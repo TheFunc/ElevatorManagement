@@ -18,3 +18,6 @@ Route::get('/data/repair', [ElevatorController::class, 'repair'])->name('data.re
 Route::get('/data/accident', [ElevatorController::class, 'accident'])->name('data.accident');
 Route::get('/data/rescue', [ElevatorController::class, 'rescue'])->name('data.rescue');
 Route::get('/data/query', [ElevatorController::class, 'query'])->name('data.query');
+
+// 文件上传路由
+Route::post('/upload', [App\Http\Controllers\FileUploadController::class, 'upload'])->name('file.upload');
