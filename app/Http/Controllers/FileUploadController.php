@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+//对应数据库
+use App\Models\files;
+
+
 class FileUploadController extends Controller
 {
     /**
@@ -48,21 +52,19 @@ class FileUploadController extends Controller
             
             // 生成文件名
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('uploads', $fileName, 'public');
-
-            dd($request->input("type"));
+            $filePath = $file->storeAs('uploads/'.$request->input("type"), $fileName, 'public');
+            // dd($filePath);
+            // dd($request->input("type"));
             // TODO: 数据库操作 - 保存文件信息
             /*
-            FileRecord::create([
-                'title' => $request->input('title'),
-                'description' => $request->input('description'),
-                'file_name' => $file->getClientOriginalName(),
-                'file_path' => $filePath,
-                'file_size' => $file->getSize(),
-                'file_type' => $file->getMimeType(),
-                'uploaded_by' => auth()->id(),
-            ]);
             */
+
+            files::create([
+                'title' => $request->input("title"),
+                'desc' => $request->input("description"),
+                'type' => $request->input("type"),
+                'path' => $filePath,
+            ]);
 
             return back()->with('success', '文件上传成功！');
         }
