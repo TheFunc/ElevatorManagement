@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ElevatorController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 // 认证路由
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -46,4 +47,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/campus', [ElevatorController::class, 'campus'])->name('campus.index');
     Route::post('/campus/store', [ElevatorController::class, 'storeCampus'])->name('campus.store');
     Route::post('/campus/{id}/delete', [ElevatorController::class, 'deleteCampus'])->name('campus.delete');
+
+    // 用户管理路由
+    Route::get('/users', [UserController::class, 'index'])->name('user.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('user.create');
+    Route::post('/users/store', [UserController::class, 'store'])->name('user.store');
+    Route::post('/users/{id}/delete', [UserController::class, 'delete'])->name('user.delete');
+    Route::post('/users/{id}/password', [UserController::class, 'changePassword'])->name('user.password');
 });

@@ -39,6 +39,52 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
+
+<!-- 退出确认弹窗 -->
+<div id="logoutModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 animate-fade-in">
+        <div class="p-6 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <i class="ri-logout-box-line text-primary text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">退出登录</h3>
+                    <p class="text-sm text-gray-500">确认要退出当前账号吗？</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-6">
+            <p class="text-gray-600 mb-4">您确定要退出电梯管理系统吗？退出后需要重新登录才能继续使用。</p>
+            <div class="flex gap-3">
+                <button onclick="hideLogoutModal()" class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    取消
+                </button>
+                <form action="{{ route('logout') }}" method="POST" class="flex-1">
+                    @csrf
+                    <button type="submit" class="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
+                        确认退出
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showLogoutModal() {
+    document.getElementById('logoutModal').classList.remove('hidden');
+}
+function hideLogoutModal() {
+    document.getElementById('logoutModal').classList.add('hidden');
+}
+// 点击背景关闭弹窗
+document.getElementById('logoutModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideLogoutModal();
+    }
+});
+</script>
     <div class="flex h-screen overflow-hidden">
         <!-- 左侧菜单 -->
         <aside class="w-64 bg-sidebar border-r border-gray-200 flex flex-col">
@@ -67,6 +113,15 @@
                         <i class="ri-alarm-warning-line text-lg"></i>
                         <span>年检预警</span>
                     </a>
+
+                    @auth
+                        @if(Auth::user()->role == 1)
+                        <a href="{{ route('user.index') }}" class="menu-item @if(Route::currentRouteName() == 'user.index' || Route::currentRouteName() == 'user.create') menu-item-active @endif">
+                            <i class="ri-user-settings-line text-lg"></i>
+                            <span>用户管理</span>
+                        </a>
+                        @endif
+                    @endauth
                     
                     <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">资料管理</div>
                     
@@ -137,13 +192,10 @@
                             <span>个人中心</span>
                         </button>
                         
-                        <form action="{{ route('logout') }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all" onclick="return confirm('确定要退出登录吗？')">
-                                <i class="ri-logout-box-line"></i>
-                                <span>退出登录</span>
-                            </button>
-                        </form>
+                        <button type="button" onclick="showLogoutModal()" class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all">
+                            <i class="ri-logout-box-line"></i>
+                            <span>退出登录</span>
+                        </button>
                         
                         <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-medium">
                             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}

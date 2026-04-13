@@ -19,6 +19,7 @@ class AdminUserSeeder extends Seeder
                 'email' => 'admin@elevator.local',
                 'password' => Hash::make('admin'),
                 'email_verified_at' => now(),
+                'role' => 1,
             ]
         );
     }
