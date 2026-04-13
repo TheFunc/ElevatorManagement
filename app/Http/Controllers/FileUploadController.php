@@ -87,4 +87,23 @@ class FileUploadController extends Controller
 
         return back()->with('error', '文件上传失败，请重试。');
     }
+
+    /**
+     * 删除文件
+     */
+    public function delete($id)
+    {
+        $file = Files::findOrFail($id);
+        
+        // 删除物理文件
+        $filePath = storage_path('app/public/' . $file->path);
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+        
+        // 删除数据库记录
+        $file->delete();
+        
+        return redirect()->route('data.query')->with('success', '文件删除成功！');
+    }
 }

@@ -23,6 +23,7 @@ Route::get('/data/query', [ElevatorController::class, 'query'])->name('data.quer
 Route::post('/upload', [App\Http\Controllers\FileUploadController::class, 'upload'])->name('file.upload');
 Route::get('/file/download/{id}', [App\Http\Controllers\FileUploadController::class, 'download'])->name('file.download');
 Route::get('/file/{id}', [App\Http\Controllers\ElevatorController::class, 'showFile'])->name('file.show');
+Route::post('/file/{id}/delete', [App\Http\Controllers\FileUploadController::class, 'delete'])->name('file.delete');
 
 // 电梯管理路由
 Route::get('/device/create', [ElevatorController::class, 'createDevice'])->name('device.create');

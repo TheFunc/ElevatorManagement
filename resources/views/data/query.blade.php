@@ -76,9 +76,12 @@
                     <td class="px-4 py-3 text-gray-600">{{ $file->created_at->format('Y-m-d H:i') }}</td>
                     <td class="px-4 py-3">
                         <a href="{{ route('file.show', $file->id) }}" class="text-primary hover:text-dark font-medium mr-3">查看详情</a>
-                        <a href="{{ route('file.download', $file->id) }}" class="text-green-600 hover:text-green-800 font-medium">
+                        <a href="{{ route('file.download', $file->id) }}" class="text-green-600 hover:text-green-800 font-medium mr-3">
                             <i class="ri-download-line mr-1"></i>下载
                         </a>
+                        <button type="button" class="text-red-600 hover:text-red-800 font-medium" onclick="showDeleteConfirm({{ $file->id }})">
+                            <i class="ri-delete-bin-line mr-1"></i>删除
+                        </button>
                     </td>
                 </tr>
                 @endforeach
@@ -91,10 +94,69 @@
                 </tr>
                 @endif
             </tbody>
-        </table>
+</table>
     </div>
     
     <!-- 分页 -->
+    @if($files->hasPages())
+    <div class="mt-6">
+        {{ $files->links() }}
+    </div>
+    @endif
+</div>
+
+<!-- 自定义确认对话框 -->
+<div id="deleteModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl p-6 max-w-md w-11/12 transform transition-all">
+        <div class="flex items-center mb-4">
+            <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mr-4">
+                <i class="ri-error-warning-line text-2xl text-red-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">确认删除</h3>
+                <p class="text-gray-500 text-sm">此操作将永久删除文件</p>
+            </div>
+        </div>
+        
+        <p class="text-gray-600 mb-6">确定要删除这个文件吗？删除后将无法恢复，同时会删除服务器上的物理文件。</p>
+        
+        <div class="flex gap-3 justify-end">
+            <button type="button" onclick="closeDeleteModal()" class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                取消
+            </button>
+            <form id="deleteForm" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    <i class="ri-delete-bin-line mr-1"></i>确认删除
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showDeleteConfirm(id) {
+    const modal = document.getElementById('deleteModal');
+    const form = document.getElementById('deleteForm');
+    
+    form.action = `/file/${id}/delete`;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+// 点击背景关闭
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+</script>
     @if($files->hasPages())
     <div class="mt-6">
         {{ $files->links() }}

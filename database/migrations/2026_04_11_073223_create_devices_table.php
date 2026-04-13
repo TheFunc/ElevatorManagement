@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string("number")->comment("电梯编号");
             $table->string("Position")->comment("电梯位置");
             $table->string("desc")->comment("电梯描述");
+            $table->string("Campus")->comment("校区");
+            $table->string("building")->comment("楼号");
 
             $table->timestamps();
         });
