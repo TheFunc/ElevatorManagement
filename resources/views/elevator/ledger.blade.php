@@ -60,9 +60,14 @@
     <div class="lg:col-span-2 card">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold text-gray-800">电梯设备列表</h3>
-            <a href="{{ route('data.device') }}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
-                <i class="ri-add-line mr-1"></i>添加电梯
-            </a>
+            <div class="flex gap-3">
+                <a href="{{ route('campus.index') }}" class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary transition-colors">
+                    <i class="ri-building-line mr-1"></i>校区管理
+                </a>
+                <a href="{{ route('data.device') }}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
+                    <i class="ri-add-line mr-1"></i>添加电梯
+                </a>
+            </div>
         </div>
         
         <div class="overflow-x-auto">

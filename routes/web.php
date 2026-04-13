@@ -31,3 +31,8 @@ Route::post('/device/store', [ElevatorController::class, 'storeDevice'])->name('
 Route::get('/device/{id}', [ElevatorController::class, 'showDevice'])->name('device.show');
 Route::get('/device/{id}/edit', [ElevatorController::class, 'editDevice'])->name('device.edit');
 Route::post('/device/{id}/update', [ElevatorController::class, 'updateDevice'])->name('device.update');
+
+// 校区管理路由
+Route::get('/campus', [ElevatorController::class, 'campus'])->name('campus.index');
+Route::post('/campus/store', [ElevatorController::class, 'storeCampus'])->name('campus.store');
+Route::post('/campus/{id}/delete', [ElevatorController::class, 'deleteCampus'])->name('campus.delete');

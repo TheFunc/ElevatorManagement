@@ -35,6 +35,17 @@
             </div>
         </div>
         
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-500 mb-1">校区</p>
+                <p class="text-lg font-semibold text-gray-800">{{ $device->Campus }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-500 mb-1">楼号</p>
+                <p class="text-lg font-semibold text-gray-800">{{ $device->building }}</p>
+            </div>
+        </div>
+        
         <div class="bg-gray-50 p-4 rounded-lg">
             <p class="text-sm text-gray-500 mb-1">电梯描述</p>
             <p class="text-gray-800">{{ $device->desc }}</p>

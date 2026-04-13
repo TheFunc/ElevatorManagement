@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Device;
 use App\Models\Files;
+use App\Models\Campus;
 
 class ElevatorController extends Controller
 {
@@ -55,7 +56,8 @@ class ElevatorController extends Controller
     // 资料管理页面
     public function device()
     {
-        return view('data.device');
+        $campuses = Campus::all();
+        return view('data.device', compact('campuses'));
     }
 
     public function prepare()
@@ -132,7 +134,8 @@ class ElevatorController extends Controller
      */
     public function createDevice()
     {
-        return view('elevator.create');
+        $campuses = Campus::all();
+        return view('elevator.create', compact('campuses'));
     }
 
     /**
@@ -144,11 +147,15 @@ class ElevatorController extends Controller
             'number' => 'required|string|max:100|unique:devices',
             'Position' => 'required|string|max:255',
             'desc' => 'required|string|max:500',
+            'Campus' => 'required|string|max:100',
+            'building' => 'required|string|max:100',
         ], [
             'number.required' => '请填写电梯编号',
             'number.unique' => '该电梯编号已存在',
             'Position.required' => '请填写电梯位置',
             'desc.required' => '请填写电梯描述',
+            'Campus.required' => '请填写校区',
+            'building.required' => '请填写楼号',
         ]);
 
         if ($validator->fails()) {
@@ -175,7 +182,8 @@ class ElevatorController extends Controller
     public function editDevice($id)
     {
         $device = Device::findOrFail($id);
-        return view('elevator.edit', compact('device'));
+        $campuses = Campus::all();
+        return view('elevator.edit', compact('device', 'campuses'));
     }
 
     /**
@@ -189,11 +197,15 @@ class ElevatorController extends Controller
             'number' => 'required|string|max:100|unique:devices,number,'.$id,
             'Position' => 'required|string|max:255',
             'desc' => 'required|string|max:500',
+            'Campus' => 'required|string|max:100',
+            'building' => 'required|string|max:100',
         ], [
             'number.required' => '请填写电梯编号',
             'number.unique' => '该电梯编号已存在',
             'Position.required' => '请填写电梯位置',
             'desc.required' => '请填写电梯描述',
+            'Campus.required' => '请填写校区',
+            'building.required' => '请填写楼号',
         ]);
 
         if ($validator->fails()) {
@@ -224,5 +236,48 @@ class ElevatorController extends Controller
         ];
         
         return view('file.show', compact('file', 'fileTypes'));
+    }
+
+    /**
+     * 校区管理页面
+     */
+    public function campus()
+    {
+        $campuses = Campus::latest()->get();
+        return view('campus.index', compact('campuses'));
+    }
+
+    /**
+     * 保存校区
+     */
+    public function storeCampus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'Campus' => 'required|string|max:100|unique:campuses',
+            'description' => 'required|string|max:500',
+        ], [
+            'Campus.required' => '请填写校区名称',
+            'Campus.unique' => '该校区已存在',
+            'description.required' => '请填写校区描述',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        Campus::create($request->all());
+
+        return redirect()->route('campus.index')->with('success', '校区添加成功！');
+    }
+
+    /**
+     * 删除校区
+     */
+    public function deleteCampus($id)
+    {
+        $campus = Campus::findOrFail($id);
+        $campus->delete();
+        
+        return redirect()->route('campus.index')->with('success', '校区删除成功！');
     }
 }
