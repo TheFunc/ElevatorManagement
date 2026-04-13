@@ -8,6 +8,14 @@
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-semibold text-gray-800">文件详细信息</h3>
         <div class="flex gap-3">
+            @php
+                $fileExtension = strtolower(pathinfo($file->path, PATHINFO_EXTENSION));
+            @endphp
+            @if(in_array($fileExtension, ['pdf', 'ppt', 'pptx']))
+            <button onclick="openPreviewModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="ri-eye-line mr-1"></i>在线预览
+            </button>
+            @endif
             <a href="{{ route('file.download', $file->id) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                 <i class="ri-download-line mr-1"></i>下载文件
             </a>
@@ -59,4 +67,70 @@
         </div>
     </div>
 </div>
+
+<!-- 文件预览模态框 -->
+<div id="previewModal" class="fixed inset-0 bg-black/70 z-50 hidden flex-col">
+    <!-- 模态框头部 -->
+    <div class="bg-white shadow-lg px-6 py-4 flex justify-between items-center">
+        <h3 class="text-lg font-semibold text-gray-800">
+            <i class="ri-file-text-line mr-2"></i>{{ $file->title }}
+        </h3>
+        <button onclick="closePreviewModal()" class="text-gray-500 hover:text-gray-700 text-2xl">
+            <i class="ri-close-line"></i>
+        </button>
+    </div>
+    
+    <!-- 预览内容区域 -->
+    <div class="flex-1 overflow-auto p-4">
+        <div id="previewContainer" class="bg-white rounded-lg shadow-xl mx-auto max-w-6xl h-full">
+            @if($fileExtension === 'pdf')
+            <iframe src="{{ asset('storage/' . $file->path) }}" 
+                    class="w-full h-full min-h-[70vh]" 
+                    frameborder="0">
+            </iframe>
+            @elseif(in_array($fileExtension, ['ppt', 'pptx']))
+            <div class="flex items-center justify-center h-full p-10">
+                <div class="text-center">
+                    <i class="ri-file-ppt-line text-6xl text-orange-500 mb-4"></i>
+                    <p class="text-gray-600 mb-4">PPT文件在线预览</p>
+                    <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ urlencode(asset('storage/' . $file->path)) }}" 
+                            class="w-[900px] h-[600px] rounded-lg shadow-lg" 
+                            frameborder="0">
+                    </iframe>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+<script>
+function openPreviewModal() {
+    const modal = document.getElementById('previewModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePreviewModal() {
+    const modal = document.getElementById('previewModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+}
+
+// ESC键关闭预览
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePreviewModal();
+    }
+});
+
+// 点击背景关闭
+document.getElementById('previewModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closePreviewModal();
+    }
+});
+</script>
 @endsection
