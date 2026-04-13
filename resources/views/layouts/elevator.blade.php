@@ -127,24 +127,33 @@
                 </div>
                 
                 <div class="flex items-center space-x-4">
-                    <button class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all">
-                        <i class="ri-user-line"></i>
-                        <span>用户设置</span>
-                    </button>
-                    
-                    <button class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all">
-                        <i class="ri-login-box-line"></i>
-                        <span>用户登录</span>
-                    </button>
-                    
-                    <button class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all">
-                        <i class="ri-user-settings-line"></i>
-                        <span>个人中心</span>
-                    </button>
-                    
-                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-medium">
-                        A
-                    </div>
+                    @auth
+                        <span class="text-gray-600">
+                            <i class="ri-user-line mr-1"></i>欢迎您，<span class="font-medium text-primary">{{ Auth::user()->name }}</span>
+                        </span>
+                        
+                        <button class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all">
+                            <i class="ri-user-settings-line"></i>
+                            <span>个人中心</span>
+                        </button>
+                        
+                        <form action="{{ route('logout') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all" onclick="return confirm('确定要退出登录吗？')">
+                                <i class="ri-logout-box-line"></i>
+                                <span>退出登录</span>
+                            </button>
+                        </form>
+                        
+                        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-medium">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all">
+                            <i class="ri-login-box-line"></i>
+                            <span>用户登录</span>
+                        </a>
+                    @endauth
                 </div>
             </header>
             
