@@ -14,6 +14,22 @@ class FileUploadController extends Controller
     /**
      * 文件上传处理
      */
+    /**
+     * 文件下载
+     */
+    public function download($id)
+    {
+        $file = Files::findOrFail($id);
+        
+        $filePath = storage_path('app/public/' . $file->path);
+        
+        if (!file_exists($filePath)) {
+            return back()->with('error', '文件不存在');
+        }
+        
+        return response()->download($filePath, basename($file->path));
+    }
+
     public function upload(Request $request)
     {
         // 文件类型定义

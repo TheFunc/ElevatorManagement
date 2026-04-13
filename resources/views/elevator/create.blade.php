@@ -1,17 +1,11 @@
 @extends('layouts.elevator')
 
-@section('title', '设备基础录入信息')
-@section('page-title', '设备基础录入信息')
+@section('title', '添加电梯')
+@section('page-title', '添加电梯')
 
 @section('content')
 <div class="card max-w-2xl mx-auto">
-    <h3 class="text-xl font-semibold text-gray-800 mb-6">设备基础信息录入</h3>
-
-    @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
+    <h3 class="text-xl font-semibold text-gray-800 mb-6">添加新电梯</h3>
 
     @if ($errors->any())
         <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
@@ -46,7 +40,7 @@
                 <i class="ri-save-line mr-2"></i>保存电梯信息
             </button>
             <a href="{{ route('elevator.ledger') }}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium">
-                返回台账
+                返回列表
             </a>
         </div>
     </form>

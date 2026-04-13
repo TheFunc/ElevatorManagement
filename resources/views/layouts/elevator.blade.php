@@ -96,7 +96,7 @@
                     </a>
                     
                     <a href="{{ route('data.repair') }}" class="menu-item @if(Route::currentRouteName() == 'data.repair') menu-item-active @endif">
-                        <i class="ri-wrench-line text-lg"></i>
+                        <i class="ri-hammer-line text-lg"></i>
                         <span>维修记录资料上传</span>
                     </a>
                     
