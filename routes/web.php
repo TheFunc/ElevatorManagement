@@ -7,6 +7,8 @@ use App\Http\Controllers\ElevatorController;
 Route::get('/', [ElevatorController::class, 'ledger'])->name('elevator.ledger');
 Route::get('/maintenance', [ElevatorController::class, 'maintenance'])->name('elevator.maintenance');
 Route::get('/warning', [ElevatorController::class, 'warning'])->name('elevator.warning');
+Route::post('/maintenance/{id}/status', [ElevatorController::class, 'updateStatus'])->name('maintenance.status');
+Route::post('/maintenance/store', [ElevatorController::class, 'storeMaintenance'])->name('maintenance.store');
 
 // 资料管理路由
 Route::get('/data/device', [ElevatorController::class, 'device'])->name('data.device');

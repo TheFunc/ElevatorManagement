@@ -4,8 +4,259 @@
 @section('page-title', '年检预警')
 
 @section('content')
-<div class="card">
-    <h3 class="text-xl font-semibold text-gray-800 mb-4">年检预警</h3>
-    <p class="text-gray-600">查看即将到期需要年检的电梯</p>
+<!-- 今日预警弹窗 -->
+@if($todayWarning->count() > 0)
+<div id="warningModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl p-6 max-w-lg w-11/12 transform transition-all animate-pulse">
+        <div class="flex items-center mb-4">
+            <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mr-4 animate-bounce">
+                <i class="ri-alarm-warning-line text-3xl text-red-600"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-red-600">年检预警提醒</h3>
+                <p class="text-gray-500">今日有 {{ $todayWarning->count() }} 台电梯需要年检</p>
+            </div>
+        </div>
+        
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 max-h-60 overflow-y-auto">
+            <ul class="space-y-2">
+                @foreach($todayWarning as $item)
+                <li class="flex items-center">
+                    <i class="ri-checkbox-blank-circle-fill text-red-500 text-xs mr-2"></i>
+                    <span class="text-red-800 font-medium">{{ $item->inspection_devices }}</span>
+                    <span class="text-gray-500 text-sm ml-2">负责人: {{ $item->responsible_person }}</span>
+                </li>
+                @endforeach
+            </ul>
+        </div>
+        
+        <div class="flex gap-3 justify-end">
+            <button type="button" onclick="closeWarningModal()" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
+                知道了，查看详情
+            </button>
+        </div>
+    </div>
 </div>
+@endif
+
+<div class="card">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-semibold text-gray-800">电梯年检预警管理</h3>
+        <button type="button" onclick="showAddModal()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
+            <i class="ri-add-line mr-1"></i>添加年检
+        </button>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-red-50 border border-red-200 p-4 rounded-lg">
+            <div class="flex items-center">
+                <div class="bg-red-100 p-3 rounded-lg">
+                    <i class="ri-alarm-warning-line text-2xl text-red-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">今日待检</p>
+                    <h3 class="text-2xl font-bold text-red-600">{{ $todayWarning->count() }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+            <div class="flex items-center">
+                <div class="bg-yellow-100 p-3 rounded-lg">
+                    <i class="ri-time-line text-2xl text-yellow-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">待检总数</p>
+                    <h3 class="text-2xl font-bold text-yellow-600">{{ $maintenances->where('status', 0)->count() }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+            <div class="flex items-center">
+                <div class="bg-green-100 p-3 rounded-lg">
+                    <i class="ri-checkbox-circle-line text-2xl text-green-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-500">已完成</p>
+                    <h3 class="text-2xl font-bold text-green-600">{{ $maintenances->where('status', 1)->count() }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 预警列表 -->
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead>
+                <tr class="bg-gray-50">
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">电梯名称</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">年检日期</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">负责人</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">联系电话</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">备注</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">状态</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($maintenances as $item)
+                <tr class="border-b border-gray-100 hover:bg-gray-50 @if($item->next_inspection_date->isToday() && $item->status == 0) bg-red-50 @endif">
+                    <td class="px-4 py-3 text-gray-800 font-medium">{{ $item->inspection_devices }}</td>
+<td class="px-4 py-3 text-gray-600">{{ $item->next_inspection_date->format('Y-m-d') }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $item->responsible_person }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $item->contact_phone }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $item->remark }}</td>
+                    <td class="px-4 py-3">
+                        @if($item->status == 0)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-700">
+                                <i class="ri-time-line mr-1"></i>未检查
+                            </span>
+                        @elseif($item->status == 1)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
+                                <i class="ri-checkbox-circle-line mr-1"></i>已检查
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700">
+                                <i class="ri-error-warning-line mr-1"></i>已过期
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3">
+                        @if($item->status == 0 || $item->status == 2)
+                        <form action="{{ route('maintenance.status', $item->id) }}" method="POST" class="inline">
+                            @csrf
+                            <input type="hidden" name="status" value="1">
+                            <button type="submit" class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium" onclick="return confirm('确认标记为已检查？')">
+                                <i class="ri-checkbox-circle-line mr-1"></i>标记完成
+                            </button>
+                        </form>
+                        @else
+                        <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-sm">无需操作</span>
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+                
+                @if($maintenances->isEmpty())
+                <tr>
+                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                        暂无年检预警数据
+                    </td>
+                </tr>
+                @endif
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 添加年检弹窗 -->
+<div id="addModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl p-6 max-w-md w-11/12 transform transition-all">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">添加年检记录</h3>
+            <button type="button" onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="ri-close-line text-xl"></i>
+            </button>
+        </div>
+        
+        <form action="{{ route('maintenance.store') }}" method="POST" class="space-y-4" onsubmit="return validateForm()">
+            @csrf
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">选择电梯 <span class="text-red-500">*</span></label>
+                <select name="inspection_devices" id="inspection_devices" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                    <option value="">请选择电梯</option>
+                    @foreach($devices as $device)
+                    <option value="{{ $device->number }}">{{ $device->number }} - {{ $device->Position }}</option>
+                    @endforeach
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">年检日期 <span class="text-red-500">*</span></label>
+                <input type="date" name="next_inspection_date" id="next_inspection_date" value="{{ old('next_inspection_date', date('Y-m-d')) }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">负责人 <span class="text-red-500">*</span></label>
+                <input type="text" name="responsible_person" id="responsible_person" value="{{ old('responsible_person') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入负责人姓名">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">联系电话 <span class="text-red-500">*</span></label>
+                <input type="text" name="contact_phone" id="contact_phone" value="{{ old('contact_phone') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入联系电话">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">备注</label>
+                <textarea name="remark" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="可选备注信息">{{ old('remark') }}</textarea>
+            </div>
+            
+            <div id="formError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                请填写所有必填项
+            </div>
+            
+            <div class="flex gap-3 justify-end">
+                <button type="button" onclick="closeAddModal()" class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                    取消
+                </button>
+                <button type="submit" class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
+                    添加
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function closeWarningModal() {
+    const modal = document.getElementById('warningModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+// 点击背景关闭
+document.getElementById('warningModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeWarningModal();
+    }
+});
+
+function showAddModal() {
+    const modal = document.getElementById('addModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('formError').classList.add('hidden');
+}
+
+function closeAddModal() {
+    const modal = document.getElementById('addModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+// 点击背景关闭添加弹窗
+document.getElementById('addModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeAddModal();
+    }
+});
+
+// 表单验证
+function validateForm() {
+    const device = document.getElementById('inspection_devices').value;
+    const date = document.getElementById('next_inspection_date').value;
+    const person = document.getElementById('responsible_person').value;
+    const phone = document.getElementById('contact_phone').value;
+    
+    if (!device || !date || !person || !phone) {
+        document.getElementById('formError').classList.remove('hidden');
+        return false;
+    }
+    
+    return true;
+}
+</script>
 @endsection

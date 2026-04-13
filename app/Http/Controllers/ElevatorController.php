@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Device;
 use App\Models\Files;
 use App\Models\Campus;
+use App\Models\Maintenance;
 
 class ElevatorController extends Controller
 {
@@ -50,7 +51,68 @@ class ElevatorController extends Controller
 
     public function warning()
     {
-        return view('elevator.warning');
+        // 更新状态：自动标记已过期的记录
+        Maintenance::whereDate('next_inspection_date', '<', now()->toDateString())
+            ->where('status', 0)
+            ->update(['status' => 2]);
+        
+        // 获取所有预警记录
+        $maintenances = Maintenance::orderBy('next_inspection_date', 'asc')->get();
+        
+        // 获取电梯列表
+        $devices = Device::all();
+        
+        // 计算今日需要预警的记录
+        $todayWarning = $maintenances->filter(function($item) {
+            return $item->next_inspection_date->isToday() && $item->status == 0;
+        });
+        
+        return view('elevator.warning', compact('maintenances', 'todayWarning', 'devices'));
+    }
+
+    /**
+     * 更新年检状态
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $maintenance = Maintenance::findOrFail($id);
+        $maintenance->update(['status' => $request->status]);
+        
+        return back()->with('success', '状态更新成功！');
+    }
+
+    /**
+     * 添加年检记录
+     */
+    public function storeMaintenance(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'inspection_devices' => 'required|string',
+            'next_inspection_date' => 'required|date',
+            'responsible_person' => 'required|string|max:100',
+            'contact_phone' => 'required|string|max:20',
+            'remark' => 'nullable|string|max:500',
+        ], [
+            'inspection_devices.required' => '请选择电梯',
+            'next_inspection_date.required' => '请选择年检日期',
+            'responsible_person.required' => '请填写负责人',
+            'contact_phone.required' => '请填写联系电话',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        Maintenance::create([
+            'inspection_devices' => $request->inspection_devices,
+            'next_inspection_date' => $request->next_inspection_date,
+            'responsible_person' => $request->responsible_person,
+            'contact_phone' => $request->contact_phone,
+            'remark' => $request->remark,
+            'status' => 0,
+        ]);
+
+        return redirect()->route('elevator.warning')->with('success', '年检记录添加成功！');
     }
 
     // 资料管理页面
