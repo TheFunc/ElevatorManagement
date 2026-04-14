@@ -12,6 +12,21 @@
         </button>
     </div>
 
+    <!-- 搜索栏 -->
+    <form action="" method="GET" class="mb-6">
+        <div class="flex gap-3 flex-wrap">
+            <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="搜索标题或描述..." class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+            <button type="submit" class="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors">
+                <i class="ri-search-line mr-1"></i>搜索
+            </button>
+            @if(request('keyword'))
+            <a href="{{ route('repair.orders') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                重置
+            </a>
+            @endif
+        </div>
+    </form>
+
     <div class="overflow-x-auto">
         <table class="w-full">
             <thead>

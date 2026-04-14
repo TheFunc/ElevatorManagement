@@ -149,6 +149,27 @@ document.getElementById('logoutModal').addEventListener('click', function(e) {
                         <span>资料查询</span>
                     </a>
                     
+                    @auth
+                    @if(Auth::user()->role == 1)
+                    <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">视频管理</div>
+                    
+                    <a href="{{ route('video.index') }}" class="menu-item @if(Route::currentRouteName() == 'video.*') menu-item-active @endif">
+                        <i class="ri-video-line text-lg"></i>
+                        <span>视频管理</span>
+                    </a>
+                    
+                    <a href="{{ route('video.preview') }}" class="menu-item @if(Route::currentRouteName() == 'video.preview') menu-item-active @endif">
+                        <i class="ri-eye-line text-lg"></i>
+                        <span>视频预览</span>
+                    </a>
+                    
+                    <a href="{{ route('video.create') }}" class="menu-item @if(Route::currentRouteName() == 'video.create') menu-item-active @endif">
+                        <i class="ri-add-circle-line text-lg"></i>
+                        <span>增加视频</span>
+                    </a>
+                    @endif
+                    @endauth
+                    
                 </div>
             </nav>
         </aside>

@@ -100,12 +100,19 @@ class ElevatorController extends Controller
         // 获取电梯列表
         $devices = Device::all();
         
-        // 计算今日需要预警的记录
+        // 获取用户列表
+        $users = \App\Models\User::all();
+        
+        // 计算今日需要预警的记录：管理员看到全部，普通用户只看到自己负责的
         $todayWarning = $maintenances->filter(function($item) {
-            return $item->next_inspection_date->isToday() && $item->status == 0;
+            if (Auth::user()->role == 1) {
+                return $item->next_inspection_date->isToday() && $item->status == 0;
+            } else {
+                return $item->next_inspection_date->isToday() && $item->status == 0 && $item->responsible_person == Auth::user()->name;
+            }
         });
         
-        return view('elevator.warning', compact('maintenances', 'todayWarning', 'devices'));
+        return view('elevator.warning', compact('maintenances', 'todayWarning', 'devices', 'users'));
     }
 
     /**
@@ -113,14 +120,30 @@ class ElevatorController extends Controller
      */
     public function updateStatus(Request $request, $id)
     {
-        if (Auth::user()->role != 1) {
-            abort(403, '您没有权限进行此操作');
+        $maintenance = Maintenance::findOrFail($id);
+        
+        if (Auth::user()->role != 1 && Auth::user()->name != $maintenance->responsible_person) {
+            abort(403, '只有负责人或管理员才能进行此操作');
         }
         
-        $maintenance = Maintenance::findOrFail($id);
         $maintenance->update(['status' => $request->status]);
         
         return back()->with('success', '状态更新成功！');
+    }
+
+    /**
+     * 删除年检记录
+     */
+    public function deleteMaintenance($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员才能删除');
+        }
+        
+        $maintenance = Maintenance::findOrFail($id);
+        $maintenance->delete();
+        
+        return redirect()->route('elevator.warning')->with('success', '年检记录已删除');
     }
 
     /**
@@ -135,24 +158,27 @@ class ElevatorController extends Controller
             'inspection_devices' => 'required|string',
             'next_inspection_date' => 'required|date',
             'responsible_person' => 'required|string|max:100',
-            'contact_phone' => 'required|string|max:20',
+            'contact_phone' => 'nullable|string|max:20',
             'remark' => 'nullable|string|max:500',
         ], [
             'inspection_devices.required' => '请选择电梯',
             'next_inspection_date.required' => '请选择年检日期',
-            'responsible_person.required' => '请填写负责人',
-            'contact_phone.required' => '请填写联系电话',
+            'responsible_person.required' => '请选择负责人',
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
+        // 自动获取用户手机号
+        $user = \App\Models\User::where('name', $request->responsible_person)->first();
+        $contact_phone = $request->contact_phone ?? ($user->phone ?? '');
+        
         Maintenance::create([
             'inspection_devices' => $request->inspection_devices,
             'next_inspection_date' => $request->next_inspection_date,
             'responsible_person' => $request->responsible_person,
-            'contact_phone' => $request->contact_phone,
+            'contact_phone' => $contact_phone,
             'remark' => $request->remark,
             'status' => 0,
         ]);
@@ -374,9 +400,20 @@ class ElevatorController extends Controller
     /**
      * 电梯单管理
      */
-    public function repairOrders()
+    public function repairOrders(Request $request)
     {
-        $orders = RepairOrder::latest()->get();
+        $query = RepairOrder::query();
+        
+        // 关键词搜索
+        if ($request->has('keyword') && $request->keyword != '') {
+            $keyword = $request->keyword;
+            $query->where(function($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%");
+            });
+        }
+        
+        $orders = $query->latest()->get();
         return view('repair.orders', compact('orders'));
     }
 
@@ -451,5 +488,38 @@ class ElevatorController extends Controller
         $filename = $order->title . '.' . $extension;
         
         return response()->download($filePath, $filename);
+    }
+
+    /**
+     * 视频管理页面
+     */
+    public function videoIndex()
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        return view('video.index');
+    }
+
+    /**
+     * 视频预览页面
+     */
+    public function videoPreview()
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        return view('video.preview');
+    }
+
+    /**
+     * 增加视频页面
+     */
+    public function videoCreate()
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        return view('video.create');
     }
 }

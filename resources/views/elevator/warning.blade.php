@@ -156,20 +156,34 @@
                     </td>
                 <td class="px-4 py-3">
                         @auth
-                        @if(Auth::user()->role == 1)
-                            @if($item->status == 0 || $item->status == 2)
-                            <form action="{{ route('maintenance.status', $item->id) }}" method="POST" class="inline">
-                                @csrf
-                                <input type="hidden" name="status" value="1">
-                                <button type="submit" class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium" onclick="return confirm('确认标记为已检查？')">
-                                    <i class="ri-checkbox-circle-line mr-1"></i>标记完成
-                                </button>
-                            </form>
-                            @else
-                            <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-sm">无需操作</span>
-                            @endif
+                        @if(Auth::user()->role == 1 || Auth::user()->name == $item->responsible_person)
+                            <div class="flex gap-2">
+                                @if($item->status == 0 || $item->status == 2)
+                                <form action="{{ route('maintenance.status', $item->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    <input type="hidden" name="status" value="1">
+                                    <button type="submit" class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium" onclick="return confirm('确认标记为已检查？')">
+                                        <i class="ri-checkbox-circle-line mr-1"></i>标记完成
+                                    </button>
+                                </form>
+                                @else
+                                <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-sm">无需操作</span>
+                                @endif
+                                
+                                @auth
+                                @if(Auth::user()->role == 1)
+                                <form action="{{ route('maintenance.delete', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('确定要删除此年检记录吗？此操作不可恢复！')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium">
+                                        <i class="ri-delete-bin-line mr-1"></i>删除
+                                    </button>
+                                </form>
+                                @endif
+                                @endauth
+                            </div>
                         @else
-                            <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-sm">仅管理员可操作</span>
+                            <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-sm">仅负责人或管理员可操作</span>
                         @endif
                         @endauth
                 </td>
@@ -218,12 +232,17 @@
             
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">负责人 <span class="text-red-500">*</span></label>
-                <input type="text" name="responsible_person" id="responsible_person" value="{{ old('responsible_person') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入负责人姓名">
+                <select name="responsible_person" id="responsible_person" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                    <option value="">请选择负责人</option>
+                    @foreach($users as $user)
+                    <option value="{{ $user->name }}">{{ $user->name }}</option>
+                    @endforeach
+                </select>
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">联系电话 <span class="text-red-500">*</span></label>
-                <input type="text" name="contact_phone" id="contact_phone" value="{{ old('contact_phone') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入联系电话">
+                <label class="block text-sm font-medium text-gray-700 mb-2">联系电话</label>
+                <input type="text" name="contact_phone" id="contact_phone" value="{{ old('contact_phone') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="将自动使用用户手机号">
             </div>
             
             <div>
@@ -287,9 +306,8 @@ function validateForm() {
     const device = document.getElementById('inspection_devices').value;
     const date = document.getElementById('next_inspection_date').value;
     const person = document.getElementById('responsible_person').value;
-    const phone = document.getElementById('contact_phone').value;
     
-    if (!device || !date || !person || !phone) {
+    if (!device || !date || !person) {
         document.getElementById('formError').classList.remove('hidden');
         return false;
     }

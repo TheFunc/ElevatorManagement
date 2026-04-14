@@ -16,8 +16,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [ElevatorController::class, 'ledger'])->name('elevator.ledger');
     Route::get('/maintenance', [ElevatorController::class, 'maintenance'])->name('elevator.maintenance');
     Route::get('/warning', [ElevatorController::class, 'warning'])->name('elevator.warning');
-    Route::post('/maintenance/{id}/status', [ElevatorController::class, 'updateStatus'])->name('maintenance.status');
-    Route::post('/maintenance/store', [ElevatorController::class, 'storeMaintenance'])->name('maintenance.store');
+Route::post('/maintenance/{id}/status', [ElevatorController::class, 'updateStatus'])->name('maintenance.status');
+Route::delete('/maintenance/{id}', [ElevatorController::class, 'deleteMaintenance'])->name('maintenance.delete');
+Route::post('/maintenance/store', [ElevatorController::class, 'storeMaintenance'])->name('maintenance.store');
 
     // 资料管理路由
     Route::get('/data/device', [ElevatorController::class, 'device'])->name('data.device');
@@ -47,6 +48,11 @@ Route::get('/repair-orders', [ElevatorController::class, 'repairOrders'])->name(
 Route::post('/repair-orders/upload', [ElevatorController::class, 'uploadRepairOrder'])->name('repair.upload');
 Route::get('/repair-orders/{id}/download', [ElevatorController::class, 'downloadRepairOrder'])->name('repair.download');
 Route::delete('/repair-orders/{id}', [ElevatorController::class, 'deleteRepairOrder'])->name('repair.delete');
+
+// 视频管理路由
+Route::get('/video', [ElevatorController::class, 'videoIndex'])->name('video.index');
+Route::get('/video/preview', [ElevatorController::class, 'videoPreview'])->name('video.preview');
+Route::get('/video/create', [ElevatorController::class, 'videoCreate'])->name('video.create');
 
     // 用户管理路由
     Route::get('/users', [UserController::class, 'index'])->name('user.index');

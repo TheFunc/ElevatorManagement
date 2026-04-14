@@ -199,7 +199,7 @@ new Chart(ctx, {
                 '#3B82F6', '#10B981', '#EAB308', '#EF4444', '#8B5CF6', '#F97316', '#14B8A6'
             ],
             borderWidth: 0,
-            hoverOffset: 12
+            hoverOffset: 0
         }]
     },
     options: {
@@ -222,10 +222,9 @@ new Chart(ctx, {
             }
         },
         animation: {
-            animateRotate: true,
-            animateScale: true,
-            duration: 800,
-            easing: 'easeOutQuart'
+            animateRotate: false,
+            animateScale: false,
+            duration: 0
         },
         interaction: {
             mode: 'nearest',
