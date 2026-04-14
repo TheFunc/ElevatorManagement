@@ -32,6 +32,41 @@
         </div>
 
         <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">电梯注册编号</label>
+            <input type="text" name="register" value="{{ old('register') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入电梯注册编号">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">出厂（产品）编号</label>
+            <input type="text" name="FactorySerial" value="{{ old('FactorySerial') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入出厂编号">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">设备名称</label>
+                <input type="text" name="name" value="{{ old('name') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="例如：乘客电梯">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">设备型号</label>
+                <input type="text" name="Model" value="{{ old('Model') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入设备型号">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">制造厂家</label>
+                <input type="text" name="Manufacturer" value="{{ old('Manufacturer') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入制造厂家">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">设备使用状态</label>
+                <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                    <option value="1" {{ old('status', 1) == 1 ? 'selected' : '' }}>在用</option>
+                    <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>停用</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">电梯位置 <span class="text-red-500">*</span></label>
             <input type="text" name="Position" value="{{ old('Position') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="例如：1号楼东侧">
         </div>

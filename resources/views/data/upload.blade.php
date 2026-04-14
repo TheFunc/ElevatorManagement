@@ -1,12 +1,12 @@
 @extends('layouts.elevator')
 
-@section('title', '救援演练资料上传')
-@section('page-title', '救援演练资料上传')
+@section('title', '资料上传')
+@section('page-title', '资料上传')
 
 @section('content')
-<div class="card">
-    <h3 class="text-xl font-semibold text-gray-800 mb-4">救援演练资料上传</h3>
-    <p class="text-gray-600 mb-6">上传救援演练相关资料</p>
+<div class="card max-w-2xl mx-auto">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">资料上传</h3>
+    <p class="text-gray-600 mb-6">统一上传所有类型的电梯管理资料文件</p>
 
     @if(session('success'))
         <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
@@ -32,8 +32,21 @@
 
     <form action="{{ route('file.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
-        <input type="hidden" name="type" value="rescue">
         
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">资料类型</label>
+            <select name="type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                <option value="">请选择资料类型</option>
+                <option value="prepare" {{ old('type') == 'prepare' ? 'selected' : '' }}>准备资料</option>
+                <option value="maintenance" {{ old('type') == 'maintenance' ? 'selected' : '' }}>维保资料</option>
+                <option value="inspection" {{ old('type') == 'inspection' ? 'selected' : '' }}>日常巡检资料</option>
+                <option value="fault" {{ old('type') == 'fault' ? 'selected' : '' }}>故障记录资料</option>
+                <option value="repair" {{ old('type') == 'repair' ? 'selected' : '' }}>维修记录资料</option>
+                <option value="accident" {{ old('type') == 'accident' ? 'selected' : '' }}>事故记录资料</option>
+                <option value="rescue" {{ old('type') == 'rescue' ? 'selected' : '' }}>救援演练资料</option>
+            </select>
+        </div>
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">文件标题</label>
             <input type="text" name="title" value="{{ old('title') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">

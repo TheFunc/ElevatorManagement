@@ -42,10 +42,35 @@
 <div class="card">
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-semibold text-gray-800">电梯年检预警管理</h3>
+        @auth
+        @if(Auth::user()->role == 1)
         <button type="button" onclick="showAddModal()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
             <i class="ri-add-line mr-1"></i>添加年检
         </button>
+        @endif
+        @endauth
     </div>
+    
+    <!-- 搜索过滤栏 -->
+    <form action="" method="GET" class="mb-6">
+        <div class="flex gap-3 flex-wrap">
+            <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="搜索电梯名称、负责人..." class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+            <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                <option value="">全部状态</option>
+                <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>未检查</option>
+                <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>已检查</option>
+                <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>已过期</option>
+            </select>
+            <button type="submit" class="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors">
+                <i class="ri-search-line mr-1"></i>查询
+            </button>
+            @if(request('keyword') || request('status') != '')
+            <a href="{{ route('elevator.warning') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                重置
+            </a>
+            @endif
+        </div>
+    </form>
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="bg-red-50 border border-red-200 p-4 rounded-lg">
@@ -90,6 +115,7 @@
         <table class="w-full">
             <thead>
                 <tr class="bg-gray-50">
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">电梯编号</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">电梯名称</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">年检日期</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">负责人</th>
@@ -103,6 +129,12 @@
                 @foreach($maintenances as $item)
                 <tr class="border-b border-gray-100 hover:bg-gray-50 @if($item->next_inspection_date->isToday() && $item->status == 0) bg-red-50 @endif">
                     <td class="px-4 py-3 text-gray-800 font-medium">{{ $item->inspection_devices }}</td>
+                    <td class="px-4 py-3 text-gray-600">
+                        @php
+                            $device = \App\Models\Device::where('number', $item->inspection_devices)->first();
+                        @endphp
+                        {{ $device->name ?? '-' }}
+                    </td>
 <td class="px-4 py-3 text-gray-600">{{ $item->next_inspection_date->format('Y-m-d') }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ $item->responsible_person }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ $item->contact_phone }}</td>
@@ -122,27 +154,33 @@
                             </span>
                         @endif
                     </td>
-                    <td class="px-4 py-3">
-                        @if($item->status == 0 || $item->status == 2)
-                        <form action="{{ route('maintenance.status', $item->id) }}" method="POST" class="inline">
-                            @csrf
-                            <input type="hidden" name="status" value="1">
-                            <button type="submit" class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium" onclick="return confirm('确认标记为已检查？')">
-                                <i class="ri-checkbox-circle-line mr-1"></i>标记完成
-                            </button>
-                        </form>
+                <td class="px-4 py-3">
+                        @auth
+                        @if(Auth::user()->role == 1)
+                            @if($item->status == 0 || $item->status == 2)
+                            <form action="{{ route('maintenance.status', $item->id) }}" method="POST" class="inline">
+                                @csrf
+                                <input type="hidden" name="status" value="1">
+                                <button type="submit" class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium" onclick="return confirm('确认标记为已检查？')">
+                                    <i class="ri-checkbox-circle-line mr-1"></i>标记完成
+                                </button>
+                            </form>
+                            @else
+                            <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-sm">无需操作</span>
+                            @endif
                         @else
-                        <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-sm">无需操作</span>
+                            <span class="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-sm">仅管理员可操作</span>
                         @endif
-                    </td>
+                        @endauth
+                </td>
                 </tr>
                 @endforeach
                 
                 @if($maintenances->isEmpty())
                 <tr>
-                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">
-                        暂无年检预警数据
-                    </td>
+                        <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+                            暂无年检预警数据
+                        </td>
                 </tr>
                 @endif
             </tbody>

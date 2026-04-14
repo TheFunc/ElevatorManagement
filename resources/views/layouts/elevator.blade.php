@@ -125,50 +125,30 @@ document.getElementById('logoutModal').addEventListener('click', function(e) {
                     
                     <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">资料管理</div>
                     
+                    @auth
+                    @if(Auth::user()->role == 1)
                     <a href="{{ route('data.device') }}" class="menu-item @if(Route::currentRouteName() == 'data.device') menu-item-active @endif">
                         <i class="ri-database-2-line text-lg"></i>
                         <span>设备基础录入信息</span>
                     </a>
+                    @endif
+                    @endauth
                     
-                    <a href="{{ route('data.prepare') }}" class="menu-item @if(Route::currentRouteName() == 'data.prepare') menu-item-active @endif">
+                    <a href="{{ route('data.upload') }}" class="menu-item @if(Route::currentRouteName() == 'data.upload') menu-item-active @endif">
                         <i class="ri-upload-cloud-line text-lg"></i>
-                        <span>准备资料上传</span>
+                        <span>资料上传</span>
                     </a>
                     
-                    <a href="{{ route('data.maintenance') }}" class="menu-item @if(Route::currentRouteName() == 'data.maintenance') menu-item-active @endif">
-                        <i class="ri-file-settings-line text-lg"></i>
-                        <span>维保资料上传</span>
+                    <a href="{{ route('repair.orders') }}" class="menu-item @if(Route::currentRouteName() == 'repair.orders' || Route::currentRouteName() == 'repair.upload') menu-item-active @endif">
+                        <i class="ri-file-list-2-line text-lg"></i>
+                        <span>电梯单上传</span>
                     </a>
-                    
-                    <a href="{{ route('data.inspection') }}" class="menu-item @if(Route::currentRouteName() == 'data.inspection') menu-item-active @endif">
-                        <i class="ri-search-eye-line text-lg"></i>
-                        <span>日常巡检资料上传</span>
-                    </a>
-                    
-                    <a href="{{ route('data.fault') }}" class="menu-item @if(Route::currentRouteName() == 'data.fault') menu-item-active @endif">
-                        <i class="ri-error-warning-line text-lg"></i>
-                        <span>故障记录资料上传</span>
-                    </a>
-                    
-                    <a href="{{ route('data.repair') }}" class="menu-item @if(Route::currentRouteName() == 'data.repair') menu-item-active @endif">
-                        <i class="ri-hammer-line text-lg"></i>
-                        <span>维修记录资料上传</span>
-                    </a>
-                    
-                    <a href="{{ route('data.accident') }}" class="menu-item @if(Route::currentRouteName() == 'data.accident') menu-item-active @endif">
-                        <i class="ri-alert-line text-lg"></i>
-                        <span>事故记录资料上传</span>
-                    </a>
-                    
-                    <a href="{{ route('data.rescue') }}" class="menu-item @if(Route::currentRouteName() == 'data.rescue') menu-item-active @endif">
-                        <i class="ri-lifebuoy-line text-lg"></i>
-                        <span>救援演练资料上传</span>
-                    </a>
-                    
+
                     <a href="{{ route('data.query') }}" class="menu-item @if(Route::currentRouteName() == 'data.query') menu-item-active @endif">
                         <i class="ri-search-line text-lg"></i>
                         <span>资料查询</span>
                     </a>
+                    
                 </div>
             </nav>
         </aside>
@@ -187,10 +167,10 @@ document.getElementById('logoutModal').addEventListener('click', function(e) {
                             <i class="ri-user-line mr-1"></i>欢迎您，<span class="font-medium text-primary">{{ Auth::user()->name }}</span>
                         </span>
                         
-                        <button class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all">
+                        <a href="{{ route('user.profile') }}" class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all">
                             <i class="ri-user-settings-line"></i>
                             <span>个人中心</span>
-                        </button>
+                        </a>
                         
                         <button type="button" onclick="showLogoutModal()" class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-lg transition-all">
                             <i class="ri-logout-box-line"></i>

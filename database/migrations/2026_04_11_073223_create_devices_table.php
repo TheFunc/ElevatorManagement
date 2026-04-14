@@ -17,6 +17,13 @@ return new class extends Migration
             $table->id();
 
             $table->string("number")->comment("电梯编号");
+            $table->string("register")->comment("电梯注册编号");
+            $table->string("FactorySerial")->comment("出厂（产品）编号");
+            $table->string("name")->comment("设备名称");
+            $table->string("Model")->comment("设备型号");
+            $table->string("Manufacturer")->comment("制造厂家");
+            $table->integer("status")->comment("设备使用状态 0 => 不可用 1 => 再用");
+
             $table->string("Position")->comment("电梯位置");
             $table->string("desc")->comment("电梯描述");
             $table->string("Campus")->comment("校区");

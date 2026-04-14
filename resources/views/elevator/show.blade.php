@@ -30,6 +30,41 @@
                 <p class="text-lg font-semibold text-gray-800">{{ $device->number }}</p>
             </div>
             <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-500 mb-1">设备名称</p>
+                <p class="text-lg font-semibold text-gray-800">{{ $device->name ?? '未填写' }}</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-500 mb-1">电梯注册编号</p>
+                <p class="text-lg font-semibold text-gray-800">{{ $device->register ?? '未填写' }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-500 mb-1">出厂编号</p>
+                <p class="text-lg font-semibold text-gray-800">{{ $device->FactorySerial ?? '未填写' }}</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-500 mb-1">设备型号</p>
+                <p class="text-lg font-semibold text-gray-800">{{ $device->Model ?? '未填写' }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-500 mb-1">制造厂家</p>
+                <p class="text-lg font-semibold text-gray-800">{{ $device->Manufacturer ?? '未填写' }}</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-500 mb-1">使用状态</p>
+                <p class="text-lg font-semibold {{ $device->status == 1 ? 'text-green-600' : 'text-red-600' }}">
+                    {{ $device->status == 1 ? '在用' : '停用' }}
+                </p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
                 <p class="text-sm text-gray-500 mb-1">电梯位置</p>
                 <p class="text-lg font-semibold text-gray-800">{{ $device->Position }}</p>
             </div>

@@ -145,4 +145,12 @@ class UserController extends Controller
 
         return redirect()->route('user.index')->with('success', '密码修改成功');
     }
+
+    /**
+     * 个人中心页面
+     */
+    public function profile()
+    {
+        return view('user.profile');
+    }
 }

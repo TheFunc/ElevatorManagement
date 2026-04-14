@@ -21,13 +21,7 @@ Route::middleware('auth')->group(function () {
 
     // 资料管理路由
     Route::get('/data/device', [ElevatorController::class, 'device'])->name('data.device');
-    Route::get('/data/prepare', [ElevatorController::class, 'prepare'])->name('data.prepare');
-    Route::get('/data/maintenance', [ElevatorController::class, 'maintenanceData'])->name('data.maintenance');
-    Route::get('/data/inspection', [ElevatorController::class, 'inspection'])->name('data.inspection');
-    Route::get('/data/fault', [ElevatorController::class, 'fault'])->name('data.fault');
-    Route::get('/data/repair', [ElevatorController::class, 'repair'])->name('data.repair');
-    Route::get('/data/accident', [ElevatorController::class, 'accident'])->name('data.accident');
-    Route::get('/data/rescue', [ElevatorController::class, 'rescue'])->name('data.rescue');
+    Route::get('/data/upload', [ElevatorController::class, 'upload'])->name('data.upload');
     Route::get('/data/query', [ElevatorController::class, 'query'])->name('data.query');
 
     // 文件上传下载路由
@@ -48,8 +42,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/campus/store', [ElevatorController::class, 'storeCampus'])->name('campus.store');
     Route::post('/campus/{id}/delete', [ElevatorController::class, 'deleteCampus'])->name('campus.delete');
 
+// 电梯单管理路由
+Route::get('/repair-orders', [ElevatorController::class, 'repairOrders'])->name('repair.orders');
+Route::post('/repair-orders/upload', [ElevatorController::class, 'uploadRepairOrder'])->name('repair.upload');
+Route::get('/repair-orders/{id}/download', [ElevatorController::class, 'downloadRepairOrder'])->name('repair.download');
+Route::delete('/repair-orders/{id}', [ElevatorController::class, 'deleteRepairOrder'])->name('repair.delete');
+
     // 用户管理路由
     Route::get('/users', [UserController::class, 'index'])->name('user.index');
+    Route::get('/users/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/users/create', [UserController::class, 'create'])->name('user.create');
     Route::post('/users/store', [UserController::class, 'store'])->name('user.store');
     Route::post('/users/{id}/delete', [UserController::class, 'delete'])->name('user.delete');

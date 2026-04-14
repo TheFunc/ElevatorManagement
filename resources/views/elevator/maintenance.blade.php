@@ -7,7 +7,7 @@
 <div class="card">
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-semibold text-gray-800">维保记录管理</h3>
-        <a href="{{ route('data.maintenance') }}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
+        <a href="{{ route('data.upload') }}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
             <i class="ri-add-line mr-1"></i>添加维保记录
         </a>
     </div>

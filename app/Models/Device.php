@@ -11,6 +11,12 @@ class Device extends Model
 
     protected $fillable = [
         'number',
+        'register',
+        'FactorySerial',
+        'name',
+        'Model',
+        'Manufacturer',
+        'status',
         'Position',
         'desc',
         'Campus',

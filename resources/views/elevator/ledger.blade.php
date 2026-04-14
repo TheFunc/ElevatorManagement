@@ -61,31 +61,63 @@
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold text-gray-800">电梯设备列表</h3>
             <div class="flex gap-3">
+                @auth
+                @if(Auth::user()->role == 1)
                 <a href="{{ route('campus.index') }}" class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary transition-colors">
                     <i class="ri-building-line mr-1"></i>校区管理
                 </a>
                 <a href="{{ route('data.device') }}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
                     <i class="ri-add-line mr-1"></i>添加电梯
                 </a>
+                @endif
+                @endauth
             </div>
         </div>
+
+        <!-- 搜索栏 -->
+        <form action="" method="GET" class="mb-6">
+            <div class="flex gap-3 flex-wrap">
+                <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="搜索电梯编号、名称、位置..." class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                    <option value="">全部状态</option>
+                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>在用</option>
+                    <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>停用</option>
+                </select>
+                <button type="submit" class="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors">
+                    <i class="ri-search-line mr-1"></i>查询
+                </button>
+                @if(request('keyword') || request('status') != '')
+                <a href="{{ route('elevator.ledger') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                    重置
+                </a>
+                @endif
+            </div>
+        </form>
         
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
                     <tr class="bg-gray-50">
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">电梯编号</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">设备名称</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">型号</th>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">位置</th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">描述</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">状态</th>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($devices as $device)
                     <tr class="border-b border-gray-100 hover:bg-gray-50">
-                        <td class="px-4 py-3 text-gray-800">{{ $device->number }}</td>
+                        <td class="px-4 py-3 text-gray-800 font-medium">{{ $device->number }}</td>
+                        <td class="px-4 py-3 text-gray-600">{{ $device->name ?? '-' }}</td>
+                        <td class="px-4 py-3 text-gray-600">{{ $device->Model ?? '-' }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $device->Position }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ Str::limit($device->desc, 30) }}</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $device->status == 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                {{ $device->status == 1 ? '在用' : '停用' }}
+                            </span>
+                        </td>
                         <td class="px-4 py-3">
                             <a href="{{ route('device.show', $device->id) }}" class="text-primary hover:text-dark font-medium">
                                 查看详情
@@ -96,7 +128,7 @@
                     
                     @if($devices->isEmpty())
                     <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
                             暂无电梯数据，请点击"添加电梯"录入设备信息
                         </td>
                     </tr>
