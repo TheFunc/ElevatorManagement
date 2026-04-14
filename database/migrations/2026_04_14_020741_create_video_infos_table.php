@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string("videoType")->comment("视频类型");
             $table->string("videoGroup")->comment("视频分组");
 
+            $table->string("description")->comment("视频描述");
+
             $table->timestamps();
         });
     }

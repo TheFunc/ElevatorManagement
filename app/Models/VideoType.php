@@ -6,5 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class VideoType extends Model
 {
-    //
+    protected $fillable = [
+        'type'
+    ];
 }

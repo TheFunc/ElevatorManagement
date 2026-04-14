@@ -10,6 +10,7 @@ use App\Models\Files;
 use App\Models\Campus;
 use App\Models\Maintenance;
 use App\Models\RepairOrder;
+use App\Models\VideoType;
 use Illuminate\Support\Facades\Storage;
 
 class ElevatorController extends Controller
@@ -498,7 +499,8 @@ class ElevatorController extends Controller
         if (Auth::user()->role != 1) {
             abort(403, '只有管理员可以访问');
         }
-        return view('video.index');
+        $videoTypes = VideoType::latest()->get();
+        return view('video.index', compact('videoTypes'));
     }
 
     /**
@@ -520,6 +522,74 @@ class ElevatorController extends Controller
         if (Auth::user()->role != 1) {
             abort(403, '只有管理员可以访问');
         }
-        return view('video.create');
+        $videoTypes = VideoType::latest()->get();
+        return view('video.create', compact('videoTypes'));
+    }
+
+    /**
+     * 保存视频类型
+     */
+    public function storeVideoType(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string|max:100|unique:video_types',
+        ], [
+            'type.required' => '请填写视频类型名称',
+            'type.unique' => '该视频类型已存在',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        VideoType::create($request->all());
+
+        return redirect()->route('video.index')->with('success', '视频类型添加成功！');
+    }
+
+    /**
+     * 更新视频类型
+     */
+    public function updateVideoType(Request $request, $id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $videoType = VideoType::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string|max:100|unique:video_types,type,'.$id,
+        ], [
+            'type.required' => '请填写视频类型名称',
+            'type.unique' => '该视频类型已存在',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $videoType->update($request->all());
+
+        return redirect()->route('video.index')->with('success', '视频类型更新成功！');
+    }
+
+    /**
+     * 删除视频类型
+     */
+    public function deleteVideoType($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $videoType = VideoType::findOrFail($id);
+        $videoType->delete();
+
+        return redirect()->route('video.index')->with('success', '视频类型删除成功！');
     }
 }

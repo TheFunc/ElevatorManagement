@@ -53,6 +53,9 @@ Route::delete('/repair-orders/{id}', [ElevatorController::class, 'deleteRepairOr
 Route::get('/video', [ElevatorController::class, 'videoIndex'])->name('video.index');
 Route::get('/video/preview', [ElevatorController::class, 'videoPreview'])->name('video.preview');
 Route::get('/video/create', [ElevatorController::class, 'videoCreate'])->name('video.create');
+Route::post('/video-type/store', [ElevatorController::class, 'storeVideoType'])->name('video.type.store');
+Route::post('/video-type/{id}/update', [ElevatorController::class, 'updateVideoType'])->name('video.type.update');
+Route::post('/video-type/{id}/delete', [ElevatorController::class, 'deleteVideoType'])->name('video.type.delete');
 
     // 用户管理路由
     Route::get('/users', [UserController::class, 'index'])->name('user.index');

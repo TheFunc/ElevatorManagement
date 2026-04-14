@@ -153,7 +153,7 @@ document.getElementById('logoutModal').addEventListener('click', function(e) {
                     @if(Auth::user()->role == 1)
                     <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">视频管理</div>
                     
-                    <a href="{{ route('video.index') }}" class="menu-item @if(Route::currentRouteName() == 'video.*') menu-item-active @endif">
+                    <a href="{{ route('video.index') }}" class="menu-item @if(Route::currentRouteName() == 'video.index') menu-item-active @endif">
                         <i class="ri-video-line text-lg"></i>
                         <span>视频管理</span>
                     </a>
