@@ -11,7 +11,9 @@ use App\Models\Campus;
 use App\Models\Maintenance;
 use App\Models\RepairOrder;
 use App\Models\VideoType;
+use App\Models\VideoInfo;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class ElevatorController extends Controller
 {
@@ -506,13 +508,51 @@ class ElevatorController extends Controller
     /**
      * 视频预览页面
      */
-    public function videoPreview()
+    public function videoPreview(Request $request)
     {
         if (Auth::user()->role != 1) {
             abort(403, '只有管理员可以访问');
         }
-        return view('video.preview');
+        
+        $query = VideoInfo::query();
+        
+        // 关键词搜索
+        if ($request->has('keyword') && $request->keyword != '') {
+            $keyword = $request->keyword;
+            $query->where(function($q) use ($keyword) {
+                $q->where('videoGroup', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%");
+            });
+        }
+        
+        // 视频类型过滤
+        if ($request->has('videoType') && $request->videoType != '') {
+            $query->where('videoType', $request->videoType);
+        }
+        
+        $videos = $query->latest()->get();
+        $videoTypes = VideoType::all();
+        
+        // 按视频分组去重
+        $groupedVideos = $videos->unique('videoGroup');
+        
+        return view('video.preview', compact('groupedVideos', 'videoTypes'));
     }
+    
+    /**
+     * 视频组详情页面
+     */
+    public function videoGroupDetail($group)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        
+        $videos = VideoInfo::where('videoGroup', $group)->latest()->get();
+        
+        return view('video.group', compact('videos', 'group'));
+    }
+    
 
     /**
      * 增加视频页面
@@ -524,6 +564,136 @@ class ElevatorController extends Controller
         }
         $videoTypes = VideoType::latest()->get();
         return view('video.create', compact('videoTypes'));
+    }
+
+    /**
+     * 处理视频批量上传
+     */
+    public function videoUpload(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'videoGroup' => 'required|string|max:100',
+            'videoType' => 'required|string|max:100',
+            'description' => 'nullable|string|max:500',
+            'cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'videos' => 'required',
+            'videos.*' => 'required|file|mimes:mp4|max:512000',
+        ], [
+            'videoGroup.required' => '请输入视频文件夹名称',
+            'videoType.required' => '请选择视频类型',
+            'cover.required' => '请选择视频封面图片',
+            'videos.required' => '请选择至少一个视频文件',
+            'videos.*.mimes' => '仅支持MP4格式的视频文件',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $videoGroup = $request->videoGroup;
+        $basePath = 'videos/' . $videoGroup;
+
+        // 创建文件夹
+        if (!Storage::exists($basePath)) {
+            Storage::makeDirectory($basePath);
+        }
+
+        // 上传封面图片
+        $coverFile = $request->file('cover');
+        $coverName = time() . '_' . $coverFile->getClientOriginalName();
+        $coverPath = $coverFile->storeAs($basePath, $coverName, 'public');
+
+        // 处理每个视频文件
+        $videos = $request->file('videos');
+        $uploadCount = 0;
+
+        foreach ($videos as $videoFile) {
+            $videoName = time() . '_' . $videoFile->getClientOriginalName();
+            $videoPath = $videoFile->storeAs($basePath, $videoName, 'public');
+
+            VideoInfo::create([
+                'coverPath' => 'storage/' . $coverPath,
+                'videoPath' => 'storage/' . $videoPath,
+                'videoType' => $request->videoType,
+                'videoGroup' => $videoGroup,
+                'description' => $request->description,
+            ]);
+
+            $uploadCount++;
+        }
+
+        return redirect()->route('video.create')->with('success', '视频上传成功！共上传 ' . $uploadCount . ' 个视频文件');
+    }
+
+    /**
+     * 上传封面图片
+     */
+    public function uploadCover(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $request->validate([
+            'videoGroup' => 'required|string|max:100',
+            'cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+        ]);
+
+        $basePath = 'videos/' . $request->videoGroup;
+        
+        if (!Storage::exists($basePath)) {
+            Storage::makeDirectory($basePath);
+        }
+
+        $coverFile = $request->file('cover');
+        $coverName = time() . '_' . $coverFile->getClientOriginalName();
+        $coverPath = $coverFile->storeAs($basePath, $coverName, 'public');
+
+        return response()->json([
+            'success' => true,
+            'path' => 'storage/' . $coverPath
+        ]);
+    }
+
+    /**
+     * 单个上传视频
+     */
+    public function uploadSingleVideo(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $request->validate([
+            'videoGroup' => 'required|string|max:100',
+            'videoType' => 'required|string|max:100',
+            'description' => 'nullable|string|max:500',
+            'coverPath' => 'required|string',
+            'video' => 'required|file|mimes:mp4|max:512000',
+        ]);
+
+        $basePath = 'videos/' . $request->videoGroup;
+        
+        $videoFile = $request->file('video');
+        $videoName = time() . '_' . $videoFile->getClientOriginalName();
+        $videoPath = $videoFile->storeAs($basePath, $videoName, 'public');
+
+        VideoInfo::create([
+            'coverPath' => $request->coverPath,
+            'videoPath' => 'storage/' . $videoPath,
+            'videoType' => $request->videoType,
+            'videoGroup' => $request->videoGroup,
+            'description' => $request->description,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'path' => 'storage/' . $videoPath
+        ]);
     }
 
     /**
@@ -576,6 +746,69 @@ class ElevatorController extends Controller
         $videoType->update($request->all());
 
         return redirect()->route('video.index')->with('success', '视频类型更新成功！');
+    }
+
+    /**
+     * 删除视频组（删除该分组下所有视频）
+     */
+    public function deleteVideoGroup($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $video = VideoInfo::findOrFail($id);
+        $videoGroup = $video->videoGroup;
+        
+        // 获取该分组下所有视频
+        $videos = VideoInfo::where('videoGroup', $videoGroup)->get();
+        
+        // 删除所有物理文件
+        foreach ($videos as $v) {
+            // 删除视频文件
+            if (Storage::exists(str_replace('storage/', 'public/', $v->videoPath))) {
+                Storage::delete(str_replace('storage/', 'public/', $v->videoPath));
+            }
+        }
+        
+        // 删除封面文件（只需要删除一次）
+        if (Storage::exists(str_replace('storage/', 'public/', $video->coverPath))) {
+            Storage::delete(str_replace('storage/', 'public/', $video->coverPath));
+        }
+        
+        // 批量删除数据库记录
+        VideoInfo::where('videoGroup', $videoGroup)->delete();
+
+        return redirect()->route('video.preview')->with('success', "视频组 '{$videoGroup}' 已删除，共删除 {$videos->count()} 个视频文件");
+    }
+    
+    /**
+     * 删除单个视频
+     */
+    public function deleteSingleVideo($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $video = VideoInfo::findOrFail($id);
+        
+        // 删除视频文件
+        if (Storage::exists(str_replace('storage/', 'public/', $video->videoPath))) {
+            Storage::delete(str_replace('storage/', 'public/', $video->videoPath));
+        }
+        
+        // 检查是否是该分组最后一个视频，如果是同时删除封面
+        $groupCount = VideoInfo::where('videoGroup', $video->videoGroup)->count();
+        if ($groupCount <= 1) {
+            if (Storage::exists(str_replace('storage/', 'public/', $video->coverPath))) {
+                Storage::delete(str_replace('storage/', 'public/', $video->coverPath));
+            }
+        }
+        
+        $video->delete();
+
+        return back()->with('success', '视频已删除！');
     }
 
     /**

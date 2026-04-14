@@ -37,7 +37,9 @@
             }
         }
     </style>
-</head>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <script src="{{ asset('js/common.js') }}"></script>
+    </head>
 <body class="bg-gray-50 min-h-screen">
 
 <!-- 退出确认弹窗 -->

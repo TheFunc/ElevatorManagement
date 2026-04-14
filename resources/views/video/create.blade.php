@@ -1,163 +1,248 @@
 @extends('layouts.elevator')
 
-@section('title', '视频管理')
-@section('page-title', '视频管理')
+@section('title', '增加视频')
+@section('page-title', '增加视频')
 
 @section('content')
 <div class="card">
     <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-semibold text-gray-800">视频类型管理</h3>
-        <button type="button" onclick="showAddModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
-            <i class="ri-add-line"></i>
-            添加视频类型
+        <h3 class="text-xl font-semibold text-gray-800">视频批量上传</h3>
+    </div>
+
+    <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"></div>
+    <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">视频文件夹名称</label>
+            <input type="text" id="videoGroup" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入视频文件夹名称">
+            <p class="text-sm text-gray-500 mt-1">上传路径格式: videos/[文件夹名]/*.mp4</p>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">视频类型</label>
+            <select id="videoType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">请选择视频类型</option>
+                @foreach($videoTypes as $type)
+                    <option value="{{ $type->type }}">{{ $type->type }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">视频描述</label>
+        <textarea id="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入视频描述"></textarea>
+    </div>
+
+    <style>
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    .file-input-btn {
+        border: 2px dashed #c7d2fe;
+        background-color: #eef2ff;
+        color: #4f46e5;
+        padding: 2rem 1rem;
+        text-align: center;
+        border-radius: 0.75rem;
+        transition: all 0.3s;
+        width: 100%;
+    }
+    .file-input-btn:hover {
+        border-color: #818cf8;
+        background-color: #e0e7ff;
+    }
+    .file-selected {
+        background-color: #dcfce7 !important;
+        border-color: #4ade80 !important;
+        color: #166534 !important;
+    }
+    </style>
+
+    <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">选择视频封面图片</label>
+        <div class="file-input-wrapper">
+            <div id="coverBtn" class="file-input-btn">
+                <i class="ri-image-add-line text-3xl mb-2 block"></i>
+                <span id="coverText">点击选择封面图片</span>
+            </div>
+            <input type="file" id="cover" accept="image/*" required onchange="updateCoverStatus(this)">
+        </div>
+        <p class="text-sm text-gray-500 mt-1">封面图片将保存到视频文件夹中</p>
+    </div>
+
+    <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">选择视频文件（支持批量选择）</label>
+        <div class="file-input-wrapper">
+            <div id="videosBtn" class="file-input-btn">
+                <i class="ri-video-add-line text-3xl mb-2 block"></i>
+                <span id="videosText">点击选择多个MP4视频文件</span>
+            </div>
+            <input type="file" id="videos" multiple accept="video/mp4" required onchange="updateVideosStatus(this)">
+        </div>
+        <p class="text-sm text-gray-500 mt-1">支持同时选择多个MP4视频文件，系统将逐个上传处理</p>
+    </div>
+
+    <script>
+    function updateCoverStatus(input) {
+        const btn = document.getElementById('coverBtn');
+        const text = document.getElementById('coverText');
+        if (input.files.length > 0) {
+            btn.classList.add('file-selected');
+            text.textContent = '✓ 已选择: ' + input.files[0].name;
+        } else {
+            btn.classList.remove('file-selected');
+            text.textContent = '点击选择封面图片';
+        }
+    }
+    
+    function updateVideosStatus(input) {
+        const btn = document.getElementById('videosBtn');
+        const text = document.getElementById('videosText');
+        if (input.files.length > 0) {
+            btn.classList.add('file-selected');
+            text.textContent = '✓ 已选择 ' + input.files.length + ' 个视频文件';
+        } else {
+            btn.classList.remove('file-selected');
+            text.textContent = '点击选择多个MP4视频文件';
+        }
+    }
+    </script>
+
+    <div id="uploadProgress" class="hidden mb-6">
+        <div class="bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div id="progressBar" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <p id="progressText" class="text-sm text-gray-600 mt-2">准备上传...</p>
+    </div>
+
+    <div id="uploadLog" class="hidden mb-6 max-h-48 overflow-y-auto bg-gray-50 p-4 rounded-lg border border-gray-200"></div>
+
+    <div class="flex justify-end">
+        <button type="button" id="uploadBtn" onclick="startUpload()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2">
+            <i class="ri-upload-cloud-line"></i>
+            开始上传
         </button>
-    </div>
-
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if ($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-            <thead>
-                <tr class="bg-gray-50">
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">视频类型</th>
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">更新时间</th>
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                @foreach($videoTypes as $videoType)
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $videoType->id }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $videoType->type }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $videoType->created_at->format('Y-m-d H:i:s') }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $videoType->updated_at->format('Y-m-d H:i:s') }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="editVideoType({{ $videoType->id }}, '{{ $videoType->type }}')" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                            <i class="ri-edit-line"></i> 编辑
-                        </button>
-                        <button onclick="deleteVideoType({{ $videoType->id }})" class="text-red-600 hover:text-red-900">
-                            <i class="ri-delete-bin-line"></i> 删除
-                        </button>
-                    </td>
-                </tr>
-                @endforeach
-
-                @if($videoTypes->isEmpty())
-                <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                        <i class="ri-inbox-line text-4xl mb-2"></i>
-                        <p>暂无视频类型数据</p>
-                    </td>
-                </tr>
-                @endif
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- 添加/编辑模态框 -->
-<div id="typeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg w-full max-w-md mx-4 p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h3 id="modalTitle" class="text-lg font-semibold text-gray-800">添加视频类型</h3>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                <i class="ri-close-line text-xl"></i>
-            </button>
-        </div>
-
-        <form id="typeForm" action="{{ route('video.type.store') }}" method="POST">
-            @csrf
-            <input type="hidden" id="typeId" name="id">
-            
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">视频类型名称</label>
-                <input type="text" id="typeName" name="type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入视频类型名称">
-            </div>
-
-            <div class="flex justify-end gap-3 mt-6">
-                <button type="button" onclick="closeModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
-                    取消
-                </button>
-                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                    保存
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- 删除确认模态框 -->
-<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg w-full max-w-sm mx-4 p-6">
-        <div class="text-center">
-            <i class="ri-error-warning-line text-5xl text-red-500 mb-4"></i>
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">确认删除</h3>
-            <p class="text-gray-500 mb-6">确定要删除此视频类型吗？此操作不可恢复。</p>
-            
-            <form id="deleteForm" method="POST">
-                @csrf
-                <div class="flex justify-center gap-3">
-                    <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
-                        取消
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                        确认删除
-                    </button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 
 <script>
-function showAddModal() {
-    document.getElementById('modalTitle').textContent = '添加视频类型';
-    document.getElementById('typeForm').action = '{{ route('video.type.store') }}';
-    document.getElementById('typeId').value = '';
-    document.getElementById('typeName').value = '';
-    document.getElementById('typeModal').classList.remove('hidden');
-    document.getElementById('typeModal').classList.add('flex');
+async function startUpload() {
+    const videoGroup = document.getElementById('videoGroup').value;
+    const videoType = document.getElementById('videoType').value;
+    const description = document.getElementById('description').value;
+    const coverFile = document.getElementById('cover').files[0];
+    const videoFiles = document.getElementById('videos').files;
+
+    if (!videoGroup || !videoType || !coverFile || videoFiles.length === 0) {
+        showError('请填写所有必填项并选择文件');
+        return;
+    }
+
+    document.getElementById('successMessage').classList.add('hidden');
+    document.getElementById('errorMessage').classList.add('hidden');
+    document.getElementById('uploadProgress').classList.remove('hidden');
+    document.getElementById('uploadLog').classList.remove('hidden');
+    document.getElementById('uploadBtn').disabled = true;
+    document.getElementById('uploadBtn').innerHTML = '<i class="ri-loader-4-line animate-spin"></i> 上传中...';
+    document.getElementById('uploadLog').innerHTML = '';
+
+    try {
+        // 先上传封面
+        addLog('正在上传封面图片...');
+        const coverFormData = new FormData();
+        coverFormData.append('videoGroup', videoGroup);
+        coverFormData.append('cover', coverFile);
+        coverFormData.append('_token', '{{ csrf_token() }}');
+
+        const coverResponse = await fetch('{{ route('video.upload.cover') }}', {
+            method: 'POST',
+            body: coverFormData
+        });
+
+        if (!coverResponse.ok) {
+            throw new Error('封面上传失败');
+        }
+
+        const coverResult = await coverResponse.json();
+        const coverPath = coverResult.path;
+        addLog('✓ 封面上传完成: ' + coverPath);
+
+        // 逐个上传视频
+        let successCount = 0;
+        const totalFiles = videoFiles.length;
+
+        for (let i = 0; i < totalFiles; i++) {
+            const videoFile = videoFiles[i];
+            const progress = Math.round(((i + 1) / totalFiles) * 100);
+            
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `正在上传 ${i + 1}/${totalFiles}: ${videoFile.name}`;
+            addLog(`正在上传 (${i + 1}/${totalFiles}): ${videoFile.name}`);
+
+            const videoFormData = new FormData();
+            videoFormData.append('videoGroup', videoGroup);
+            videoFormData.append('videoType', videoType);
+            videoFormData.append('description', description);
+            videoFormData.append('coverPath', coverPath);
+            videoFormData.append('video', videoFile);
+            videoFormData.append('_token', '{{ csrf_token() }}');
+
+            const videoResponse = await fetch('{{ route('video.upload.single') }}', {
+                method: 'POST',
+                body: videoFormData
+            });
+
+            if (videoResponse.ok) {
+                successCount++;
+                addLog(`✓ ${videoFile.name} 上传成功`);
+            } else {
+                addLog(`✗ ${videoFile.name} 上传失败`);
+            }
+        }
+
+        document.getElementById('progressBar').style.width = '100%';
+        document.getElementById('progressText').textContent = `上传完成！成功 ${successCount}/${totalFiles} 个文件`;
+        showSuccess(`视频上传完成！共成功上传 ${successCount} 个视频文件`);
+
+    } catch (error) {
+        showError('上传出错: ' + error.message);
+        addLog('✗ 上传出错: ' + error.message);
+    }
+
+    document.getElementById('uploadBtn').disabled = false;
+    document.getElementById('uploadBtn').innerHTML = '<i class="ri-upload-cloud-line"></i> 开始上传';
 }
 
-function editVideoType(id, name) {
-    document.getElementById('modalTitle').textContent = '编辑视频类型';
-    document.getElementById('typeForm').action = '/video-type/' + id + '/update';
-    document.getElementById('typeId').value = id;
-    document.getElementById('typeName').value = name;
-    document.getElementById('typeModal').classList.remove('hidden');
-    document.getElementById('typeModal').classList.add('flex');
+function addLog(text) {
+    const logDiv = document.getElementById('uploadLog');
+    logDiv.innerHTML += '<p class="text-sm text-gray-600 py-1">' + text + '</p>';
+    logDiv.scrollTop = logDiv.scrollHeight;
 }
 
-function closeModal() {
-    document.getElementById('typeModal').classList.add('hidden');
-    document.getElementById('typeModal').classList.remove('flex');
+function showSuccess(message) {
+    const msgDiv = document.getElementById('successMessage');
+    msgDiv.textContent = message;
+    msgDiv.classList.remove('hidden');
 }
 
-function deleteVideoType(id) {
-    document.getElementById('deleteForm').action = '/video-type/' + id + '/delete';
-    document.getElementById('deleteModal').classList.remove('hidden');
-    document.getElementById('deleteModal').classList.add('flex');
-}
-
-function closeDeleteModal() {
-    document.getElementById('deleteModal').classList.add('hidden');
-    document.getElementById('deleteModal').classList.remove('flex');
+function showError(message) {
+    const msgDiv = document.getElementById('errorMessage');
+    msgDiv.textContent = message;
+    msgDiv.classList.remove('hidden');
 }
 </script>
 @endsection

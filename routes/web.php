@@ -53,6 +53,12 @@ Route::delete('/repair-orders/{id}', [ElevatorController::class, 'deleteRepairOr
 Route::get('/video', [ElevatorController::class, 'videoIndex'])->name('video.index');
 Route::get('/video/preview', [ElevatorController::class, 'videoPreview'])->name('video.preview');
 Route::get('/video/create', [ElevatorController::class, 'videoCreate'])->name('video.create');
+Route::post('/video/upload', [ElevatorController::class, 'videoUpload'])->name('video.upload');
+Route::post('/video/upload/cover', [ElevatorController::class, 'uploadCover'])->name('video.upload.cover');
+Route::post('/video/upload/single', [ElevatorController::class, 'uploadSingleVideo'])->name('video.upload.single');
+Route::get('/video/group/{group}', [ElevatorController::class, 'videoGroupDetail'])->name('video.group');
+Route::post('/video/{id}/delete', [ElevatorController::class, 'deleteVideoGroup'])->name('video.delete');
+Route::post('/video/{id}/delete-single', [ElevatorController::class, 'deleteSingleVideo'])->name('video.delete.single');
 Route::post('/video-type/store', [ElevatorController::class, 'storeVideoType'])->name('video.type.store');
 Route::post('/video-type/{id}/update', [ElevatorController::class, 'updateVideoType'])->name('video.type.update');
 Route::post('/video-type/{id}/delete', [ElevatorController::class, 'deleteVideoType'])->name('video.type.delete');
