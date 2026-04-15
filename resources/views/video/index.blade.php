@@ -4,6 +4,70 @@
 @section('page-title', '视频管理')
 
 @section('content')
+<style>
+@media (max-width: 767px) {
+    /* 手机端表格深度优化 */
+    .video-table-wrapper {
+        margin: 0 -16px;
+        padding: 0 16px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .video-table {
+        min-width: 650px;
+        width: auto;
+    }
+    
+    .video-table th,
+    .video-table td {
+        padding: 14px 12px !important;
+    }
+    
+    /* 图片列宽度保护 */
+    .video-table td:first-child,
+    .video-table th:first-child {
+        min-width: 60px;
+        width: 60px;
+    }
+    
+    /* 图片不变形优化 */
+    .video-thumbnail {
+        width: 40px !important;
+        height: 40px !important;
+        object-fit: contain !important;
+        border-radius: 6px;
+        flex-shrink: 0;
+    }
+    
+    /* 文字自动换行 */
+    .video-table td {
+        white-space: normal !important;
+        word-break: break-word;
+        line-height: 1.5;
+    }
+    
+    /* 操作按钮优化 */
+    .video-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 80px;
+    }
+    
+    .video-actions button,
+    .video-actions a {
+        padding: 6px 8px;
+        border-radius: 6px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+}
+</style>
+
 <div class="card">
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-semibold text-gray-800">视频类型管理</h3>
@@ -29,8 +93,8 @@
         </div>
     @endif
 
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+    <div class="video-table-wrapper overflow-x-auto">
+        <table class="video-table min-w-full bg-white border border-gray-200 rounded-lg">
             <thead>
                 <tr class="bg-gray-50">
                     <th class="px-6 py-3 border-b border-gray-200 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
@@ -47,8 +111,8 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $videoType->type }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $videoType->created_at->format('Y-m-d H:i:s') }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $videoType->updated_at->format('Y-m-d H:i:s') }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="editVideoType({{ $videoType->id }}, '{{ $videoType->type }}')" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium video-actions">
+                        <button onclick="editVideoType({{ $videoType->id }}, '{{ $videoType->type }}')" class="text-indigo-600 hover:text-indigo-900">
                             <i class="ri-edit-line"></i> 编辑
                         </button>
                         <button onclick="deleteVideoType({{ $videoType->id }})" class="text-red-600 hover:text-red-900">

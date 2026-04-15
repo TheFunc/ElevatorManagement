@@ -94,7 +94,8 @@
             </div>
         </form>
         
-        <div class="overflow-x-auto">
+        <!-- PC端表格 仅在桌面显示 -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full">
                 <thead>
                     <tr class="bg-gray-50">
@@ -135,6 +136,48 @@
                     @endif
                 </tbody>
             </table>
+        </div>
+        
+        <!-- 手机端卡片流布局 仅在移动端显示 -->
+        <div class="md:hidden space-y-3">
+            @foreach($devices as $device)
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="flex p-4 gap-4">
+                    <!-- 左侧图片 -->
+                    <div class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <i class="ri-building-4-line text-3xl text-gray-400"></i>
+                    </div>
+                    
+                    <!-- 右侧信息 -->
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-1">
+                            <h4 class="font-semibold text-gray-800 truncate">{{ $device->number }}</h4>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $device->status == 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                {{ $device->status == 1 ? '在用' : '停用' }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-0.5">{{ $device->name ?? '-' }}</p>
+                        <p class="text-xs text-gray-500 mb-0.5">{{ $device->Model ?? '-' }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ $device->Position }}</p>
+                    </div>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="border-t border-gray-100 px-4 py-3">
+                    <a href="{{ route('device.show', $device->id) }}" class="w-full flex items-center justify-center gap-1.5 py-2.5 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors">
+                        <i class="ri-eye-line"></i>
+                        <span>查看详情</span>
+                    </a>
+                </div>
+            </div>
+            @endforeach
+            
+            @if($devices->isEmpty())
+            <div class="py-12 text-center text-gray-500">
+                <i class="ri-inbox-line text-4xl text-gray-300 mb-3"></i>
+                <p>暂无电梯数据，请点击"添加电梯"录入设备信息</p>
+            </div>
+            @endif
         </div>
     </div>
     

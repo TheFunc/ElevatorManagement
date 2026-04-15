@@ -59,7 +59,7 @@
   "data": [
     {
       "id": 1,
-      "type": "电梯安全",
+      "type": "视频类型",
       "created_at": "2026-04-10T12:00:00Z",
       "updated_at": "2026-04-10T12:00:00Z"
     }
@@ -89,11 +89,11 @@
   "data": [
     {
       "id": 1,
-      "coverPath": "/storage/covers/xxx.jpg",
-      "videoPath": "/storage/videos/xxx.mp4",
-      "videoType": "电梯安全",
-      "videoGroup": "安全培训",
-      "description": "电梯日常安全检查操作流程",
+      "coverPath": "/storage/covers/xxx.jpg",//这是封面路径
+      "videoPath": "/storage/videos/xxx.mp4",//这是视频路径
+      "videoType": "视频对应的类型",
+      "videoGroup": "视频属于那个组",
+      "description": "这是视频的描述",
       "created_at": "2026-04-10T12:00:00Z",
       "updated_at": "2026-04-10T12:00:00Z"
     }

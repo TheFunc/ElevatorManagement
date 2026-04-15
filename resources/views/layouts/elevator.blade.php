@@ -45,97 +45,226 @@
             .sidebar-overlay {
                 @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 md:hidden;
             }
-            .table-responsive {
-                @apply overflow-x-auto -mx-5 px-5 md:-mx-6 md:px-6;
-            }
-            .btn-group-responsive {
-                @apply flex flex-wrap gap-2.5;
-            }
-            
-            /* 移动端按钮优化 */
-            .btn-mobile {
-                @apply h-12 px-5 rounded-xl font-medium transition-all duration-200 active:scale-[0.97] shadow-sm;
-            }
-            
-            .btn-primary {
-                @apply btn-mobile bg-primary text-white hover:bg-dark shadow-primary/20 active:shadow-md;
-            }
-            
-            .btn-secondary {
-                @apply btn-mobile bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300;
-            }
-            
-            .btn-success {
-                @apply btn-mobile bg-green-500 text-white hover:bg-green-600 shadow-green-500/20;
-            }
-            
-            .btn-danger {
-                @apply btn-mobile bg-red-500 text-white hover:bg-red-600 shadow-red-500/20;
-            }
-            
-            /* 移动端表单优化 */
-            .form-input {
-                @apply h-12 w-full px-4 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all duration-200 text-base;
-            }
-            
-            .form-select {
-                @apply h-12 w-full px-4 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all duration-200 text-base appearance-none bg-no-repeat bg-right pr-10;
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-                background-size: 1.25rem;
-                background-position: right 0.75rem center;
-            }
-            
-            .form-textarea {
-                @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all duration-200 text-base resize-vertical min-h-[120px];
-            }
-            
-            .form-label {
-                @apply block text-sm font-medium text-gray-700 mb-2.5;
-            }
-            
-            /* 移动端复选框优化 */
-            .form-checkbox {
-                @apply w-5 h-5 rounded-md border-2 border-gray-300 text-primary focus:ring-primary focus:ring-offset-2 cursor-pointer transition-all duration-200;
-            }
-            
-            /* 移动端开关组件 */
-            .form-toggle {
-                @apply relative w-12 h-6 rounded-full bg-gray-200 cursor-pointer transition-colors duration-300 peer-checked:bg-primary;
-            }
-            .form-toggle::after {
-                content: '';
-                @apply absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300;
-            }
-            .peer:checked + .form-toggle::after {
-                transform: translateX(24px);
-            }
-            
-            /* 移动端表格优化 */
-            .table-mobile {
-                @apply w-full;
-            }
-            .table-mobile th {
-                @apply px-4 py-3.5 text-left text-sm font-semibold text-gray-600 bg-gray-50 first:rounded-tl-xl last:rounded-tr-xl;
-            }
-            .table-mobile td {
-                @apply px-4 py-3.5 text-gray-700 border-b border-gray-100;
-            }
-            .table-mobile tr {
-                @apply hover:bg-gray-50/50 transition-colors;
-            }
-            .table-mobile tr:last-child td {
-                @apply border-b-0;
-            }
         }
     </style>
+    
+    <!-- PC 端样式 -->
+    <style media="(min-width: 768px)">
+        /* PC端保持原有样式完全不变 */
+        .table-responsive { overflow: visible; }
+        .form-input { height: 42px; }
+        .form-select { height: 42px; }
+        .btn-mobile { height: 40px; padding: 0 16px; }
+        .card { padding: 24px; }
+        table th, table td { padding: 12px 16px; }
+    </style>
+    
+    <!-- 手机端独立样式 -->
+    <style media="(max-width: 767px)">
+        /* ========== 手机端完全独立布局 ========== */
+        
+        /* 全局间距 */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        /* 内容区域边距 */
+        main {
+            padding: 12px !important;
+            gap: 16px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            border-radius: 16px;
+            padding: 16px !important;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        /* 按钮优化 */
+        .btn-mobile {
+            height: 48px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .btn-group-responsive {
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+        
+        .btn-group-responsive button,
+        .btn-group-responsive a {
+            width: 100% !important;
+        }
+        
+        /* 表单控件 */
+        .form-input,
+        .form-select {
+            height: 50px !important;
+            border-radius: 12px;
+            font-size: 16px;
+            padding: 0 16px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            border-radius: 12px;
+            font-size: 16px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+        
+        .form-label {
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .form-checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+        }
+        
+        /* 搜索栏 */
+        .search-bar {
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .search-bar input,
+        .search-bar select {
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+        
+        .search-bar button {
+            width: 100%;
+        }
+        
+        /* 表格适配 */
+        .table-responsive {
+            overflow-x: auto;
+            margin: 0 -16px;
+            padding: 0 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .table-mobile {
+            min-width: 700px;
+            border-spacing: 0;
+        }
+        
+        .table-mobile th {
+            padding: 14px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .table-mobile td {
+            padding: 14px 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .table-mobile tr {
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        /* 统计卡片网格 */
+        .grid-cols-1.md\:grid-cols-4,
+        .grid-cols-1.lg\:grid-cols-3,
+        .grid-cols-1.md\:grid-cols-2 {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+        }
+        
+        /* 操作按钮组 */
+        .action-buttons {
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .action-buttons a,
+        .action-buttons button {
+            width: 100%;
+            justify-content: center;
+            padding: 10px 16px;
+        }
+        
+        /* 水平布局转垂直 */
+        .flex-row.md\:flex-row {
+            flex-direction: column !important;
+            gap: 12px;
+        }
+        
+        .flex.items-center.justify-between {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .flex.items-center.justify-between > div {
+            width: 100%;
+        }
+        
+        /* 间距调整 */
+        .space-y-1 > * + * {
+            margin-top: 12px;
+        }
+        
+        .gap-3 {
+            gap: 12px;
+        }
+        
+        .gap-4 {
+            gap: 16px;
+        }
+        
+        .gap-6 {
+            gap: 20px;
+        }
+        
+        /* 文字优化 */
+        h1, h2, h3 {
+            line-height: 1.4;
+        }
+        
+        /* 弹窗 */
+        .modal-content {
+            margin: 16px;
+            border-radius: 20px;
+        }
+        
+        /* 侧边栏 */
+        #sidebar {
+            width: 280px;
+        }
+    </style>
+
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script src="{{ asset('js/common.js') }}"></script>
     </head>
-<body class="bg-gray-50 min-h-screen text-[15px] antialiased">
+<body class="bg-gray-50 min-h-screen antialiased">
 
 <!-- 退出确认弹窗 -->
 <div id="logoutModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 animate-fade-in scale-95">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 animate-fade-in scale-95 modal-content">
         <div class="p-6 border-b border-gray-100">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -150,12 +279,12 @@
         <div class="p-6">
             <p class="text-gray-600 mb-6">您确定要退出电梯管理系统吗？退出后需要重新登录才能继续使用。</p>
             <div class="flex flex-col sm:flex-row gap-3">
-                <button onclick="hideLogoutModal()" class="flex-1 btn-secondary">
+                <button onclick="hideLogoutModal()" class="flex-1 px-5 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 active:bg-gray-300 transition-all">
                     取消
                 </button>
                 <form action="{{ route('logout') }}" method="POST" class="flex-1">
                     @csrf
-                    <button type="submit" class="w-full btn-primary">
+                    <button type="submit" class="w-full px-5 py-3 bg-primary text-white rounded-xl hover:bg-dark transition-all">
                         确认退出
                     </button>
                 </form>
@@ -216,10 +345,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // 移动端点击反馈
     document.querySelectorAll('button, a, .menu-item').forEach(el => {
         el.addEventListener('touchstart', function() {
-            this.classList.add('scale-[0.98]');
+            this.style.transform = 'scale(0.98)';
         }, { passive: true });
         el.addEventListener('touchend', function() {
-            this.classList.remove('scale-[0.98]');
+            this.style.transform = '';
+        }, { passive: true });
+        el.addEventListener('touchcancel', function() {
+            this.style.transform = '';
         }, { passive: true });
     });
 });
@@ -297,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <a href="{{ route('video.index') }}" class="menu-item @if(Route::currentRouteName() == 'video.index') menu-item-active @endif">
                         <i class="ri-video-line text-lg"></i>
-                        <span>视频管理</span>
+                        <span>视频类型管理</span>
                     </a>
                     
                     <a href="{{ route('video.preview') }}" class="menu-item @if(Route::currentRouteName() == 'video.preview') menu-item-active @endif">
