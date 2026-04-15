@@ -99,9 +99,14 @@
             <table class="w-full">
                 <thead>
                     <tr class="bg-gray-50">
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">电梯编号</th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">设备名称</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100" onclick="sortTable('number')">
+                            电梯编号 <i class="ri-arrow-up-down-line ml-1"></i>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100" onclick="sortTable('name')">
+                            设备名称 <i class="ri-arrow-up-down-line ml-1"></i>
+                        </th>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">型号</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">校区</th>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">位置</th>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">状态</th>
                         <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
@@ -113,6 +118,7 @@
                         <td class="px-4 py-3 text-gray-800 font-medium">{{ $device->number }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $device->name ?? '-' }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $device->Model ?? '-' }}</td>
+                        <td class="px-4 py-3 text-gray-600">{{ $device->Campus ?? '-' }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $device->Position }}</td>
                         <td class="px-4 py-3">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $device->status == 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -129,7 +135,7 @@
                     
                     @if($devices->isEmpty())
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                             暂无电梯数据，请点击"添加电梯"录入设备信息
                         </td>
                     </tr>
@@ -158,6 +164,7 @@
                         </div>
                         <p class="text-sm text-gray-600 mb-0.5">{{ $device->name ?? '-' }}</p>
                         <p class="text-xs text-gray-500 mb-0.5">{{ $device->Model ?? '-' }}</p>
+                        <p class="text-xs text-gray-500 mb-0.5"><i class="ri-map-pin-line mr-1"></i>{{ $device->Campus ?? '-' }}</p>
                         <p class="text-xs text-gray-500 truncate">{{ $device->Position }}</p>
                     </div>
                 </div>
@@ -275,5 +282,31 @@ new Chart(ctx, {
         }
     }
 });
+</script>
+
+<script>
+function sortTable(field) {
+    const url = new URL(window.location.href);
+    const currentSort = url.searchParams.get('sort');
+    const currentOrder = url.searchParams.get('order');
+    
+    let newOrder = 'asc';
+    if (currentSort === field && currentOrder === 'asc') {
+        newOrder = 'desc';
+    }
+    
+    url.searchParams.set('sort', field);
+    url.searchParams.set('order', newOrder);
+    
+    // 保留其他查询参数
+    if (document.querySelector('input[name="keyword"]').value) {
+        url.searchParams.set('keyword', document.querySelector('input[name="keyword"]').value);
+    }
+    if (document.querySelector('select[name="status"]').value !== '') {
+        url.searchParams.set('status', document.querySelector('select[name="status"]').value);
+    }
+    
+    window.location.href = url.toString();
+}
 </script>
 @endsection

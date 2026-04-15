@@ -371,6 +371,19 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- 菜单导航 -->
             <nav class="flex-1 p-4 overflow-y-auto">
                 <div class="space-y-1.5">
+                    @auth
+                        @if(Auth::user()->role == 1)
+                        <div class="text-xs font-semibold text-gray-500 uppercase mb-3 px-2">用户管理</div>
+                        
+                        <a href="{{ route('user.index') }}" class="menu-item @if(Route::currentRouteName() == 'user.index' || Route::currentRouteName() == 'user.create') menu-item-active @endif">
+                            <i class="ri-user-settings-line text-lg"></i>
+                            <span>用户管理</span>
+                        </a>
+                        
+                        <div class="h-px bg-gray-200 my-4"></div>
+                        @endif
+                    @endauth
+
                     <div class="text-xs font-semibold text-gray-500 uppercase mb-3 px-2">系统管理</div>
                     
                     <a href="{{ route('elevator.ledger') }}" class="menu-item @if(Route::currentRouteName() == 'elevator.ledger') menu-item-active @endif">
@@ -387,15 +400,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <i class="ri-alarm-warning-line text-lg"></i>
                         <span>年检预警</span>
                     </a>
-
-                    @auth
-                        @if(Auth::user()->role == 1)
-                        <a href="{{ route('user.index') }}" class="menu-item @if(Route::currentRouteName() == 'user.index' || Route::currentRouteName() == 'user.create') menu-item-active @endif">
-                            <i class="ri-user-settings-line text-lg"></i>
-                            <span>用户管理</span>
-                        </a>
-                        @endif
-                    @endauth
                     
                     <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">资料管理</div>
                     

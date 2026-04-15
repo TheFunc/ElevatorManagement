@@ -38,8 +38,19 @@ class ElevatorController extends Controller
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
         }
+
+        // 排序处理
+        if ($request->has('sort') && $request->has('order')) {
+            $sort = $request->sort;
+            $order = $request->order == 'desc' ? 'desc' : 'asc';
+            if (in_array($sort, ['number', 'name'])) {
+                $query->orderBy($sort, $order);
+            }
+        } else {
+            $query->latest();
+        }
         
-        $devices = $query->latest()->get();
+        $devices = $query->get();
         
         // 统计各类资料数量
         $fileStats = [
@@ -57,7 +68,15 @@ class ElevatorController extends Controller
 
     public function maintenance(Request $request)
     {
-        $query = Files::where('type', 'maintenance')->latest();
+        $query = Files::where('type', 'maintenance');
+        
+        // 排序处理
+        if ($request->has('sort') && $request->has('order')) {
+            $order = $request->order == 'asc' ? 'asc' : 'desc';
+            $query->orderBy('created_at', $order);
+        } else {
+            $query->latest();
+        }
         
         // 搜索功能
         if ($request->has('keyword') && $request->keyword != '') {
@@ -68,7 +87,7 @@ class ElevatorController extends Controller
             });
         }
         
-        $files = $query->paginate(10);
+        $files = $query->paginate(10)->appends($request->all());
         
         return view('elevator.maintenance', compact('files'));
     }
@@ -97,8 +116,16 @@ class ElevatorController extends Controller
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
         }
+
+        // 排序处理
+        if ($request->has('sort') && $request->has('order')) {
+            $order = $request->order == 'desc' ? 'desc' : 'asc';
+            $query->orderBy('status', $order);
+        } else {
+            $query->orderBy('next_inspection_date', 'asc');
+        }
         
-        $maintenances = $query->orderBy('next_inspection_date', 'asc')->get();
+        $maintenances = $query->get();
         
         // 获取电梯列表
         $devices = Device::all();

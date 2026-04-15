@@ -36,7 +36,9 @@
                 <tr class="bg-gray-50">
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">文件标题</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">描述</th>
-                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">上传时间</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100" onclick="sortTable()">
+                        上传时间 <i class="ri-arrow-up-down-line ml-1"></i>
+                    </th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
                 </tr>
             </thead>
@@ -76,4 +78,26 @@
     </div>
     @endif
 </div>
+
+<script>
+function sortTable() {
+    const url = new URL(window.location.href);
+    const currentOrder = url.searchParams.get('order');
+    
+    let newOrder = 'asc';
+    if (currentOrder === 'asc') {
+        newOrder = 'desc';
+    }
+    
+    url.searchParams.set('sort', 'created_at');
+    url.searchParams.set('order', newOrder);
+    
+    // 保留搜索关键词
+    if (document.querySelector('input[name="keyword"]').value) {
+        url.searchParams.set('keyword', document.querySelector('input[name="keyword"]').value);
+    }
+    
+    window.location.href = url.toString();
+}
+</script>
 @endsection

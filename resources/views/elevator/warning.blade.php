@@ -51,16 +51,26 @@
         @endauth
     </div>
     
+    <!-- 状态快速筛选按钮 -->
+    <div class="flex flex-wrap gap-3 mb-4">
+        <a href="{{ route('elevator.warning', request()->except('status')) }}" class="px-4 py-2 rounded-lg transition-colors {{ !request('status') ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+            全部
+        </a>
+        <a href="{{ route('elevator.warning', array_merge(request()->all(), ['status' => '0'])) }}" class="px-4 py-2 rounded-lg transition-colors {{ request('status') == '0' ? 'bg-yellow-500 text-white' : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' }}">
+            <i class="ri-time-line mr-1"></i>未检查
+        </a>
+        <a href="{{ route('elevator.warning', array_merge(request()->all(), ['status' => '1'])) }}" class="px-4 py-2 rounded-lg transition-colors {{ request('status') == '1' ? 'bg-green-500 text-white' : 'bg-green-100 text-green-700 hover:bg-green-200' }}">
+            <i class="ri-checkbox-circle-line mr-1"></i>已检查
+        </a>
+        <a href="{{ route('elevator.warning', array_merge(request()->all(), ['status' => '2'])) }}" class="px-4 py-2 rounded-lg transition-colors {{ request('status') == '2' ? 'bg-red-500 text-white' : 'bg-red-100 text-red-700 hover:bg-red-200' }}">
+            <i class="ri-error-warning-line mr-1"></i>已过期
+        </a>
+    </div>
+
     <!-- 搜索过滤栏 -->
     <form action="" method="GET" class="mb-6">
         <div class="flex gap-3 flex-wrap">
             <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="搜索电梯名称、负责人..." class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
-            <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
-                <option value="">全部状态</option>
-                <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>未检查</option>
-                <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>已检查</option>
-                <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>已过期</option>
-            </select>
             <button type="submit" class="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors">
                 <i class="ri-search-line mr-1"></i>查询
             </button>
@@ -121,7 +131,9 @@
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">负责人</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">联系电话</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">备注</th>
-                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">状态</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100" onclick="sortTable()">
+                        状态 <i class="ri-arrow-up-down-line ml-1"></i>
+                    </th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
                 </tr>
             </thead>
@@ -313,6 +325,31 @@ function validateForm() {
     }
     
     return true;
+}
+</script>
+
+<script>
+function sortTable() {
+    const url = new URL(window.location.href);
+    const currentOrder = url.searchParams.get('order');
+    
+    let newOrder = 'asc';
+    if (currentOrder === 'asc') {
+        newOrder = 'desc';
+    }
+    
+    url.searchParams.set('sort', 'status');
+    url.searchParams.set('order', newOrder);
+    
+    // 保留查询参数
+    if (document.querySelector('input[name="keyword"]').value) {
+        url.searchParams.set('keyword', document.querySelector('input[name="keyword"]').value);
+    }
+    if (document.querySelector('select[name="status"]').value !== '') {
+        url.searchParams.set('status', document.querySelector('select[name="status"]').value);
+    }
+    
+    window.location.href = url.toString();
 }
 </script>
 @endsection
