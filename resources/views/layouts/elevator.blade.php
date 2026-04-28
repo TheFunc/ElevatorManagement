@@ -396,10 +396,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>维保记录</span>
                     </a>
                     
-                    <a href="{{ route('elevator.warning') }}" class="menu-item @if(Route::currentRouteName() == 'elevator.warning') menu-item-active @endif">
+                    <!-- <a href="{{ route('elevator.warning') }}" class="menu-item @if(Route::currentRouteName() == 'elevator.warning') menu-item-active @endif">
                         <i class="ri-alarm-warning-line text-lg"></i>
                         <span>年检预警</span>
-                    </a>
+                    </a> -->
                     
                     <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">资料管理</div>
                     

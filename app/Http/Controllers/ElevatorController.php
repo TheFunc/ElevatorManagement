@@ -94,12 +94,7 @@ class ElevatorController extends Controller
 
     public function warning(Request $request)
     {
-        // 更新状态：自动标记已过期的记录
-        Maintenance::whereDate('next_inspection_date', '<', now()->toDateString())
-            ->where('status', 0)
-            ->update(['status' => 2]);
-        
-        // 获取预警记录并处理查询
+        // 获取年检记录并处理查询
         $query = Maintenance::query();
         
         // 关键词搜索
@@ -133,14 +128,8 @@ class ElevatorController extends Controller
         // 获取用户列表
         $users = \App\Models\User::all();
         
-        // 计算今日需要预警的记录：管理员看到全部，普通用户只看到自己负责的
-        $todayWarning = $maintenances->filter(function($item) {
-            if (Auth::user()->role == 1) {
-                return $item->next_inspection_date->isToday() && $item->status == 0;
-            } else {
-                return $item->next_inspection_date->isToday() && $item->status == 0 && $item->responsible_person == Auth::user()->name;
-            }
-        });
+        // 今日预警记录已禁用
+        $todayWarning = collect();
         
         return view('elevator.warning', compact('maintenances', 'todayWarning', 'devices', 'users'));
     }
