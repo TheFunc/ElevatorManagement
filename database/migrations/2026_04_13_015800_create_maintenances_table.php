@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string("contact_phone")->comment("负责人电话");
             $table->string("remark")->default("无")->comment("备注");
 
-            $table->tinyInteger("status")->default(0)->comment("状态: 0=>未检查 1=>已检查 2=>已过期");
+            $table->tinyInteger("status")->default(0)->comment("状态: 0=>未检查 1=>已检查 2=>已过期 3=>废用");
 
 
             $table->timestamps();

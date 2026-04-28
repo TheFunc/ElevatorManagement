@@ -60,8 +60,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-gray-50 p-4 rounded-lg">
                 <p class="text-sm text-gray-500 mb-1">使用状态</p>
-                <p class="text-lg font-semibold {{ $device->status == 1 ? 'text-green-600' : 'text-red-600' }}">
-                    {{ $device->status == 1 ? '在用' : '停用' }}
+                <p class="text-lg font-semibold 
+                    {{ $device->status == 1 ? 'text-green-600' : ($device->status == 0 ? 'text-red-600' : 'text-gray-500') }}">
+                    {{ $device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '废用') }}
                 </p>
             </div>
             <div class="bg-gray-50 p-4 rounded-lg">

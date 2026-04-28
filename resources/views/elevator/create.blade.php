@@ -46,6 +46,21 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">制造厂家</label>
+                <input type="text" name="Manufacturer" value="{{ old('Manufacturer') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入制造厂家">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">设备使用状态</label>
+                <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                    <option value="1" {{ old('status') == 1 ? 'selected' : '' }}>在用</option>
+                    <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>停用</option>
+                    <option value="2" {{ old('status') == 2 ? 'selected' : '' }}>废用</option>
+                </select>
+            </div>
+        </div>
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">电梯描述 <span class="text-red-500">*</span></label>
             <textarea name="desc" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入电梯详细描述信息">{{ old('desc') }}</textarea>
