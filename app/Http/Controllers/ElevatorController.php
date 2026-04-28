@@ -416,6 +416,142 @@ class ElevatorController extends Controller
         return redirect()->route('campus.index')->with('success', '校区删除成功！');
     }
 
+
+    /**
+     * 上传电梯单
+     */
+    public function uploadRepairOrder(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:200|unique:repair_orders,title',
+            'description' => 'nullable|string|max:500',
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+        ], [
+            'title.required' => '请填写标题',
+            'title.unique' => '该标题已存在，请使用不同的标题',
+            'images.*.required' => '请选择图片文件',
+            'images.*.image' => '仅支持图片格式',
+            'images.*.max' => '单张图片大小不能超过10MB',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $images = $request->file('images');
+        $description = $request->description ?? '';
+        $groupId = time();
+
+        foreach ($images as $index => $image) {
+            $path = $image->store('repair_orders', 'public');
+            
+            RepairOrder::create([
+                'title' => $request->title,
+                'description' => $description,
+                'path' => 'storage/' . $path,
+                'time' => now(),
+                'group_id' => $groupId,
+                'sort_order' => $index,
+            ]);
+        }
+
+        return redirect()->route('repair.orders')->with('success', '电梯单上传成功！共上传 ' . count($images) . ' 张图片，已创建为分组');
+    }
+
+    /**
+     * 删除电梯单
+     */
+    public function deleteRepairOrder($id)
+    {
+        $order = RepairOrder::findOrFail($id);
+        
+        // 如果是分组，删除整个分组所有图片
+        if($order->group_id) {
+            $groupOrders = RepairOrder::where('group_id', $order->group_id)->get();
+            
+            foreach($groupOrders as $item) {
+                $filePath = public_path($item->path);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+                $item->delete();
+            }
+            
+            return redirect()->route('repair.orders')->with('success', "电梯单分组已删除，共删除 {$groupOrders->count()} 张图片");
+        } else {
+            // 单张删除
+            $filePath = public_path($order->path);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+            
+            $order->delete();
+            
+            return redirect()->route('repair.orders')->with('success', '电梯单已删除');
+        }
+    }
+
+    /**
+     * 下载电梯单
+     */
+    public function downloadRepairOrder($id)
+    {
+        $order = RepairOrder::findOrFail($id);
+        
+        // 如果是分组，打包所有图片
+        if($order->group_id) {
+            $groupOrders = RepairOrder::where('group_id', $order->group_id)->get();
+            
+            $zip = new \ZipArchive();
+            $zipFileName = $order->title . '.zip';
+            $zipPath = storage_path('app/temp/' . $zipFileName);
+            
+            // 创建临时目录
+            if (!file_exists(storage_path('app/temp'))) {
+                mkdir(storage_path('app/temp'), 0755, true);
+            }
+            
+            if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+                foreach($groupOrders as $index => $item) {
+                    $filePath = public_path($item->path);
+                    if (file_exists($filePath)) {
+                        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+                        $zip->addFile($filePath, $order->title . '_' . ($index + 1) . '.' . $extension);
+                    }
+                }
+                $zip->close();
+                
+                return response()->download($zipPath)->deleteFileAfterSend(true);
+            } else {
+                return back()->with('error', '创建压缩包失败，请检查Zip扩展是否开启');
+            }
+        } else {
+            // 单张下载
+            $filePath = public_path($order->path);
+            
+            if (!file_exists($filePath)) {
+                abort(404, '文件不存在');
+            }
+            
+            $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+            $filename = $order->title . '.' . $extension;
+            
+            return response()->download($filePath, $filename);
+        }
+    }
+
+    /**
+     * 视频管理页面
+     */
+    public function videoIndex()
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        $videoTypes = VideoType::latest()->get();
+        return view('video.index', compact('videoTypes'));
+    }
+
     /**
      * 电梯单管理
      */
@@ -432,127 +568,18 @@ class ElevatorController extends Controller
             });
         }
         
-        $orders = $query->latest()->get();
-        return view('repair.orders', compact('orders'));
-    }
-
-    /**
-     * 上传电梯单
-     */
-    public function uploadRepairOrder(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:200',
-            'description' => 'nullable|string|max:500',
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
-        ], [
-            'title.required' => '请填写标题',
-            'images.*.required' => '请选择图片文件',
-            'images.*.image' => '仅支持图片格式',
-            'images.*.max' => '单张图片大小不能超过10MB',
-        ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        $images = $request->file('images');
-        $description = $request->description ?? '';
-
-        foreach ($images as $image) {
-            $path = $image->store('repair_orders', 'public');
+        // 按分组聚合，每组只取第一条记录
+        $orders = $query->latest()
+            ->get()
+            ->groupBy('group_id')
+            ->map(function($group) {
+                $first = $group->first();
+                $first->images = $group->sortBy('sort_order')->values();
+                return $first;
+            })
+            ->values();
             
-            RepairOrder::create([
-                'title' => $request->title,
-                'description' => $description,
-                'path' => 'storage/' . $path,
-                'time' => now(),
-            ]);
-        }
-
-        return redirect()->route('repair.orders')->with('success', '电梯单上传成功！共上传 ' . count($images) . ' 张图片');
-    }
-
-    /**
-     * 删除电梯单
-     */
-    public function deleteRepairOrder($id)
-    {
-        $order = RepairOrder::findOrFail($id);
-        
-        // 删除物理文件
-        $filePath = public_path($order->path);
-        if (file_exists($filePath)) {
-            unlink($filePath);
-        }
-        
-        $order->delete();
-        
-        return redirect()->route('repair.orders')->with('success', '电梯单已删除');
-    }
-
-    /**
-     * 下载电梯单
-     */
-    public function downloadRepairOrder($id)
-    {
-        $order = RepairOrder::findOrFail($id);
-        $filePath = public_path($order->path);
-        
-        if (!file_exists($filePath)) {
-            abort(404, '文件不存在');
-        }
-        
-        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-        $filename = $order->title . '.' . $extension;
-        
-        return response()->download($filePath, $filename);
-    }
-
-    /**
-     * 视频管理页面
-     */
-    public function videoIndex()
-    {
-        if (Auth::user()->role != 1) {
-            abort(403, '只有管理员可以访问');
-        }
-        $videoTypes = VideoType::latest()->get();
-        return view('video.index', compact('videoTypes'));
-    }
-
-    /**
-     * 视频预览页面
-     */
-    public function videoPreview(Request $request)
-    {
-        if (Auth::user()->role != 1) {
-            abort(403, '只有管理员可以访问');
-        }
-        
-        $query = VideoInfo::query();
-        
-        // 关键词搜索
-        if ($request->has('keyword') && $request->keyword != '') {
-            $keyword = $request->keyword;
-            $query->where(function($q) use ($keyword) {
-                $q->where('videoGroup', 'like', "%{$keyword}%")
-                  ->orWhere('description', 'like', "%{$keyword}%");
-            });
-        }
-        
-        // 视频类型过滤
-        if ($request->has('videoType') && $request->videoType != '') {
-            $query->where('videoType', $request->videoType);
-        }
-        
-        $videos = $query->latest()->get();
-        $videoTypes = VideoType::all();
-        
-        // 按视频分组去重
-        $groupedVideos = $videos->unique('videoGroup');
-        
-        return view('video.preview', compact('groupedVideos', 'videoTypes'));
+        return view('repair.orders', compact('orders'));
     }
     
     /**

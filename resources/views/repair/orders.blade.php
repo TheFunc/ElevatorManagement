@@ -41,27 +41,42 @@
             <tbody>
                 @foreach($orders as $order)
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="px-4 py-3">
-                        <img src="{{ asset($order->path) }}" alt="{{ $order->title }}" class="w-20 h-20 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform" onclick="showImage('{{ asset($order->path) }}', '{{ $order->title }}')">
-                    </td>
+            <td class="px-4 py-3">
+                <div class="relative w-20 h-20 overflow-hidden rounded-lg">
+                    @if(isset($order->images) && $order->images->count() > 0)
+                        <div class="carousel-thumb" data-images='@json($order->images->map(fn($img) => ["path" => asset($img->path), "title" => $img->title]))'>
+                            <img src="{{ asset($order->images->first()->path) }}" alt="{{ $order->title }}" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform carousel-image" onclick="showImageGroup(this)">
+                            @if($order->images->count() > 1)
+                            <div class="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
+                                1/{{ $order->images->count() }}
+                            </div>
+                            <button class="absolute left-1 top-1/2 -translate-y-1/2 bg-black/50 text-white w-5 h-5 rounded-full text-xs hover:bg-black/70 carousel-prev" onclick="event.stopPropagation(); prevThumb(this)">
+                                <i class="ri-arrow-left-s-line"></i>
+                            </button>
+                            <button class="absolute right-1 top-1/2 -translate-y-1/2 bg-black/50 text-white w-5 h-5 rounded-full text-xs hover:bg-black/70 carousel-next" onclick="event.stopPropagation(); nextThumb(this)">
+                                <i class="ri-arrow-right-s-line"></i>
+                            </button>
+                            @endif
+                        </div>
+                    @else
+                        <img src="{{ asset($order->path) }}" alt="{{ $order->title }}" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform" onclick="showImage('{{ asset($order->path) }}', '{{ $order->title }}')">
+                    @endif
+                </div>
+            </td>
                     <td class="px-4 py-3 text-gray-800 font-medium">{{ $order->title }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ $order->description }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($order->time)->format('Y-m-d H:i') }}</td>
                     <td class="px-4 py-3">
                         <div class="flex gap-2">
-                            <button onclick="showImage('{{ asset($order->path) }}', '{{ $order->title }}')" class="px-3 py-1 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors text-sm font-medium">
+                            <button onclick="showImageGroup(this)" data-images='@json($order->images->map(fn($img) => ["path" => asset($img->path), "title" => $img->title]))' class="px-3 py-1 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors text-sm font-medium">
                                 <i class="ri-eye-line mr-1"></i>查看
                             </button>
                             <a href="{{ route('repair.download', $order->id) }}" class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
                                 <i class="ri-download-line mr-1"></i>下载
                             </a>
-                            <form action="{{ route('repair.delete', $order->id) }}" method="POST" class="inline" onsubmit="return confirm('确定要删除此电梯单吗？')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium">
-                                    <i class="ri-delete-bin-line mr-1"></i>删除
-                                </button>
-                            </form>
+                            <button onclick="showDeleteConfirm({{ $order->id }}, '{{ $order->title }}', {{ isset($order->images) ? $order->images->count() : 1 }})" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium">
+                                <i class="ri-delete-bin-line mr-1"></i>删除
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -323,5 +338,129 @@ document.getElementById('uploadModal').addEventListener('click', function(e) {
         closeUploadModal();
     }
 });
+
+// 缩略图轮播功能
+let thumbCarouselIndex = {};
+
+function prevThumb(btn) {
+    const container = btn.closest('.carousel-thumb');
+    const images = JSON.parse(container.dataset.images);
+    const groupId = container.closest('tr').rowIndex;
+    
+    if(!thumbCarouselIndex[groupId]) thumbCarouselIndex[groupId] = 0;
+    
+    thumbCarouselIndex[groupId] = (thumbCarouselIndex[groupId] - 1 + images.length) % images.length;
+    updateThumb(container, images, groupId);
+}
+
+function nextThumb(btn) {
+    const container = btn.closest('.carousel-thumb');
+    const images = JSON.parse(container.dataset.images);
+    const groupId = container.closest('tr').rowIndex;
+    
+    if(!thumbCarouselIndex[groupId]) thumbCarouselIndex[groupId] = 0;
+    
+    thumbCarouselIndex[groupId] = (thumbCarouselIndex[groupId] + 1) % images.length;
+    updateThumb(container, images, groupId);
+}
+
+function updateThumb(container, images, groupId) {
+    const img = container.querySelector('.carousel-image');
+    const counter = container.querySelector('.absolute.bottom-1');
+    
+    img.src = images[thumbCarouselIndex[groupId]].path;
+    if(counter) {
+        counter.textContent = `${thumbCarouselIndex[groupId] + 1}/${images.length}`;
+    }
+}
+
+// 分组图片查看模态窗口
+let groupImages = [];
+let currentGroupIndex = 0;
+
+function showImageGroup(element) {
+    let images;
+    if(element.dataset.images) {
+        images = JSON.parse(element.dataset.images);
+    } else {
+        const container = element.closest('.carousel-thumb');
+        images = JSON.parse(container.dataset.images);
+        const groupId = container.closest('tr').rowIndex;
+        currentGroupIndex = thumbCarouselIndex[groupId] || 0;
+    }
+    
+    groupImages = images;
+    
+    // 添加轮播导航按钮
+    const modal = document.getElementById('imageModal');
+    const existingNav = modal.querySelector('.carousel-nav');
+    if(existingNav) existingNav.remove();
+    
+    if(images.length > 1) {
+        const navHtml = `
+        <div class="carousel-nav absolute top-1/2 -translate-y-1/2 left-4 right-4 flex justify-between pointer-events-none">
+            <button class="bg-white/20 hover:bg-white/30 text-white w-12 h-12 rounded-full text-2xl pointer-events-auto transition-colors" onclick="prevGroupImage()">
+                <i class="ri-arrow-left-s-line"></i>
+            </button>
+            <button class="bg-white/20 hover:bg-white/30 text-white w-12 h-12 rounded-full text-2xl pointer-events-auto transition-colors" onclick="nextGroupImage()">
+                <i class="ri-arrow-right-s-line"></i>
+            </button>
+        </div>
+        <div class="absolute bottom-20 text-white text-lg">
+            ${currentGroupIndex + 1} / ${images.length}
+        </div>
+        `;
+        document.getElementById('imageWrapper').insertAdjacentHTML('afterend', navHtml);
+        
+        // 键盘左右键导航
+        document.addEventListener('keydown', groupImageNav);
+    }
+    
+    showImage(images[currentGroupIndex].path, images[currentGroupIndex].title);
+}
+
+function prevGroupImage() {
+    currentGroupIndex = (currentGroupIndex - 1 + groupImages.length) % groupImages.length;
+    updateGroupImage();
+}
+
+function nextGroupImage() {
+    currentGroupIndex = (currentGroupIndex + 1) % groupImages.length;
+    updateGroupImage();
+}
+
+function updateGroupImage() {
+    const img = document.getElementById('modalImage');
+    const title = document.getElementById('modalTitle');
+    const counter = document.querySelector('#imageModal .absolute.bottom-20');
+    
+    img.src = groupImages[currentGroupIndex].path;
+    title.textContent = groupImages[currentGroupIndex].title;
+    if(counter) {
+        counter.textContent = `${currentGroupIndex + 1} / ${groupImages.length}`;
+    }
+    
+    // 重置缩放位置
+    currentZoom = 1;
+    offsetX = 0;
+    offsetY = 0;
+    applyZoom();
+    document.getElementById('imageWrapper').style.transform = 'translate(0, 0)';
+}
+
+function groupImageNav(e) {
+    if(e.key === 'ArrowLeft') prevGroupImage();
+    if(e.key === 'ArrowRight') nextGroupImage();
+}
+
+// 重写关闭事件清理键盘监听
+const originalCloseImageModal = closeImageModal;
+closeImageModal = function() {
+    originalCloseImageModal();
+    document.removeEventListener('keydown', groupImageNav);
+}
+
 </script>
+
+@include('partials.delete-confirm')
 @endsection

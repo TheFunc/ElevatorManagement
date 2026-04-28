@@ -13,7 +13,9 @@ class RepairOrder extends Model
         'title',
         'description',
         'path',
-        'time'
+        'time',
+        'group_id',
+        'sort_order'
     ];
 
     protected $dates = [
