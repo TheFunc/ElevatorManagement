@@ -553,6 +553,44 @@ class ElevatorController extends Controller
     }
 
     /**
+     * 视频预览页面
+     */
+    public function videoPreview(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+
+        // 获取所有视频类型
+        $videoTypes = VideoType::latest()->get();
+
+        // 查询视频数据
+        $query = VideoInfo::query();
+
+        // 关键词搜索（按视频组名）
+        if ($request->has('keyword') && $request->keyword != '') {
+            $keyword = $request->keyword;
+            $query->where('videoGroup', 'like', "%{$keyword}%");
+        }
+
+        // 视频类型过滤
+        if ($request->has('videoType') && $request->videoType != '') {
+            $query->where('videoType', $request->videoType);
+        }
+
+        // 按分组聚合，每组只取第一条记录（用于显示封面和基本信息）
+        $groupedVideos = $query->latest()
+            ->get()
+            ->groupBy('videoGroup')
+            ->map(function($group) {
+                return $group->first();
+            })
+            ->values();
+
+        return view('video.preview', compact('groupedVideos', 'videoTypes'));
+    }
+
+    /**
      * 电梯单管理
      */
     public function repairOrders(Request $request)
