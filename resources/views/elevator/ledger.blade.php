@@ -96,54 +96,69 @@
         </form>
         
         <!-- PC端表格 仅在桌面显示 -->
-        <div class="hidden md:block overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-gray-50">
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100" onclick="sortTable('number')">
-                            电梯编号 <i class="ri-arrow-up-down-line ml-1"></i>
-                        </th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100" onclick="sortTable('name')">
-                            设备名称 <i class="ri-arrow-up-down-line ml-1"></i>
-                        </th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">型号</th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">校区</th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">位置</th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">状态</th>
-                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($devices as $device)
-                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                        <td class="px-4 py-3 text-gray-800 font-medium">{{ $device->number }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $device->name ?? '-' }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $device->Model ?? '-' }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $device->Campus ?? '-' }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $device->Position }}</td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                {{ $device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700') }}">
-                                {{ $device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '废用') }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <a href="{{ route('device.show', $device->id) }}" class="text-primary hover:text-dark font-medium">
-                                查看详情
-                            </a>
-                        </td>
-                    </tr>
-                    @endforeach
-                    
-                    @if($devices->isEmpty())
-                    <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
-                            暂无电梯数据，请点击"添加电梯"录入设备信息
-                        </td>
-                    </tr>
-                    @endif
-                </tbody>
-            </table>
+        <div class="hidden md:block">
+            <!-- 顶部滚动条容器 -->
+            <div class="overflow-x-auto mb-1" id="topScrollbar" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <div id="topScrollbarInner" style="height: 1px;"></div>
+            </div>
+            
+            <!-- 隐藏顶部滚动条的Webkit样式 -->
+            <style>
+                #topScrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+            </style>
+            
+            <!-- 表格容器 -->
+            <div class="overflow-x-auto" id="tableContainer">
+                <table class="w-full table-fixed" id="deviceTable">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 w-[120px]" onclick="sortTable('number')">
+                                电梯编号 <i class="ri-arrow-up-down-line ml-1"></i>
+                            </th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 w-[150px]" onclick="sortTable('name')">
+                                设备名称 <i class="ri-arrow-up-down-line ml-1"></i>
+                            </th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[120px]">型号</th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[100px]">校区</th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[180px]">位置</th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[80px]">状态</th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[100px]">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($devices as $device)
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="px-3 py-3 text-gray-800 font-medium whitespace-nowrap truncate" title="{{ $device->number }}">{{ $device->number }}</td>
+                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->name ?? '-' }}">{{ $device->name ?? '-' }}</td>
+                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->Model ?? '-' }}">{{ $device->Model ?? '-' }}</td>
+                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->Campus ?? '-' }}">{{ $device->Campus ?? '-' }}</td>
+                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->Position }}">{{ $device->Position }}</td>
+                            <td class="px-3 py-3">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap
+                                    {{ $device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700') }}">
+                                    {{ $device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '废用') }}
+                                </span>
+                            </td>
+                            <td class="px-3 py-3">
+                                <a href="{{ route('device.show', $device->id) }}" class="text-primary hover:text-dark font-medium whitespace-nowrap">
+                                    查看详情
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                        
+                        @if($devices->isEmpty())
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                暂无电梯数据，请点击"添加电梯"录入设备信息
+                            </td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <!-- 手机端卡片流布局 仅在移动端显示 -->
@@ -285,9 +300,7 @@ new Chart(ctx, {
         }
     }
 });
-</script>
 
-<script>
 function sortTable(field) {
     const url = new URL(window.location.href);
     const currentSort = url.searchParams.get('sort');
@@ -311,5 +324,63 @@ function sortTable(field) {
     
     window.location.href = url.toString();
 }
+
+// 鼠标滚轮横向滚动表格
+document.addEventListener('DOMContentLoaded', function() {
+    const tableContainer = document.getElementById('tableContainer');
+    const topScrollbar = document.getElementById('topScrollbar');
+    const topScrollbarInner = document.getElementById('topScrollbarInner');
+    
+    // 设置顶部滚动条内部容器的宽度与表格一致
+    function syncScrollbarWidth() {
+        if (tableContainer && topScrollbarInner) {
+            topScrollbarInner.style.width = tableContainer.scrollWidth + 'px';
+        }
+    }
+    
+    // 初始化时同步宽度
+    syncScrollbarWidth();
+    
+    // 窗口大小改变时重新同步
+    window.addEventListener('resize', syncScrollbarWidth);
+    
+    // 双向同步滚动
+    if (tableContainer && topScrollbar) {
+        let isSyncing = false;
+        
+        // 表格滚动时同步顶部滚动条
+        tableContainer.addEventListener('scroll', function() {
+            if (!isSyncing) {
+                isSyncing = true;
+                topScrollbar.scrollLeft = this.scrollLeft;
+                requestAnimationFrame(() => {
+                    isSyncing = false;
+                });
+            }
+        });
+        
+        // 顶部滚动条滚动时同步表格
+        topScrollbar.addEventListener('scroll', function() {
+            if (!isSyncing) {
+                isSyncing = true;
+                tableContainer.scrollLeft = this.scrollLeft;
+                requestAnimationFrame(() => {
+                    isSyncing = false;
+                });
+            }
+        });
+        
+        // 鼠标滚轮横向滚动表格
+        tableContainer.addEventListener('wheel', function(e) {
+            // 检查是否有横向滚动条
+            if (this.scrollWidth > this.clientWidth) {
+                // 阻止默认的垂直滚动行为
+                e.preventDefault();
+                // 将垂直滚动转换为横向滚动
+                this.scrollLeft += e.deltaY;
+            }
+        }, { passive: false });
+    }
+});
 </script>
 @endsection
