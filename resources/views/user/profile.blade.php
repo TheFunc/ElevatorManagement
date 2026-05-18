@@ -23,10 +23,9 @@
             </div>
             <div>
                 <h3 class="text-2xl font-bold text-gray-800">{{ Auth::user()->name }}</h3>
-                <p class="text-gray-600 mt-1">{{ Auth::user()->email }}</p>
                 <p class="mt-2">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {{ Auth::user()->role == 1 ? '系统管理员' : '普通用户' }}
+                        {{ Auth::user()->role == 1 ? '总监' : '电梯管理员' }}
                     </span>
                 </p>
             </div>
@@ -48,12 +47,8 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-gray-50 p-4 rounded-lg">
-                <p class="text-sm text-gray-500 mb-1">邮箱地址</p>
-                <p class="text-lg font-semibold text-gray-800">{{ Auth::user()->email }}</p>
-            </div>
-            <div class="bg-gray-50 p-4 rounded-lg">
                 <p class="text-sm text-gray-500 mb-1">用户角色</p>
-                <p class="text-lg font-semibold text-gray-800">{{ Auth::user()->role == 1 ? '系统管理员' : '普通用户' }}</p>
+                <p class="text-lg font-semibold text-gray-800">{{ Auth::user()->role == 1 ? '总监' : '电梯管理员' }}</p>
             </div>
         </div>
 
@@ -108,6 +103,7 @@
     </div>
 
     <!-- 密码修改区域 -->
+    @if(Auth::user()->role == 1)
     <div class="mt-8 border-t border-gray-200 pt-6">
         <h4 class="text-lg font-semibold text-gray-800 mb-4">安全设置</h4>
         <div class="bg-gray-50 p-4 rounded-lg">
@@ -116,11 +112,12 @@
                     <p class="font-medium text-gray-800">修改登录密码</p>
                     <p class="text-sm text-gray-500">定期修改密码保证账号安全</p>
                 </div>
-                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
+                <a href="{{ route('user.index') }}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
                     修改密码
-                </button>
+                </a>
             </div>
         </div>
     </div>
+    @endif
 </div>
 @endsection

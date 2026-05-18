@@ -34,7 +34,7 @@ class FileUploadController extends Controller
     {
         // 文件类型定义
         $fileTypes = [
-            'prepare'      => '准备资料',
+            'prepare'      => '准用资料',
             'maintenance'  => '维保资料',
             'inspection'   => '日常巡检资料',
             'fault'        => '故障记录资料',

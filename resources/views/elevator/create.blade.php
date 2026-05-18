@@ -56,7 +56,7 @@
                 <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
                     <option value="1" {{ old('status') == 1 ? 'selected' : '' }}>在用</option>
                     <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>停用</option>
-                    <option value="2" {{ old('status') == 2 ? 'selected' : '' }}>废用</option>
+                    <option value="2" {{ old('status') == 2 ? 'selected' : '' }}>报废</option>
                 </select>
             </div>
         </div>

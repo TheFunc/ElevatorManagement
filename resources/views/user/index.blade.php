@@ -73,11 +73,11 @@
                     <td class="px-4 py-3">
                         @if($user->role == 1)
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary">
-                                <i class="ri-admin-line mr-1"></i>管理员
+                                <i class="ri-admin-line mr-1"></i>总监
                             </span>
                         @else
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-600">
-                                <i class="ri-user-line mr-1"></i>普通用户
+                                <i class="ri-user-line mr-1"></i>电梯管理员
                             </span>
                         @endif
                     </td>
@@ -116,7 +116,7 @@
     </div>
 
     <div class="mt-6 text-sm text-gray-500">
-        共 {{ $users->count() }} 个用户，其中管理员 {{ $users->where('role', 1)->count() }} 名
+        共 {{ $users->count() }} 个用户，其中总监 {{ $users->where('role', 1)->count() }} 名
     </div>
 </div>
 

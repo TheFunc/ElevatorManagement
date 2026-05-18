@@ -244,7 +244,7 @@ class ElevatorController extends Controller
         
         // 文件类型配置
         $fileTypes = [
-            'prepare'      => ['name' => '准备资料', 'color' => 'blue', 'icon' => 'ri-file-copy-line'],
+            'prepare'      => ['name' => '准用资料', 'color' => 'blue', 'icon' => 'ri-file-copy-line'],
             'maintenance'  => ['name' => '维保资料', 'color' => 'green', 'icon' => 'ri-tools-line'],
             'inspection'   => ['name' => '巡检资料', 'color' => 'yellow', 'icon' => 'ri-checkbox-circle-line'],
             'fault'        => ['name' => '故障记录', 'color' => 'red', 'icon' => 'ri-error-warning-line'],
@@ -357,7 +357,7 @@ class ElevatorController extends Controller
         
         // 文件类型配置
         $fileTypes = [
-            'prepare'      => ['name' => '准备资料', 'color' => 'blue', 'icon' => 'ri-file-copy-line'],
+            'prepare'      => ['name' => '准用资料', 'color' => 'blue', 'icon' => 'ri-file-copy-line'],
             'maintenance'  => ['name' => '维保资料', 'color' => 'green', 'icon' => 'ri-tools-line'],
             'inspection'   => ['name' => '巡检资料', 'color' => 'yellow', 'icon' => 'ri-checkbox-circle-line'],
             'fault'        => ['name' => '故障记录', 'color' => 'red', 'icon' => 'ri-error-warning-line'],

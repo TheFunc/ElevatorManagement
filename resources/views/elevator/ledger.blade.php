@@ -82,7 +82,7 @@
                     <option value="">全部状态</option>
                     <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>在用</option>
                     <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>停用</option>
-                    <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>废用</option>
+                    <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>报废</option>
                 </select>
                 <button type="submit" class="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors">
                     <i class="ri-search-line mr-1"></i>查询
@@ -138,7 +138,7 @@
                             <td class="px-3 py-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap
                                     {{ $device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700') }}">
-                                    {{ $device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '废用') }}
+                                    {{ $device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '报废') }}
                                 </span>
                             </td>
                             <td class="px-3 py-3">
@@ -177,7 +177,7 @@
                             <h4 class="font-semibold text-gray-800 truncate">{{ $device->number }}</h4>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
                                 {{ $device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700') }}">
-                                {{ $device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '废用') }}
+                                {{ $device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '报废') }}
                             </span>
                         </div>
                         <p class="text-sm text-gray-600 mb-0.5">{{ $device->name ?? '-' }}</p>
