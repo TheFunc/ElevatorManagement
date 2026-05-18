@@ -471,6 +471,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         <i class="ri-add-circle-line text-lg"></i>
                         <span>增加视频</span>
                     </a>
+                    
+                    <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">图文管理</div>
+                    
+                    <a href="{{ route('image-text.types') }}" class="menu-item @if(Route::currentRouteName() == 'image-text.types') menu-item-active @endif">
+                        <i class="ri-layout-grid-line text-lg"></i>
+                        <span>图文类型管理</span>
+                    </a>
+                    
+                    <a href="{{ route('image-text.preview') }}" class="menu-item @if(Route::currentRouteName() == 'image-text.preview') menu-item-active @endif">
+                        <i class="ri-eye-line text-lg"></i>
+                        <span>图文预览</span>
+                    </a>
+                    
+                    <a href="{{ route('image-text.create') }}" class="menu-item @if(Route::currentRouteName() == 'image-text.create') menu-item-active @endif">
+                        <i class="ri-add-circle-line text-lg"></i>
+                        <span>增加图文</span>
+                    </a>
                     @endif
                     @endauth
                     

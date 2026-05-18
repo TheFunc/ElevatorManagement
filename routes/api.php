@@ -16,4 +16,11 @@ Route::prefix('/v1')->group(function () {
         Route::get("/list", [FrontendAPI::class, "videoInfo"]);
     });
 
+    // 图文管理API路由
+    Route::prefix("/image-text")->group(function() {
+        Route::get("/types", [FrontendAPI::class, "imageTextType"]);
+        Route::get("/list", [FrontendAPI::class, "imageTextList"]);
+        Route::get("/{id}", [FrontendAPI::class, "imageTextDetail"]);
+    });
+
 });

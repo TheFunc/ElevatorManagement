@@ -906,4 +906,280 @@ class ElevatorController extends Controller
 
         return redirect()->route('video.index')->with('success', '视频类型删除成功！');
     }
+
+    /**
+     * 图文类型管理页面
+     */
+    public function imageTextTypes()
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        
+        $imageTypes = \App\Models\ImageType::latest()->get();
+        return view('image-text.types', compact('imageTypes'));
+    }
+
+    /**
+     * 保存图文类型
+     */
+    public function storeImageTextType(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string|max:100|unique:image_types',
+        ], [
+            'type.required' => '请填写图文类型名称',
+            'type.unique' => '该图文类型已存在',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        \App\Models\ImageType::create($request->all());
+
+        return redirect()->route('image-text.types')->with('success', '图文类型添加成功！');
+    }
+
+    /**
+     * 更新图文类型
+     */
+    public function updateImageTextType(Request $request, $id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $imageType = \App\Models\ImageType::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string|max:100|unique:image_types,type,'.$id,
+        ], [
+            'type.required' => '请填写图文类型名称',
+            'type.unique' => '该图文类型已存在',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $imageType->update($request->all());
+
+        return redirect()->route('image-text.types')->with('success', '图文类型更新成功！');
+    }
+
+    /**
+     * 删除图文类型
+     */
+    public function deleteImageTextType($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $imageType = \App\Models\ImageType::findOrFail($id);
+        $imageType->delete();
+
+        return redirect()->route('image-text.types')->with('success', '图文类型删除成功！');
+    }
+
+    /**
+     * 图文预览页面
+     */
+    public function imageTextPreview(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+
+        // 获取所有图片类型
+        $imageTypes = \App\Models\ImageType::latest()->get();
+
+        // 查询图片数据
+        $query = \App\Models\ImageInfo::query();
+
+        // 关键词搜索（按图片组名）
+        if ($request->has('keyword') && $request->keyword != '') {
+            $keyword = $request->keyword;
+            $query->where('imageGroup', 'like', "%{$keyword}%");
+        }
+
+        // 图片类型过滤
+        if ($request->has('imageType') && $request->imageType != '') {
+            $query->where('imageType', $request->imageType);
+        }
+
+        // 按分组聚合，每组只取第一条记录（用于显示封面和基本信息）
+        $groupedImages = $query->latest()
+            ->get()
+            ->groupBy('imageGroup')
+            ->map(function($group) {
+                return $group->first();
+            })
+            ->values();
+
+        return view('image-text.preview', compact('groupedImages', 'imageTypes'));
+    }
+
+    /**
+     * 图片组详情页面
+     */
+    public function imageGroupDetail($group)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        
+        $images = \App\Models\ImageInfo::where('imageGroup', $group)->latest()->get();
+        
+        return view('image-text.group', compact('images', 'group'));
+    }
+
+    /**
+     * 删除图片组（删除该分组下所有图片）
+     */
+    public function deleteImageGroup($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $image = \App\Models\ImageInfo::findOrFail($id);
+        $imageGroup = $image->imageGroup;
+        
+        // 获取该分组下所有图片
+        $images = \App\Models\ImageInfo::where('imageGroup', $imageGroup)->get();
+        
+        // 删除所有物理文件
+        foreach ($images as $img) {
+            // 删除图片文件
+            if (Storage::exists(str_replace('storage/', 'public/', $img->imagePath))) {
+                Storage::delete(str_replace('storage/', 'public/', $img->imagePath));
+            }
+        }
+        
+        // 删除封面文件（只需要删除一次）
+        if (Storage::exists(str_replace('storage/', 'public/', $image->coverPath))) {
+            Storage::delete(str_replace('storage/', 'public/', $image->coverPath));
+        }
+        
+        // 批量删除数据库记录
+        \App\Models\ImageInfo::where('imageGroup', $imageGroup)->delete();
+
+        return redirect()->route('image-text.preview')->with('success', "图片组 '{$imageGroup}' 已删除，共删除 {$images->count()} 个图片文件");
+    }
+    
+    /**
+     * 删除单个图片
+     */
+    public function deleteSingleImage($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $image = \App\Models\ImageInfo::findOrFail($id);
+        
+        // 删除图片文件
+        if (Storage::exists(str_replace('storage/', 'public/', $image->imagePath))) {
+            Storage::delete(str_replace('storage/', 'public/', $image->imagePath));
+        }
+        
+        // 检查是否是该分组最后一个图片，如果是同时删除封面
+        $groupCount = \App\Models\ImageInfo::where('imageGroup', $image->imageGroup)->count();
+        if ($groupCount <= 1) {
+            if (Storage::exists(str_replace('storage/', 'public/', $image->coverPath))) {
+                Storage::delete(str_replace('storage/', 'public/', $image->coverPath));
+            }
+        }
+        
+        $image->delete();
+
+        return back()->with('success', '图片已删除！');
+    }
+
+    /**
+     * 增加图文页面
+     */
+    public function imageTextCreate()
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        
+        $imageTypes = \App\Models\ImageType::latest()->get();
+        return view('image-text.create', compact('imageTypes'));
+    }
+
+    /**
+     * 上传图文封面
+     */
+    public function uploadImageCover(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $request->validate([
+            'imageGroup' => 'required|string|max:100',
+            'cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+        ]);
+
+        $basePath = 'images/' . $request->imageGroup;
+        
+        if (!Storage::exists($basePath)) {
+            Storage::makeDirectory($basePath);
+        }
+
+        $coverFile = $request->file('cover');
+        $coverName = time() . '_' . $coverFile->getClientOriginalName();
+        $coverPath = $coverFile->storeAs($basePath, $coverName, 'public');
+
+        return response()->json([
+            'success' => true,
+            'path' => 'storage/' . $coverPath
+        ]);
+    }
+
+    /**
+     * 单个上传图片
+     */
+    public function uploadSingleImage(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $request->validate([
+            'imageGroup' => 'required|string|max:100',
+            'imageType' => 'required|string|max:100',
+            'description' => 'nullable|string|max:500',
+            'coverPath' => 'required|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:51200',
+        ]);
+
+        $basePath = 'images/' . $request->imageGroup;
+        
+        $imageFile = $request->file('image');
+        $imageName = time() . '_' . $imageFile->getClientOriginalName();
+        $imagePath = $imageFile->storeAs($basePath, $imageName, 'public');
+
+        \App\Models\ImageInfo::create([
+            'coverPath' => $request->coverPath,
+            'imagePath' => 'storage/' . $imagePath,
+            'imageType' => $request->imageType,
+            'imageGroup' => $request->imageGroup,
+            'description' => $request->description,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'path' => 'storage/' . $imagePath
+        ]);
+    }
+
 }
