@@ -31,7 +31,7 @@
     </div>
 
     <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">图文内容</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">图片描述</label>
         <textarea id="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入图片描述"></textarea>
     </div>
 

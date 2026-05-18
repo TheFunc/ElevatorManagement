@@ -426,6 +426,7 @@ class ElevatorController extends Controller
             'title' => 'required|string|max:200|unique:repair_orders,title',
             'description' => 'nullable|string|max:500',
             'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'customUploadTime' => 'nullable|date',
         ], [
             'title.required' => '请填写标题',
             'title.unique' => '该标题已存在，请使用不同的标题',
@@ -442,6 +443,9 @@ class ElevatorController extends Controller
         $description = $request->description ?? '';
         $groupId = time();
 
+        // 处理自定义上传时间
+        $uploadTime = $request->filled('customUploadTime') ? $request->customUploadTime : now();
+
         foreach ($images as $index => $image) {
             $path = $image->store('repair_orders', 'public');
             
@@ -449,7 +453,7 @@ class ElevatorController extends Controller
                 'title' => $request->title,
                 'description' => $description,
                 'path' => 'storage/' . $path,
-                'time' => now(),
+                'time' => $uploadTime,
                 'group_id' => $groupId,
                 'sort_order' => $index,
             ]);

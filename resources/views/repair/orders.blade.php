@@ -118,6 +118,12 @@
             </div>
 
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">自定义上传时间（可选）</label>
+                <input type="datetime-local" name="customUploadTime" id="customUploadTime" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                <p class="text-sm text-gray-500 mt-1">如果不填写，将使用当前时间作为上传时间</p>
+            </div>
+
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">选择图片 <span class="text-red-500">*</span> (可多选)</label>
                 <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors">
                     <i class="ri-upload-cloud-line text-4xl text-gray-400 mb-2"></i>
