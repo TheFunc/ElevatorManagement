@@ -1,12 +1,10 @@
-@extends('layouts.elevator')
+<?php $__env->startSection('title', '增加图文'); ?>
+<?php $__env->startSection('page-title', '增加图文'); ?>
 
-@section('title', '增加视频')
-@section('page-title', '增加视频')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="card">
     <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-semibold text-gray-800">视频批量上传</h3>
+        <h3 class="text-xl font-semibold text-gray-800">图文批量上传</h3>
     </div>
 
     <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"></div>
@@ -14,25 +12,25 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">视频文件夹名称</label>
-            <input type="text" id="videoGroup" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入视频文件夹名称">
-            <p class="text-sm text-gray-500 mt-1">上传路径格式: videos/[文件夹名]/*.mp4</p>
+            <label class="block text-sm font-medium text-gray-700 mb-2">图片文件夹名称</label>
+            <input type="text" id="imageGroup" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入图片文件夹名称">
+            <p class="text-sm text-gray-500 mt-1">上传路径格式: images/[文件夹名]/*.jpg</p>
         </div>
         
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">视频类型</label>
-            <select id="videoType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">请选择视频类型</option>
-                @foreach($videoTypes as $type)
-                    <option value="{{ $type->type }}">{{ $type->type }}</option>
-                @endforeach
+            <label class="block text-sm font-medium text-gray-700 mb-2">图片类型</label>
+            <select id="imageType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">请选择图片类型</option>
+                <?php $__currentLoopData = $imageTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($type->type); ?>"><?php echo e($type->type); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
         </div>
     </div>
 
     <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">视频描述</label>
-        <textarea id="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入视频描述"></textarea>
+        <label class="block text-sm font-medium text-gray-700 mb-2">图片描述</label>
+        <textarea id="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="请输入图片描述"></textarea>
     </div>
 
     <style>
@@ -73,7 +71,7 @@
     </style>
 
     <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">选择视频封面图片</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">选择封面图片</label>
         <div class="file-input-wrapper">
             <div id="coverBtn" class="file-input-btn">
                 <i class="ri-image-add-line text-3xl mb-2 block"></i>
@@ -81,19 +79,19 @@
             </div>
             <input type="file" id="cover" accept="image/*" required onchange="updateCoverStatus(this)">
         </div>
-        <p class="text-sm text-gray-500 mt-1">封面图片将保存到视频文件夹中</p>
+        <p class="text-sm text-gray-500 mt-1">封面图片将保存到图片文件夹中</p>
     </div>
 
     <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">选择视频文件（支持批量选择）</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">选择图片文件（支持批量选择）</label>
         <div class="file-input-wrapper">
-            <div id="videosBtn" class="file-input-btn">
-                <i class="ri-video-add-line text-3xl mb-2 block"></i>
-                <span id="videosText">点击选择多个MP4视频文件</span>
+            <div id="imagesBtn" class="file-input-btn">
+                <i class="ri-gallery-line text-3xl mb-2 block"></i>
+                <span id="imagesText">点击选择多个图片文件</span>
             </div>
-            <input type="file" id="videos" multiple accept="video/mp4" required onchange="updateVideosStatus(this)">
+            <input type="file" id="images" multiple accept="image/jpeg,image/png,image/jpg,image/gif" required onchange="updateImagesStatus(this)">
         </div>
-        <p class="text-sm text-gray-500 mt-1">支持同时选择多个MP4视频文件，系统将逐个上传处理</p>
+        <p class="text-sm text-gray-500 mt-1">支持同时选择多个图片文件（JPG、PNG、GIF），系统将逐个上传处理</p>
     </div>
 
     <script>
@@ -109,15 +107,15 @@
         }
     }
     
-    function updateVideosStatus(input) {
-        const btn = document.getElementById('videosBtn');
-        const text = document.getElementById('videosText');
+    function updateImagesStatus(input) {
+        const btn = document.getElementById('imagesBtn');
+        const text = document.getElementById('imagesText');
         if (input.files.length > 0) {
             btn.classList.add('file-selected');
-            text.textContent = '✓ 已选择 ' + input.files.length + ' 个视频文件';
+            text.textContent = '✓ 已选择 ' + input.files.length + ' 个图片文件';
         } else {
             btn.classList.remove('file-selected');
-            text.textContent = '点击选择多个MP4视频文件';
+            text.textContent = '点击选择多个图片文件';
         }
     }
     </script>
@@ -141,13 +139,13 @@
 
 <script>
 async function startUpload() {
-    const videoGroup = document.getElementById('videoGroup').value;
-    const videoType = document.getElementById('videoType').value;
+    const imageGroup = document.getElementById('imageGroup').value;
+    const imageType = document.getElementById('imageType').value;
     const description = document.getElementById('description').value;
     const coverFile = document.getElementById('cover').files[0];
-    const videoFiles = document.getElementById('videos').files;
+    const imageFiles = document.getElementById('images').files;
 
-    if (!videoGroup || !videoType || !coverFile || videoFiles.length === 0) {
+    if (!imageGroup || !imageType || !coverFile || imageFiles.length === 0) {
         showError('请填写所有必填项并选择文件');
         return;
     }
@@ -164,11 +162,11 @@ async function startUpload() {
         // 先上传封面
         addLog('正在上传封面图片...');
         const coverFormData = new FormData();
-        coverFormData.append('videoGroup', videoGroup);
+        coverFormData.append('imageGroup', imageGroup);
         coverFormData.append('cover', coverFile);
-        coverFormData.append('_token', '{{ csrf_token() }}');
+        coverFormData.append('_token', '<?php echo e(csrf_token()); ?>');
 
-        const coverResponse = await fetch('{{ route('video.upload.cover') }}', {
+        const coverResponse = await fetch('<?php echo e(route('image-text.upload.cover')); ?>', {
             method: 'POST',
             body: coverFormData
         });
@@ -181,51 +179,42 @@ async function startUpload() {
         const coverPath = coverResult.path;
         addLog('✓ 封面上传完成: ' + coverPath);
 
-        // 逐个上传视频
+        // 逐个上传图片
         let successCount = 0;
-        const totalFiles = videoFiles.length;
+        const totalFiles = imageFiles.length;
 
         for (let i = 0; i < totalFiles; i++) {
-            const videoFile = videoFiles[i];
+            const imageFile = imageFiles[i];
             const progress = Math.round(((i + 1) / totalFiles) * 100);
             
             document.getElementById('progressBar').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `正在上传 ${i + 1}/${totalFiles}: ${videoFile.name}`;
-            addLog(`正在上传 (${i + 1}/${totalFiles}): ${videoFile.name}`);
+            document.getElementById('progressText').textContent = `正在上传 ${i + 1}/${totalFiles}: ${imageFile.name}`;
+            addLog(`正在上传 (${i + 1}/${totalFiles}): ${imageFile.name}`);
 
-            const videoFormData = new FormData();
-            videoFormData.append('videoGroup', videoGroup);
-            videoFormData.append('videoType', videoType);
-            videoFormData.append('description', description);
-            videoFormData.append('coverPath', coverPath);
-            videoFormData.append('video', videoFile);
-            videoFormData.append('_token', '{{ csrf_token() }}');
+            const imageFormData = new FormData();
+            imageFormData.append('imageGroup', imageGroup);
+            imageFormData.append('imageType', imageType);
+            imageFormData.append('description', description);
+            imageFormData.append('coverPath', coverPath);
+            imageFormData.append('image', imageFile);
+            imageFormData.append('_token', '<?php echo e(csrf_token()); ?>');
 
-            const videoResponse = await fetch('{{ route('video.upload.single') }}', {
+            const imageResponse = await fetch('<?php echo e(route('image-text.upload.single')); ?>', {
                 method: 'POST',
-                body: videoFormData
+                body: imageFormData
             });
 
-            if (videoResponse.ok) {
-                const result = await videoResponse.json();
+            if (imageResponse.ok) {
                 successCount++;
-                addLog(`✓ ${videoFile.name} 上传成功`);
+                addLog(`✓ ${imageFile.name} 上传成功`);
             } else {
-                // 获取详细错误信息
-                let errorMsg = '未知错误';
-                try {
-                    const errorData = await videoResponse.json();
-                    errorMsg = errorData.message || errorData.error || JSON.stringify(errorData);
-                } catch (e) {
-                    errorMsg = `HTTP ${videoResponse.status} ${videoResponse.statusText}`;
-                }
-                addLog(`✗ ${videoFile.name} 上传失败: ${errorMsg}`);
+                addLog(`✗ ${imageFile.name} 上传失败`);
             }
         }
 
         document.getElementById('progressBar').style.width = '100%';
         document.getElementById('progressText').textContent = `上传完成！成功 ${successCount}/${totalFiles} 个文件`;
-        showSuccess(`视频上传完成！共成功上传 ${successCount} 个视频文件`);
+        showSuccess(`图片上传完成！共成功上传 ${successCount} 个图片文件`);
 
     } catch (error) {
         showError('上传出错: ' + error.message);
@@ -254,4 +243,6 @@ function showError(message) {
     msgDiv.classList.remove('hidden');
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.elevator', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\else\order\ElevatorManagement\ElevatorManagement\resources\views/image-text/create.blade.php ENDPATH**/ ?>

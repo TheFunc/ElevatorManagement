@@ -63,18 +63,31 @@ Route::post('/video-type/{id}/update', [ElevatorController::class, 'updateVideoT
 Route::post('/video-type/{id}/delete', [ElevatorController::class, 'deleteVideoType'])->name('video.type.delete');
 
     // 图文管理路由
+    Route::get('/image-text', [ElevatorController::class, 'imageTextIndex'])->name('image-text.index');
+    Route::get('/image-text/create', [ElevatorController::class, 'imageTextCreate'])->name('image-text.create');
+    Route::post('/image-text/store', [ElevatorController::class, 'imageTextStore'])->name('image-text.store');
+    
+    // 图片管理路由（旧版）- 必须在 {id} 参数化路由之前定义
     Route::get('/image-text/types', [ElevatorController::class, 'imageTextTypes'])->name('image-text.types');
+    Route::get('/image-text/preview', [ElevatorController::class, 'imageTextPreview'])->name('image-text.preview');
+    Route::get('/image-text/group/{group}', [ElevatorController::class, 'imageGroupDetail'])->name('image-text.group');
+    Route::get('/image-text/create-old', [ElevatorController::class, 'imageTextCreate'])->name('image-text.create-old');
+    Route::post('/image-text/upload/cover', [ElevatorController::class, 'uploadImageCover'])->name('image-text.upload.cover');
+    Route::post('/image-text/upload/single', [ElevatorController::class, 'uploadSingleImage'])->name('image-text.upload.single');
     Route::post('/image-text-type/store', [ElevatorController::class, 'storeImageTextType'])->name('image-text.type.store');
     Route::post('/image-text-type/{id}/update', [ElevatorController::class, 'updateImageTextType'])->name('image-text.type.update');
     Route::post('/image-text-type/{id}/delete', [ElevatorController::class, 'deleteImageTextType'])->name('image-text.type.delete');
-    Route::get('/image-text/preview', [ElevatorController::class, 'imageTextPreview'])->name('image-text.preview');
-    Route::get('/image-text/group/{group}', [ElevatorController::class, 'imageGroupDetail'])->name('image-text.group');
-    Route::post('/image-text/{id}/delete', [ElevatorController::class, 'deleteImageGroup'])->name('image-text.delete');
-    Route::post('/image-text/{id}/delete-single', [ElevatorController::class, 'deleteSingleImage'])->name('image-text.delete.single');
-    Route::get('/image-text/create', [ElevatorController::class, 'imageTextCreate'])->name('image-text.create');
-    Route::post('/image-text/upload/cover', [ElevatorController::class, 'uploadImageCover'])->name('image-text.upload.cover');
-    Route::post('/image-text/upload/single', [ElevatorController::class, 'uploadSingleImage'])->name('image-text.upload.single');
-
+    Route::post('/image-group/{id}/delete', [ElevatorController::class, 'deleteImageGroup'])->name('image-group.delete');
+    Route::post('/image-single/{id}/delete', [ElevatorController::class, 'deleteSingleImage'])->name('image-single.delete');
+    
+    // 参数化路由 - 必须放在具体路由之后
+    Route::get('/image-text/{id}/edit', [ElevatorController::class, 'imageTextEdit'])->name('image-text.edit');
+    Route::put('/image-text/{id}', [ElevatorController::class, 'imageTextUpdate'])->name('image-text.update');
+    Route::delete('/image-text/{id}', [ElevatorController::class, 'imageTextDelete'])->name('image-text.delete');
+    Route::get('/image-text/{id}', [ElevatorController::class, 'imageTextShow'])->name('image-text.show');
+    Route::get('/image-text/{id}/api', [ElevatorController::class, 'imageTextApi'])->name('image-text.api');
+    Route::get('/image-text/{id}/export-pdf', [ElevatorController::class, 'imageTextExportPdf'])->name('image-text.export-pdf');
+    
     // 用户管理路由
     Route::get('/users', [UserController::class, 'index'])->name('user.index');
     Route::get('/users/profile', [UserController::class, 'profile'])->name('user.profile');

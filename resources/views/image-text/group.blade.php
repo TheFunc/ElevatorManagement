@@ -54,7 +54,7 @@
                             <button onclick="previewImage('{{ asset($image->imagePath) }}', '{{ basename($image->imagePath) }}')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
                                 <i class="ri-eye-line"></i> 预览
                             </button>
-                            <button onclick="showDeleteModal('{{ route('image-text.delete.single', $image->id) }}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                            <button onclick="showDeleteModal('{{ route('image-single.delete', $image->id) }}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
                                 <i class="ri-delete-bin-line"></i> 删除
                             </button>
                         </div>

@@ -39,11 +39,11 @@
             <div class="flex gap-4">
                 <label class="flex items-center cursor-pointer">
                     <input type="radio" name="role" value="0" {{ old('role') == 0 ? 'checked' : '' }} class="w-4 h-4 text-primary">
-                    <span class="ml-2 text-gray-700">普通用户</span>
+                    <span class="ml-2 text-gray-700">电梯管理员</span>
                 </label>
                 <label class="flex items-center cursor-pointer">
                     <input type="radio" name="role" value="1" {{ old('role') == 1 ? 'checked' : '' }} class="w-4 h-4 text-primary">
-                    <span class="ml-2 text-gray-700">管理员</span>
+                    <span class="ml-2 text-gray-700">总监</span>
                 </label>
             </div>
         </div>

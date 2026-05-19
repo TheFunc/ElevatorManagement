@@ -19,7 +19,7 @@ class FileUploadController extends Controller
      */
     public function download($id)
     {
-        $file = Files::findOrFail($id);
+        $file = files::findOrFail($id);
         
         $filePath = storage_path('app/public/' . $file->path);
         
@@ -93,7 +93,7 @@ class FileUploadController extends Controller
      */
     public function delete($id)
     {
-        $file = Files::findOrFail($id);
+        $file = files::findOrFail($id);
         
         // 删除物理文件
         $filePath = storage_path('app/public/' . $file->path);

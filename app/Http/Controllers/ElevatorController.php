@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use App\Models\Device;
 use App\Models\Files;
 use App\Models\Campus;
@@ -753,32 +754,72 @@ class ElevatorController extends Controller
             abort(403, '您没有权限进行此操作');
         }
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'videoGroup' => 'required|string|max:100',
             'videoType' => 'required|string|max:100',
             'description' => 'nullable|string|max:500',
             'coverPath' => 'required|string',
             'video' => 'required|file|mimes:mp4|max:512000',
+        ], [
+            'video.required' => '请选择视频文件',
+            'video.file' => '上传的文件无效',
+            'video.mimes' => '仅支持 MP4 格式的视频文件',
+            'video.max' => '视频文件大小不能超过 500MB',
         ]);
 
-        $basePath = 'videos/' . $request->videoGroup;
-        
-        $videoFile = $request->file('video');
-        $videoName = time() . '_' . $videoFile->getClientOriginalName();
-        $videoPath = $videoFile->storeAs($basePath, $videoName, 'public');
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'error' => $validator->errors()->first()
+            ], 422);
+        }
 
-        VideoInfo::create([
-            'coverPath' => $request->coverPath,
-            'videoPath' => 'storage/' . $videoPath,
-            'videoType' => $request->videoType,
-            'videoGroup' => $request->videoGroup,
-            'description' => $request->description,
-        ]);
+        try {
+            $basePath = 'videos/' . $request->videoGroup;
+            
+            // 确保目录存在
+            if (!Storage::exists($basePath)) {
+                Storage::makeDirectory($basePath);
+            }
+            
+            $videoFile = $request->file('video');
+            
+            // 检查文件大小（额外验证）
+            $maxSize = 512000 * 1024; // 512000 KB = 500 MB in bytes
+            if ($videoFile->getSize() > $maxSize) {
+                return response()->json([
+                    'success' => false,
+                    'error' => '视频文件大小超过限制（最大 500MB）'
+                ], 422);
+            }
+            
+            $videoName = time() . '_' . $videoFile->getClientOriginalName();
+            $videoPath = $videoFile->storeAs($basePath, $videoName, 'public');
 
-        return response()->json([
-            'success' => true,
-            'path' => 'storage/' . $videoPath
-        ]);
+            VideoInfo::create([
+                'coverPath' => $request->coverPath,
+                'videoPath' => 'storage/' . $videoPath,
+                'videoType' => $request->videoType,
+                'videoGroup' => $request->videoGroup,
+                'description' => $request->description,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'path' => 'storage/' . $videoPath
+            ]);
+        } catch (\Exception $e) {
+            Log::error('视频上传失败: ' . $e->getMessage(), [
+                'file' => $request->file('video')?->getClientOriginalName(),
+                'size' => $request->file('video')?->getSize(),
+                'error' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'error' => '视频上传失败: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -1184,6 +1225,165 @@ class ElevatorController extends Controller
             'success' => true,
             'path' => 'storage/' . $imagePath
         ]);
+    }
+
+    /**
+     * 图文列表页面
+     */
+    public function imageTextIndex(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+
+        $query = \App\Models\ImageText::with('creator')->orderBy('created_at', 'desc');
+
+        // 关键词搜索
+        if ($request->has('keyword') && $request->keyword != '') {
+            $keyword = $request->keyword;
+            $query->where(function($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%");
+            });
+        }
+
+        // 模板类型过滤
+        if ($request->has('is_template') && $request->is_template !== '') {
+            $query->where('is_template', $request->is_template);
+        }
+
+        $imageTexts = $query->paginate(12);
+
+        return view('image-text.index', compact('imageTexts'));
+    }
+
+    /**
+     * 存储新图文
+     */
+    public function imageTextStore(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'layout_data' => 'required|array',
+            'thumbnail' => 'nullable|string|max:500',
+            'is_template' => 'boolean',
+            'template_name' => 'nullable|string|max:255',
+        ]);
+
+        \App\Models\ImageText::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'layout_data' => $request->layout_data,
+            'thumbnail' => $request->thumbnail,
+            'is_template' => $request->is_template ?? false,
+            'template_name' => $request->template_name,
+            'created_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('image-text.index')
+            ->with('success', '图文创建成功！');
+    }
+
+    /**
+     * 编辑图文页面
+     */
+    public function imageTextEdit($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+
+        $imageText = \App\Models\ImageText::findOrFail($id);
+        
+        return view('image-text.editor', compact('imageText'));
+    }
+
+    /**
+     * 更新图文
+     */
+    public function imageTextUpdate(Request $request, $id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $imageText = \App\Models\ImageText::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'layout_data' => 'required|array',
+            'thumbnail' => 'nullable|string|max:500',
+            'is_template' => 'boolean',
+            'template_name' => 'nullable|string|max:255',
+        ]);
+
+        $imageText->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'layout_data' => $request->layout_data,
+            'thumbnail' => $request->thumbnail,
+            'is_template' => $request->is_template ?? false,
+            'template_name' => $request->template_name,
+        ]);
+
+        return redirect()->route('image-text.index')
+            ->with('success', '图文更新成功！');
+    }
+
+    /**
+     * 删除图文
+     */
+    public function imageTextDelete($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $imageText = \App\Models\ImageText::findOrFail($id);
+        $imageText->delete();
+
+        return redirect()->route('image-text.index')
+            ->with('success', '图文已删除！');
+    }
+
+    /**
+     * 查看图文详情
+     */
+    public function imageTextShow($id)
+    {
+        $imageText = \App\Models\ImageText::with('creator')->findOrFail($id);
+        
+        return view('image-text.show', compact('imageText'));
+    }
+
+    /**
+     * 获取图文API数据（用于编辑器）
+     */
+    public function imageTextApi($id)
+    {
+        $imageText = \App\Models\ImageText::findOrFail($id);
+        
+        return response()->json([
+            'success' => true,
+            'data' => $imageText
+        ]);
+    }
+
+    /**
+     * 导出图文为PDF
+     */
+    public function imageTextExportPdf($id)
+    {
+        $imageText = \App\Models\ImageText::with('creator')->findOrFail($id);
+        
+        // TODO: 实现PDF导出功能
+        return back()->with('info', 'PDF导出功能开发中...');
     }
 
 }

@@ -1,9 +1,7 @@
-@extends('layouts.elevator')
+<?php $__env->startSection('title', '电梯台账'); ?>
+<?php $__env->startSection('page-title', '电梯台账'); ?>
 
-@section('title', '电梯台账')
-@section('page-title', '电梯台账')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- 统计卡片 -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
     <div class="card p-4">
@@ -13,7 +11,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-gray-500 text-sm">电梯总数</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ $devices->count() }}</h3>
+                <h3 class="text-2xl font-bold text-gray-800"><?php echo e($devices->count()); ?></h3>
             </div>
         </div>
     </div>
@@ -25,7 +23,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-gray-500 text-sm">资料总数</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ array_sum($fileStats) }}</h3>
+                <h3 class="text-2xl font-bold text-gray-800"><?php echo e(array_sum($fileStats)); ?></h3>
             </div>
         </div>
     </div>
@@ -37,7 +35,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-gray-500 text-sm">维保资料</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ $fileStats['maintenance'] }}</h3>
+                <h3 class="text-2xl font-bold text-gray-800"><?php echo e($fileStats['maintenance']); ?></h3>
             </div>
         </div>
     </div>
@@ -49,7 +47,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-gray-500 text-sm">故障记录</p>
-                <h3 class="text-2xl font-bold text-gray-800">{{ $fileStats['fault'] }}</h3>
+                <h3 class="text-2xl font-bold text-gray-800"><?php echo e($fileStats['fault']); ?></h3>
             </div>
         </div>
     </div>
@@ -61,37 +59,37 @@
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold text-gray-800">电梯设备列表</h3>
             <div class="flex gap-3">
-                @auth
-                @if(Auth::user()->role == 1)
-                <a href="{{ route('campus.index') }}" class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary transition-colors">
+                <?php if(auth()->guard()->check()): ?>
+                <?php if(Auth::user()->role == 1): ?>
+                <a href="<?php echo e(route('campus.index')); ?>" class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-primary transition-colors">
                     <i class="ri-building-line mr-1"></i>校区管理
                 </a>
-                <a href="{{ route('data.device') }}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
+                <a href="<?php echo e(route('data.device')); ?>" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
                     <i class="ri-add-line mr-1"></i>添加电梯
                 </a>
-                @endif
-                @endauth
+                <?php endif; ?>
+                <?php endif; ?>
             </div>
         </div>
 
         <!-- 搜索栏 -->
         <form action="" method="GET" class="mb-6">
             <div class="flex gap-3 flex-wrap">
-                <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="搜索电梯编号、名称、位置..." class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                <input type="text" name="keyword" value="<?php echo e(request('keyword')); ?>" placeholder="搜索电梯编号、名称、位置..." class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
                 <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
                     <option value="">全部状态</option>
-                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>在用</option>
-                    <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>停用</option>
-                    <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>报废</option>
+                    <option value="1" <?php echo e(request('status') == '1' ? 'selected' : ''); ?>>在用</option>
+                    <option value="0" <?php echo e(request('status') == '0' ? 'selected' : ''); ?>>停用</option>
+                    <option value="2" <?php echo e(request('status') == '2' ? 'selected' : ''); ?>>报废</option>
                 </select>
                 <button type="submit" class="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors">
                     <i class="ri-search-line mr-1"></i>查询
                 </button>
-                @if(request('keyword') || request('status') != '')
-                <a href="{{ route('elevator.ledger') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                <?php if(request('keyword') || request('status') != ''): ?>
+                <a href="<?php echo e(route('elevator.ledger')); ?>" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
                     重置
                 </a>
-                @endif
+                <?php endif; ?>
             </div>
         </form>
         
@@ -129,35 +127,36 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($devices as $device)
+                        <?php $__currentLoopData = $devices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $device): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <tr class="border-b border-gray-100 hover:bg-gray-50">
-                            <td class="px-3 py-3 text-gray-800 font-medium whitespace-nowrap truncate" title="{{ $device->number }}">{{ $device->number }}</td>
-                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->name ?? '-' }}">{{ $device->name ?? '-' }}</td>
-                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->building ?? '-' }}">{{ $device->building ?? '-' }}</td>
-                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->Model ?? '-' }}">{{ $device->Model ?? '-' }}</td>
-                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->Campus ?? '-' }}">{{ $device->Campus ?? '-' }}</td>
-                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->Position }}">{{ $device->Position }}</td>
+                            <td class="px-3 py-3 text-gray-800 font-medium whitespace-nowrap truncate" title="<?php echo e($device->number); ?>"><?php echo e($device->number); ?></td>
+                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="<?php echo e($device->name ?? '-'); ?>"><?php echo e($device->name ?? '-'); ?></td>
+                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="<?php echo e($device->building ?? '-'); ?>"><?php echo e($device->building ?? '-'); ?></td>
+                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="<?php echo e($device->Model ?? '-'); ?>"><?php echo e($device->Model ?? '-'); ?></td>
+                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="<?php echo e($device->Campus ?? '-'); ?>"><?php echo e($device->Campus ?? '-'); ?></td>
+                            <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="<?php echo e($device->Position); ?>"><?php echo e($device->Position); ?></td>
                             <td class="px-3 py-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap
-                                    {{ $device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700') }}">
-                                    {{ $device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '报废') }}
+                                    <?php echo e($device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700')); ?>">
+                                    <?php echo e($device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '报废')); ?>
+
                                 </span>
                             </td>
                             <td class="px-3 py-3">
-                                <a href="{{ route('device.show', $device->id) }}" class="text-primary hover:text-dark font-medium whitespace-nowrap">
+                                <a href="<?php echo e(route('device.show', $device->id)); ?>" class="text-primary hover:text-dark font-medium whitespace-nowrap">
                                     查看详情
                                 </a>
                             </td>
                         </tr>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         
-                        @if($devices->isEmpty())
+                        <?php if($devices->isEmpty()): ?>
                         <tr>
                             <td colspan="8" class="px-4 py-8 text-center text-gray-500">
                                 暂无电梯数据，请点击"添加电梯"录入设备信息
                             </td>
                         </tr>
-                        @endif
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -165,7 +164,7 @@
         
         <!-- 手机端卡片流布局 仅在移动端显示 -->
         <div class="md:hidden space-y-3">
-            @foreach($devices as $device)
+            <?php $__currentLoopData = $devices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $device): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                 <div class="flex p-4 gap-4">
                     <!-- 左侧图片 -->
@@ -176,38 +175,39 @@
                     <!-- 右侧信息 -->
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between mb-1">
-                            <h4 class="font-semibold text-gray-800 truncate">{{ $device->number }}</h4>
+                            <h4 class="font-semibold text-gray-800 truncate"><?php echo e($device->number); ?></h4>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
-                                {{ $device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700') }}">
-                                {{ $device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '报废') }}
+                                <?php echo e($device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700')); ?>">
+                                <?php echo e($device->status == 1 ? '在用' : ($device->status == 0 ? '停用' : '报废')); ?>
+
                             </span>
                         </div>
-                        <p class="text-sm text-gray-600 mb-0.5">{{ $device->name ?? '-' }}</p>
-                        @if($device->building)
-                        <p class="text-xs text-gray-500 mb-0.5"><i class="ri-building-line mr-1"></i>{{ $device->building }}</p>
-                        @endif
-                        <p class="text-xs text-gray-500 mb-0.5">{{ $device->Model ?? '-' }}</p>
-                        <p class="text-xs text-gray-500 mb-0.5"><i class="ri-map-pin-line mr-1"></i>{{ $device->Campus ?? '-' }}</p>
-                        <p class="text-xs text-gray-500 truncate">{{ $device->Position }}</p>
+                        <p class="text-sm text-gray-600 mb-0.5"><?php echo e($device->name ?? '-'); ?></p>
+                        <?php if($device->building): ?>
+                        <p class="text-xs text-gray-500 mb-0.5"><i class="ri-building-line mr-1"></i><?php echo e($device->building); ?></p>
+                        <?php endif; ?>
+                        <p class="text-xs text-gray-500 mb-0.5"><?php echo e($device->Model ?? '-'); ?></p>
+                        <p class="text-xs text-gray-500 mb-0.5"><i class="ri-map-pin-line mr-1"></i><?php echo e($device->Campus ?? '-'); ?></p>
+                        <p class="text-xs text-gray-500 truncate"><?php echo e($device->Position); ?></p>
                     </div>
                 </div>
                 
                 <!-- 操作按钮 -->
                 <div class="border-t border-gray-100 px-4 py-3">
-                    <a href="{{ route('device.show', $device->id) }}" class="w-full flex items-center justify-center gap-1.5 py-2.5 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors">
+                    <a href="<?php echo e(route('device.show', $device->id)); ?>" class="w-full flex items-center justify-center gap-1.5 py-2.5 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors">
                         <i class="ri-eye-line"></i>
                         <span>查看详情</span>
                     </a>
                 </div>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             
-            @if($devices->isEmpty())
+            <?php if($devices->isEmpty()): ?>
             <div class="py-12 text-center text-gray-500">
                 <i class="ri-inbox-line text-4xl text-gray-300 mb-3"></i>
                 <p>暂无电梯数据，请点击"添加电梯"录入设备信息</p>
             </div>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
     
@@ -220,31 +220,31 @@
         <div class="mt-4 space-y-2">
             <div class="flex items-center text-sm">
                 <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-                <span class="text-gray-600">准备资料: {{ $fileStats['prepare'] }}</span>
+                <span class="text-gray-600">准备资料: <?php echo e($fileStats['prepare']); ?></span>
             </div>
             <div class="flex items-center text-sm">
                 <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
-                <span class="text-gray-600">维保资料: {{ $fileStats['maintenance'] }}</span>
+                <span class="text-gray-600">维保资料: <?php echo e($fileStats['maintenance']); ?></span>
             </div>
             <div class="flex items-center text-sm">
                 <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-                <span class="text-gray-600">巡检资料: {{ $fileStats['inspection'] }}</span>
+                <span class="text-gray-600">巡检资料: <?php echo e($fileStats['inspection']); ?></span>
             </div>
             <div class="flex items-center text-sm">
                 <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
-                <span class="text-gray-600">故障记录: {{ $fileStats['fault'] }}</span>
+                <span class="text-gray-600">故障记录: <?php echo e($fileStats['fault']); ?></span>
             </div>
             <div class="flex items-center text-sm">
                 <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span>
-                <span class="text-gray-600">维修记录: {{ $fileStats['repair'] }}</span>
+                <span class="text-gray-600">维修记录: <?php echo e($fileStats['repair']); ?></span>
             </div>
             <div class="flex items-center text-sm">
                 <span class="w-3 h-3 rounded-full bg-orange-500 mr-2"></span>
-                <span class="text-gray-600">事故记录: {{ $fileStats['accident'] }}</span>
+                <span class="text-gray-600">事故记录: <?php echo e($fileStats['accident']); ?></span>
             </div>
             <div class="flex items-center text-sm">
                 <span class="w-3 h-3 rounded-full bg-teal-500 mr-2"></span>
-                <span class="text-gray-600">救援演练: {{ $fileStats['rescue'] }}</span>
+                <span class="text-gray-600">救援演练: <?php echo e($fileStats['rescue']); ?></span>
             </div>
         </div>
     </div>
@@ -260,13 +260,14 @@ new Chart(ctx, {
         labels: ['准备资料', '维保资料', '巡检资料', '故障记录', '维修记录', '事故记录', '救援演练'],
         datasets: [{
             data: [
-                {{ $fileStats['prepare'] }},
-                {{ $fileStats['maintenance'] }},
-                {{ $fileStats['inspection'] }},
-                {{ $fileStats['fault'] }},
-                {{ $fileStats['repair'] }},
-                {{ $fileStats['accident'] }},
-                {{ $fileStats['rescue'] }}
+                <?php echo e($fileStats['prepare']); ?>,
+                <?php echo e($fileStats['maintenance']); ?>,
+                <?php echo e($fileStats['inspection']); ?>,
+                <?php echo e($fileStats['fault']); ?>,
+                <?php echo e($fileStats['repair']); ?>,
+                <?php echo e($fileStats['accident']); ?>,
+                <?php echo e($fileStats['rescue']); ?>
+
             ],
             backgroundColor: [
                 '#3B82F6', '#10B981', '#EAB308', '#EF4444', '#8B5CF6', '#F97316', '#14B8A6'
@@ -388,4 +389,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.elevator', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\else\order\ElevatorManagement\ElevatorManagement\resources\views/elevator/ledger.blade.php ENDPATH**/ ?>

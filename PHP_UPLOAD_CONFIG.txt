@@ -1,0 +1,24 @@
+; ============================================
+; 视频上传配置优化（添加到 php.ini 文件中）
+; ============================================
+
+; 允许最大上传文件大小（建议根据实际需求调整）
+upload_max_filesize = 500M
+
+; POST 请求最大大小（应略大于 upload_max_filesize）
+post_max_size = 512M
+
+; 脚本最大执行时间（秒），大文件上传需要更长时间
+max_execution_time = 300
+
+; 内存限制
+memory_limit = 512M
+
+; 最大输入时间
+max_input_time = 300
+
+; 文件上传临时目录（确保有足够空间）
+; upload_tmp_dir = "D:/temp"
+
+; 同时上传的最大文件数
+max_file_uploads = 20

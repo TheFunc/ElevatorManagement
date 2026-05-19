@@ -1,9 +1,7 @@
-@extends('layouts.elevator')
+<?php $__env->startSection('title', '增加视频'); ?>
+<?php $__env->startSection('page-title', '增加视频'); ?>
 
-@section('title', '增加视频')
-@section('page-title', '增加视频')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="card">
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-semibold text-gray-800">视频批量上传</h3>
@@ -23,9 +21,9 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">视频类型</label>
             <select id="videoType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">请选择视频类型</option>
-                @foreach($videoTypes as $type)
-                    <option value="{{ $type->type }}">{{ $type->type }}</option>
-                @endforeach
+                <?php $__currentLoopData = $videoTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($type->type); ?>"><?php echo e($type->type); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
         </div>
     </div>
@@ -166,9 +164,9 @@ async function startUpload() {
         const coverFormData = new FormData();
         coverFormData.append('videoGroup', videoGroup);
         coverFormData.append('cover', coverFile);
-        coverFormData.append('_token', '{{ csrf_token() }}');
+        coverFormData.append('_token', '<?php echo e(csrf_token()); ?>');
 
-        const coverResponse = await fetch('{{ route('video.upload.cover') }}', {
+        const coverResponse = await fetch('<?php echo e(route('video.upload.cover')); ?>', {
             method: 'POST',
             body: coverFormData
         });
@@ -199,9 +197,9 @@ async function startUpload() {
             videoFormData.append('description', description);
             videoFormData.append('coverPath', coverPath);
             videoFormData.append('video', videoFile);
-            videoFormData.append('_token', '{{ csrf_token() }}');
+            videoFormData.append('_token', '<?php echo e(csrf_token()); ?>');
 
-            const videoResponse = await fetch('{{ route('video.upload.single') }}', {
+            const videoResponse = await fetch('<?php echo e(route('video.upload.single')); ?>', {
                 method: 'POST',
                 body: videoFormData
             });
@@ -254,4 +252,5 @@ function showError(message) {
     msgDiv.classList.remove('hidden');
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.elevator', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\else\order\ElevatorManagement\ElevatorManagement\resources\views/video/create.blade.php ENDPATH**/ ?>
