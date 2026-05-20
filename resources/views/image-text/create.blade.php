@@ -6,7 +6,7 @@
 @section('content')
 <div class="card">
     <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-semibold text-gray-800">图文批量上传</h3>
+        <h3 class="text-xl font-semibold text-gray-800">图文上传</h3>
     </div>
 
     <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"></div>
@@ -85,15 +85,15 @@
     </div>
 
     <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">选择图片文件（支持批量选择）</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">选择图片文件</label>
         <div class="file-input-wrapper">
-            <div id="imagesBtn" class="file-input-btn">
-                <i class="ri-gallery-line text-3xl mb-2 block"></i>
-                <span id="imagesText">点击选择多个图片文件</span>
+            <div id="imageBtn" class="file-input-btn">
+                <i class="ri-image-line text-3xl mb-2 block"></i>
+                <span id="imageText">点击选择图片文件</span>
             </div>
-            <input type="file" id="images" multiple accept="image/jpeg,image/png,image/jpg,image/gif" required onchange="updateImagesStatus(this)">
+            <input type="file" id="image" accept="image/jpeg,image/png,image/jpg,image/gif" required onchange="updateImageStatus(this)">
         </div>
-        <p class="text-sm text-gray-500 mt-1">支持同时选择多个图片文件（JPG、PNG、GIF），系统将逐个上传处理</p>
+        <p class="text-sm text-gray-500 mt-1">支持 JPG、PNG、GIF 格式的图片</p>
     </div>
 
     <script>
@@ -109,15 +109,15 @@
         }
     }
     
-    function updateImagesStatus(input) {
-        const btn = document.getElementById('imagesBtn');
-        const text = document.getElementById('imagesText');
+    function updateImageStatus(input) {
+        const btn = document.getElementById('imageBtn');
+        const text = document.getElementById('imageText');
         if (input.files.length > 0) {
             btn.classList.add('file-selected');
-            text.textContent = '✓ 已选择 ' + input.files.length + ' 个图片文件';
+            text.textContent = '✓ 已选择: ' + input.files[0].name;
         } else {
             btn.classList.remove('file-selected');
-            text.textContent = '点击选择多个图片文件';
+            text.textContent = '点击选择图片文件';
         }
     }
     </script>
@@ -145,9 +145,9 @@ async function startUpload() {
     const imageType = document.getElementById('imageType').value;
     const description = document.getElementById('description').value;
     const coverFile = document.getElementById('cover').files[0];
-    const imageFiles = document.getElementById('images').files;
+    const imageFile = document.getElementById('image').files[0];
 
-    if (!imageGroup || !imageType || !coverFile || imageFiles.length === 0) {
+    if (!imageGroup || !imageType || !coverFile || !imageFile) {
         showError('请填写所有必填项并选择文件');
         return;
     }
@@ -174,49 +174,54 @@ async function startUpload() {
         });
 
         if (!coverResponse.ok) {
-            throw new Error('封面上传失败');
+            let errorMsg = '未知错误';
+            try {
+                const errorData = await coverResponse.json();
+                errorMsg = errorData.message || errorData.error || JSON.stringify(errorData);
+            } catch (e) {
+                errorMsg = `HTTP ${coverResponse.status} ${coverResponse.statusText}`;
+            }
+            throw new Error('封面上传失败: ' + errorMsg);
         }
 
         const coverResult = await coverResponse.json();
         const coverPath = coverResult.path;
+        const safeGroupName = coverResult.groupName || imageGroup;  // 使用后端返回的清理后的组名
         addLog('✓ 封面上传完成: ' + coverPath);
 
-        // 逐个上传图片
-        let successCount = 0;
-        const totalFiles = imageFiles.length;
+        // 上传图片
+        document.getElementById('progressBar').style.width = '50%';
+        document.getElementById('progressText').textContent = `正在上传图片: ${imageFile.name}`;
+        addLog(`正在上传图片: ${imageFile.name}`);
 
-        for (let i = 0; i < totalFiles; i++) {
-            const imageFile = imageFiles[i];
-            const progress = Math.round(((i + 1) / totalFiles) * 100);
-            
-            document.getElementById('progressBar').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `正在上传 ${i + 1}/${totalFiles}: ${imageFile.name}`;
-            addLog(`正在上传 (${i + 1}/${totalFiles}): ${imageFile.name}`);
+        const imageFormData = new FormData();
+        imageFormData.append('imageGroup', safeGroupName);  // 使用清理后的组名
+        imageFormData.append('imageType', imageType);
+        imageFormData.append('description', description);
+        imageFormData.append('coverPath', coverPath);
+        imageFormData.append('image', imageFile);
+        imageFormData.append('_token', '{{ csrf_token() }}');
 
-            const imageFormData = new FormData();
-            imageFormData.append('imageGroup', imageGroup);
-            imageFormData.append('imageType', imageType);
-            imageFormData.append('description', description);
-            imageFormData.append('coverPath', coverPath);
-            imageFormData.append('image', imageFile);
-            imageFormData.append('_token', '{{ csrf_token() }}');
+        const imageResponse = await fetch('{{ route('image-text.upload.single') }}', {
+            method: 'POST',
+            body: imageFormData
+        });
 
-            const imageResponse = await fetch('{{ route('image-text.upload.single') }}', {
-                method: 'POST',
-                body: imageFormData
-            });
-
-            if (imageResponse.ok) {
-                successCount++;
-                addLog(`✓ ${imageFile.name} 上传成功`);
-            } else {
-                addLog(`✗ ${imageFile.name} 上传失败`);
+        if (imageResponse.ok) {
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('progressText').textContent = '上传完成！';
+            addLog(`✓ ${imageFile.name} 上传成功`);
+            showSuccess('图片上传成功！');
+        } else {
+            let errorMsg = '未知错误';
+            try {
+                const errorData = await imageResponse.json();
+                errorMsg = errorData.message || errorData.error || JSON.stringify(errorData);
+            } catch (e) {
+                errorMsg = `HTTP ${imageResponse.status} ${imageResponse.statusText}`;
             }
+            throw new Error('图片上传失败: ' + errorMsg);
         }
-
-        document.getElementById('progressBar').style.width = '100%';
-        document.getElementById('progressText').textContent = `上传完成！成功 ${successCount}/${totalFiles} 个文件`;
-        showSuccess(`图片上传完成！共成功上传 ${successCount} 个图片文件`);
 
     } catch (error) {
         showError('上传出错: ' + error.message);

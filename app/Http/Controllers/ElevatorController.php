@@ -1174,7 +1174,9 @@ class ElevatorController extends Controller
             'cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
         ]);
 
-        $basePath = 'images/' . $request->imageGroup;
+        // 清理 imageGroup 名称，移除文件系统不允许的字符
+        $safeGroupName = $this->sanitizeFileName($request->imageGroup);
+        $basePath = 'images/' . $safeGroupName;
         
         if (!Storage::exists($basePath)) {
             Storage::makeDirectory($basePath);
@@ -1186,7 +1188,8 @@ class ElevatorController extends Controller
 
         return response()->json([
             'success' => true,
-            'path' => 'storage/' . $coverPath
+            'path' => 'storage/' . $coverPath,
+            'groupName' => $safeGroupName  // 返回清理后的组名
         ]);
     }
 
@@ -1207,7 +1210,9 @@ class ElevatorController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:51200',
         ]);
 
-        $basePath = 'images/' . $request->imageGroup;
+        // 清理 imageGroup 名称，移除文件系统不允许的字符
+        $safeGroupName = $this->sanitizeFileName($request->imageGroup);
+        $basePath = 'images/' . $safeGroupName;
         
         $imageFile = $request->file('image');
         $imageName = time() . '_' . $imageFile->getClientOriginalName();
@@ -1217,7 +1222,7 @@ class ElevatorController extends Controller
             'coverPath' => $request->coverPath,
             'imagePath' => 'storage/' . $imagePath,
             'imageType' => $request->imageType,
-            'imageGroup' => $request->imageGroup,
+            'imageGroup' => $request->imageGroup,  // 保存原始名称到数据库
             'description' => $request->description,
         ]);
 
@@ -1225,6 +1230,25 @@ class ElevatorController extends Controller
             'success' => true,
             'path' => 'storage/' . $imagePath
         ]);
+    }
+
+    /**
+     * 清理文件名，移除文件系统中不允许的字符
+     */
+    private function sanitizeFileName($name)
+    {
+        // Windows 不允许的字符: < > : " / \ | ? *
+        // 替换为下划线或移除
+        $sanitized = preg_replace('/[<>:"\/\\\\|?*]/', '_', $name);
+        // 移除首尾空格和点
+        $sanitized = trim($sanitized, " .");
+        // 限制长度
+        $sanitized = mb_substr($sanitized, 0, 100);
+        // 如果为空，使用默认名称
+        if (empty($sanitized)) {
+            $sanitized = 'unnamed_group';
+        }
+        return $sanitized;
     }
 
     /**
