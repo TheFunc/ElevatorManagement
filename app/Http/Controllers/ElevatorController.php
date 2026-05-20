@@ -1400,14 +1400,42 @@ class ElevatorController extends Controller
     }
 
     /**
-     * 导出图文为PDF
+     * 文本类型管理页面
      */
-    public function imageTextExportPdf($id)
+    public function textManagementTypes()
     {
-        $imageText = \App\Models\ImageText::with('creator')->findOrFail($id);
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
         
-        // TODO: 实现PDF导出功能
-        return back()->with('info', 'PDF导出功能开发中...');
+        // TODO: 实现文本类型管理功能
+        return view('text-management.types');
+    }
+
+    /**
+     * 文本预览页面
+     */
+    public function textManagementPreview()
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        
+        // TODO: 实现文本预览功能
+        return view('text-management.preview');
+    }
+
+    /**
+     * 添加文本页面
+     */
+    public function textManagementCreate()
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        
+        // TODO: 实现添加文本功能
+        return view('text-management.create');
     }
 
 }

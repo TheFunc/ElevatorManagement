@@ -488,6 +488,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         <i class="ri-add-circle-line text-lg"></i>
                         <span>增加图文</span>
                     </a>
+                    
+                    <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">文本管理</div>
+                    
+                    <a href="<?php echo e(route('text-management.types')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'text-management.types'): ?> menu-item-active <?php endif; ?>">
+                        <i class="ri-file-list-3-line text-lg"></i>
+                        <span>文本类型管理</span>
+                    </a>
+                    
+                    <a href="<?php echo e(route('text-management.preview')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'text-management.preview'): ?> menu-item-active <?php endif; ?>">
+                        <i class="ri-eye-line text-lg"></i>
+                        <span>文本预览</span>
+                    </a>
+                    
+                    <a href="<?php echo e(route('text-management.create')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'text-management.create'): ?> menu-item-active <?php endif; ?>">
+                        <i class="ri-add-circle-line text-lg"></i>
+                        <span>添加文本</span>
+                    </a>
                     <?php endif; ?>
                     <?php endif; ?>
                     

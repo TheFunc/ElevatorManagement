@@ -80,6 +80,11 @@ Route::post('/video-type/{id}/delete', [ElevatorController::class, 'deleteVideoT
     Route::post('/image-group/{id}/delete', [ElevatorController::class, 'deleteImageGroup'])->name('image-group.delete');
     Route::post('/image-single/{id}/delete', [ElevatorController::class, 'deleteSingleImage'])->name('image-single.delete');
     
+    // 文本管理路由
+    Route::get('/text-management/types', [ElevatorController::class, 'textManagementTypes'])->name('text-management.types');
+    Route::get('/text-management/preview', [ElevatorController::class, 'textManagementPreview'])->name('text-management.preview');
+    Route::get('/text-management/create', [ElevatorController::class, 'textManagementCreate'])->name('text-management.create');
+    
     // 参数化路由 - 必须放在具体路由之后
     Route::get('/image-text/{id}/edit', [ElevatorController::class, 'imageTextEdit'])->name('image-text.edit');
     Route::put('/image-text/{id}', [ElevatorController::class, 'imageTextUpdate'])->name('image-text.update');
