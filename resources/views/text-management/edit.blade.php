@@ -1,13 +1,13 @@
 @extends('layouts.elevator')
 
-@section('title', '添加文本')
-@section('page-title', '添加文本')
+@section('title', '编辑文本')
+@section('page-title', '编辑文本')
 
 @section('content')
 <div class="card max-w-4xl mx-auto">
     <div class="mb-6">
-        <h3 class="text-xl font-semibold text-gray-800">添加新文本</h3>
-        <p class="text-gray-500 mt-1">填写以下信息以添加新的文本内容</p>
+        <h3 class="text-xl font-semibold text-gray-800">编辑文本</h3>
+        <p class="text-gray-500 mt-1">修改文本内容和相关信息</p>
     </div>
 
     @if ($errors->any())
@@ -20,7 +20,7 @@
         </div>
     @endif
 
-    <form action="{{ route('text-info.store') }}" method="POST">
+    <form action="{{ route('text-info.update', $textInfo->id) }}" method="POST">
         @csrf
         
         <!-- 隐藏字段：TextGroup 默认为 null -->
@@ -34,10 +34,9 @@
             <select name="TextType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">请选择文本类型</option>
                 @foreach($textTypes as $type)
-                    <option value="{{ $type->type }}">{{ $type->type }}</option>
+                    <option value="{{ $type->type }}" {{ $textInfo->TextType == $type->type ? 'selected' : '' }}>{{ $type->type }}</option>
                 @endforeach
             </select>
-            <p class="text-sm text-gray-500 mt-1">如果没有合适的类型，请先在"文本类型管理"中添加</p>
         </div>
 
         <!-- 文本内容 -->
@@ -47,8 +46,7 @@
             </label>
             <textarea name="TextContent" rows="20" 
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                      placeholder="在此输入文本内容...">{{ old('TextContent') }}</textarea>
-            <p class="text-sm text-gray-500 mt-1">支持长文本内容</p>
+                      placeholder="在此输入文本内容...">{{ old('TextContent', $textInfo->TextContent) }}</textarea>
         </div>
 
         <!-- 操作按钮 -->
@@ -57,7 +55,7 @@
                 取消
             </a>
             <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                <i class="ri-save-line"></i> 保存
+                <i class="ri-save-line"></i> 保存修改
             </button>
         </div>
     </form>

@@ -1415,14 +1415,39 @@ class ElevatorController extends Controller
     /**
      * 文本预览页面
      */
-    public function textManagementPreview()
+    public function textManagementPreview(Request $request)
     {
         if (Auth::user()->role != 1) {
             abort(403, '只有管理员可以访问');
         }
-        
-        // TODO: 实现文本预览功能
-        return view('text-management.preview');
+
+        // 获取所有文本类型
+        $textTypes = \App\Models\TextType::latest()->get();
+
+        // 查询文本数据
+        $query = \App\Models\TextInfo::query();
+
+        // 关键词搜索（按文本分组名）
+        if ($request->has('keyword') && $request->keyword != '') {
+            $keyword = $request->keyword;
+            $query->where('TextGroup', 'like', "%{$keyword}%");
+        }
+
+        // 文本类型过滤
+        if ($request->has('textType') && $request->textType != '') {
+            $query->where('TextType', $request->textType);
+        }
+
+        // 按分组聚合，每组只取第一条记录
+        $groupedTexts = $query->latest()
+            ->get()
+            ->groupBy('TextGroup')
+            ->map(function($group) {
+                return $group->first();
+            })
+            ->values();
+
+        return view('text-management.preview', compact('groupedTexts', 'textTypes'));
     }
 
     /**
@@ -1434,8 +1459,172 @@ class ElevatorController extends Controller
             abort(403, '只有管理员可以访问');
         }
         
-        // TODO: 实现添加文本功能
-        return view('text-management.create');
+        // 获取所有文本类型供选择
+        $textTypes = \App\Models\TextType::latest()->get();
+        return view('text-management.create', compact('textTypes'));
+    }
+
+    /**
+     * 保存文本
+     */
+    public function storeTextInfo(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'TextType' => 'required|string|max:100',
+            'TextGroup' => 'nullable|string|max:200',
+            'TextContent' => 'nullable|string',
+        ], [
+            'TextType.required' => '请选择文本类型',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        \App\Models\TextInfo::create($request->all());
+
+        return redirect()->route('text-management.preview')->with('success', '文本添加成功！');
+    }
+
+    /**
+     * 删除文本
+     */
+    public function deleteTextInfo($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $textInfo = \App\Models\TextInfo::findOrFail($id);
+        $textInfo->delete();
+
+        return redirect()->route('text-management.preview')->with('success', '文本删除成功！');
+    }
+
+    /**
+     * 编辑文本页面
+     */
+    public function editTextInfo($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        
+        $textInfo = \App\Models\TextInfo::findOrFail($id);
+        $textTypes = \App\Models\TextType::latest()->get();
+        return view('text-management.edit', compact('textInfo', 'textTypes'));
+    }
+
+    /**
+     * 更新文本
+     */
+    public function updateTextInfo(Request $request, $id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $textInfo = \App\Models\TextInfo::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'TextType' => 'required|string|max:100',
+            'TextGroup' => 'nullable|string|max:200',
+            'TextContent' => 'nullable|string',
+        ], [
+            'TextType.required' => '请选择文本类型',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $textInfo->update($request->all());
+
+        return redirect()->route('text-management.preview')->with('success', '文本更新成功！');
+    }
+
+    /**
+     * 文本类型管理页面
+     */
+    public function textTypeIndex()
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '只有管理员可以访问');
+        }
+        
+        $textTypes = \App\Models\TextType::latest()->get();
+        return view('text-management.types', compact('textTypes'));
+    }
+
+    /**
+     * 保存文本类型
+     */
+    public function storeTextType(Request $request)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string|max:100|unique:text_types',
+        ], [
+            'type.required' => '请填写文本类型名称',
+            'type.unique' => '该文本类型已存在',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        \App\Models\TextType::create($request->all());
+
+        return redirect()->route('text-management.types')->with('success', '文本类型添加成功！');
+    }
+
+    /**
+     * 更新文本类型
+     */
+    public function updateTextType(Request $request, $id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $textType = \App\Models\TextType::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string|max:100|unique:text_types,type,'.$id,
+        ], [
+            'type.required' => '请填写文本类型名称',
+            'type.unique' => '该文本类型已存在',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $textType->update($request->all());
+
+        return redirect()->route('text-management.types')->with('success', '文本类型更新成功！');
+    }
+
+    /**
+     * 删除文本类型
+     */
+    public function deleteTextType($id)
+    {
+        if (Auth::user()->role != 1) {
+            abort(403, '您没有权限进行此操作');
+        }
+
+        $textType = \App\Models\TextType::findOrFail($id);
+        $textType->delete();
+
+        return redirect()->route('text-management.types')->with('success', '文本类型删除成功！');
     }
 
 }

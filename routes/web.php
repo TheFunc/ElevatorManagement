@@ -81,9 +81,17 @@ Route::post('/video-type/{id}/delete', [ElevatorController::class, 'deleteVideoT
     Route::post('/image-single/{id}/delete', [ElevatorController::class, 'deleteSingleImage'])->name('image-single.delete');
     
     // 文本管理路由
-    Route::get('/text-management/types', [ElevatorController::class, 'textManagementTypes'])->name('text-management.types');
+    Route::get('/text-management/types', [ElevatorController::class, 'textTypeIndex'])->name('text-management.types');
+    Route::post('/text-type/store', [ElevatorController::class, 'storeTextType'])->name('text-type.store');
+    Route::post('/text-type/{id}/update', [ElevatorController::class, 'updateTextType'])->name('text-type.update');
+    Route::post('/text-type/{id}/delete', [ElevatorController::class, 'deleteTextType'])->name('text-type.delete');
+    
     Route::get('/text-management/preview', [ElevatorController::class, 'textManagementPreview'])->name('text-management.preview');
     Route::get('/text-management/create', [ElevatorController::class, 'textManagementCreate'])->name('text-management.create');
+    Route::post('/text-info/store', [ElevatorController::class, 'storeTextInfo'])->name('text-info.store');
+    Route::post('/text-info/{id}/delete', [ElevatorController::class, 'deleteTextInfo'])->name('text-info.delete');
+    Route::get('/text-info/{id}/edit', [ElevatorController::class, 'editTextInfo'])->name('text-info.edit');
+    Route::post('/text-info/{id}/update', [ElevatorController::class, 'updateTextInfo'])->name('text-info.update');
     
     // 参数化路由 - 必须放在具体路由之后
     Route::get('/image-text/{id}/edit', [ElevatorController::class, 'imageTextEdit'])->name('image-text.edit');
