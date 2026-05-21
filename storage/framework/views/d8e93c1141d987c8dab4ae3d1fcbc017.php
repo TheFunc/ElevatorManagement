@@ -1,11 +1,9 @@
-@extends('layouts.elevator')
+<?php $__env->startSection('title', '编辑文本'); ?>
+<?php $__env->startSection('page-title', '编辑文本'); ?>
 
-@section('title', '添加文本')
-@section('page-title', '添加文本')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- 引入 Markdown 相关样式和脚本 -->
-<link rel="stylesheet" href="{{ asset('css/markdown/default.min.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/markdown/default.min.css')); ?>">
 <style>
 .markdown-editor-container {
     display: grid;
@@ -169,7 +167,6 @@
     position: relative;
 }
 
-/* 表格样式 */
 .markdown-preview-content table {
     border-collapse: collapse;
     width: 100%;
@@ -211,22 +208,22 @@
 
 <div class="card max-w-6xl mx-auto">
     <div class="mb-6">
-        <h3 class="text-xl font-semibold text-gray-800">添加新文本</h3>
-        <p class="text-gray-500 mt-1">使用 Markdown 语法编写文本内容，右侧实时预览效果</p>
+        <h3 class="text-xl font-semibold text-gray-800">编辑文本</h3>
+        <p class="text-gray-500 mt-1">使用 Markdown 语法修改文本内容，右侧实时预览效果</p>
     </div>
 
-    @if ($errors->any())
+    <?php if($errors->any()): ?>
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <ul class="list-disc list-inside">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </ul>
         </div>
-    @endif
+    <?php endif; ?>
 
-    <form action="{{ route('text-info.store') }}" method="POST">
-        @csrf
+    <form action="<?php echo e(route('text-info.update', $textInfo->id)); ?>" method="POST">
+        <?php echo csrf_field(); ?>
         
         <!-- 隐藏字段：TextGroup 默认为 null -->
         <input type="hidden" name="TextGroup" value="null">
@@ -238,11 +235,10 @@
             </label>
             <select name="TextType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">请选择文本类型</option>
-                @foreach($textTypes as $type)
-                    <option value="{{ $type->type }}">{{ $type->type }}</option>
-                @endforeach
+                <?php $__currentLoopData = $textTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($type->type); ?>" <?php echo e($textInfo->TextType == $type->type ? 'selected' : ''); ?>><?php echo e($type->type); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
-            <p class="text-sm text-gray-500 mt-1">如果没有合适的类型，请先在"文本类型管理"中添加</p>
         </div>
 
         <!-- Markdown 编辑器区域 -->
@@ -261,7 +257,7 @@
                         name="TextContent" 
                         id="markdownEditor"
                         class="markdown-textarea"
-                        placeholder="# 标题&#10;&#10;## 二级标题&#10;&#10;**粗体** *斜体*&#10;&#10;- 列表项 1&#10;- 列表项 2&#10;&#10;``php&#10;// 代码块&#10;echo 'Hello World';&#10;```&#10;&#10;[链接文本](https://example.com)&#10;&#10;> 引用文本">{{ old('TextContent') }}</textarea>
+                        placeholder="# 标题&#10;&#10;## 二级标题&#10;&#10;**粗体** *斜体*&#10;&#10;- 列表项 1&#10;- 列表项 2&#10;&#10;``php&#10;// 代码块&#10;echo 'Hello World';&#10;```&#10;&#10;[链接文本](https://example.com)&#10;&#10;> 引用文本"><?php echo e(old('TextContent', $textInfo->TextContent)); ?></textarea>
                 </div>
 
                 <!-- 右侧：预览区 -->
@@ -282,19 +278,19 @@
 
         <!-- 操作按钮 -->
         <div class="flex justify-end gap-3 pt-4 border-t">
-            <a href="{{ route('text-management.preview') }}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+            <a href="<?php echo e(route('text-management.preview')); ?>" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
                 取消
             </a>
             <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                <i class="ri-save-line"></i> 保存
+                <i class="ri-save-line"></i> 保存修改
             </button>
         </div>
     </form>
 </div>
 
 <!-- 引入 Markdown 相关脚本 -->
-<script src="{{ asset('js/markdown/marked.min.js') }}"></script>
-<script src="{{ asset('js/markdown/highlight.min.js') }}"></script>
+<script src="<?php echo e(asset('js/markdown/marked.min.js')); ?>"></script>
+<script src="<?php echo e(asset('js/markdown/highlight.min.js')); ?>"></script>
 <script>
 // 配置 marked.js
 marked.setOptions({
@@ -391,4 +387,6 @@ if (editor.value.trim()) {
     renderMarkdown();
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.elevator', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\else\order\ElevatorManagement\ElevatorManagement\resources\views/text-management/edit.blade.php ENDPATH**/ ?>

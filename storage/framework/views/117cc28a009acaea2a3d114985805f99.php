@@ -46,17 +46,17 @@
                 </tr>
             </thead>
             <tbody>
-                <?php $__currentLoopData = $groupedTexts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $text): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $texts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $text): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr class="border-b hover:bg-gray-50">
                     <td class="py-3 px-4">
                         <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm"><?php echo e($text->TextType); ?></span>
                     </td>
                     <td class="py-3 px-4 text-gray-600 max-w-md truncate">
-                        <?php echo e(Str::limit($text->TextContent, 100)); ?>
+                        <?php echo e(Str::limit(strip_tags($text->TextContent), 100)); ?>
 
                     </td>
                     <td class="py-3 px-4 text-gray-500">
-                        <?php echo e(strlen($text->TextContent ?? '')); ?>
+                        <?php echo e(mb_strlen($text->TextContent ?? '')); ?>
 
                     </td>
                     <td class="py-3 px-4 text-gray-500"><?php echo e($text->created_at->format('Y-m-d H:i')); ?></td>
@@ -73,7 +73,7 @@
                 </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-                <?php if($groupedTexts->isEmpty()): ?>
+                <?php if($texts->isEmpty()): ?>
                 <tr>
                     <td colspan="5" class="py-8 text-center text-gray-500">
                         <i class="ri-inbox-line text-4xl mb-2 block"></i>
@@ -84,6 +84,14 @@
             </tbody>
         </table>
     </div>
+
+    <!-- 分页 -->
+    <?php if($texts->hasPages()): ?>
+    <div class="mt-6">
+        <?php echo e($texts->links()); ?>
+
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- 删除确认模态框 -->

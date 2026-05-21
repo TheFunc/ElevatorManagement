@@ -1427,10 +1427,13 @@ class ElevatorController extends Controller
         // 查询文本数据
         $query = \App\Models\TextInfo::query();
 
-        // 关键词搜索（按文本分组名）
+        // 关键词搜索（按文本内容）
         if ($request->has('keyword') && $request->keyword != '') {
             $keyword = $request->keyword;
-            $query->where('TextGroup', 'like', "%{$keyword}%");
+            $query->where(function($q) use ($keyword) {
+                $q->where('TextContent', 'like', "%{$keyword}%")
+                  ->orWhere('TextType', 'like', "%{$keyword}%");
+            });
         }
 
         // 文本类型过滤
@@ -1438,16 +1441,10 @@ class ElevatorController extends Controller
             $query->where('TextType', $request->textType);
         }
 
-        // 按分组聚合，每组只取第一条记录
-        $groupedTexts = $query->latest()
-            ->get()
-            ->groupBy('TextGroup')
-            ->map(function($group) {
-                return $group->first();
-            })
-            ->values();
+        // 获取所有文本数据，按创建时间倒序排列
+        $texts = $query->latest()->paginate(20);
 
-        return view('text-management.preview', compact('groupedTexts', 'textTypes'));
+        return view('text-management.preview', compact('texts', 'textTypes'));
     }
 
     /**

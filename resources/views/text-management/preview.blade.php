@@ -47,16 +47,16 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($groupedTexts as $text)
+                @foreach($texts as $text)
                 <tr class="border-b hover:bg-gray-50">
                     <td class="py-3 px-4">
                         <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">{{ $text->TextType }}</span>
                     </td>
                     <td class="py-3 px-4 text-gray-600 max-w-md truncate">
-                        {{ Str::limit($text->TextContent, 100) }}
+                        {{ Str::limit(strip_tags($text->TextContent), 100) }}
                     </td>
                     <td class="py-3 px-4 text-gray-500">
-                        {{ strlen($text->TextContent ?? '') }}
+                        {{ mb_strlen($text->TextContent ?? '') }}
                     </td>
                     <td class="py-3 px-4 text-gray-500">{{ $text->created_at->format('Y-m-d H:i') }}</td>
                     <td class="py-3 px-4">
@@ -72,7 +72,7 @@
                 </tr>
                 @endforeach
 
-                @if($groupedTexts->isEmpty())
+                @if($texts->isEmpty())
                 <tr>
                     <td colspan="5" class="py-8 text-center text-gray-500">
                         <i class="ri-inbox-line text-4xl mb-2 block"></i>
@@ -83,6 +83,13 @@
             </tbody>
         </table>
     </div>
+
+    <!-- 分页 -->
+    @if($texts->hasPages())
+    <div class="mt-6">
+        {{ $texts->links() }}
+    </div>
+    @endif
 </div>
 
 <!-- 删除确认模态框 -->

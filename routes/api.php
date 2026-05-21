@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +21,13 @@ Route::prefix('/v1')->group(function () {
         Route::get("/types", [FrontendAPI::class, "imageTextType"]);
         Route::get("/list", [FrontendAPI::class, "imageTextList"]);
         Route::get("/{id}", [FrontendAPI::class, "imageTextDetail"]);
+    });
+
+    // 文本管理API路由
+    Route::prefix("/text")->group(function() {
+        Route::get("/types", [FrontendAPI::class, "textType"]);
+        Route::get("/list", [FrontendAPI::class, "textList"]);
+        Route::get("/{id}", [FrontendAPI::class, "textDetail"]);
     });
 
 });

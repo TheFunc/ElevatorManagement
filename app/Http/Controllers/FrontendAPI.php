@@ -8,6 +8,8 @@ use App\Models\VideoInfo;
 use App\Models\ImageText;
 use App\Models\ImageType;
 use App\Models\ImageInfo;
+use App\Models\TextType;
+use App\Models\TextInfo;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 
@@ -161,6 +163,90 @@ class FrontendAPI extends Controller
         } catch (QueryException $e) {
             report($e);
             return $this->errorResponse('获取图片详情失败', 500);
+        } catch (\Exception $e) {
+            report($e);
+            return $this->errorResponse('服务器内部错误', 500);
+        }
+    }
+
+    /**
+     * 获取所有文本类型
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function textType(Request $request): JsonResponse
+    {
+        try {
+            $textTypes = TextType::all();
+
+            return $this->successResponse($textTypes);
+
+        } catch (QueryException $e) {
+            report($e);
+            return $this->errorResponse('获取文本分类失败', 500);
+        } catch (\Exception $e) {
+            report($e);
+            return $this->errorResponse('服务器内部错误', 500);
+        }
+    }
+
+    /**
+     * 获取所有文本信息
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function textList(Request $request): JsonResponse
+    {
+        try {
+            $query = TextInfo::query();
+
+            // 关键词搜索（按文本内容或类型）
+            if ($request->has('keyword') && $request->keyword != '') {
+                $keyword = $request->keyword;
+                $query->where(function($q) use ($keyword) {
+                    $q->where('TextContent', 'like', "%{$keyword}%")
+                      ->orWhere('TextType', 'like', "%{$keyword}%");
+                });
+            }
+
+            // 文本类型过滤
+            if ($request->has('textType') && $request->textType != '') {
+                $query->where('TextType', $request->textType);
+            }
+
+            $textInfos = $query->orderBy('created_at', 'desc')->get();
+
+            return $this->successResponse($textInfos);
+
+        } catch (QueryException $e) {
+            report($e);
+            return $this->errorResponse('获取文本信息失败', 500);
+        } catch (\Exception $e) {
+            report($e);
+            return $this->errorResponse('服务器内部错误', 500);
+        }
+    }
+
+    /**
+     * 获取文本详情
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function textDetail($id): JsonResponse
+    {
+        try {
+            $textInfo = TextInfo::findOrFail($id);
+
+            return $this->successResponse($textInfo);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->errorResponse('文本不存在', 404);
+        } catch (QueryException $e) {
+            report($e);
+            return $this->errorResponse('获取文本详情失败', 500);
         } catch (\Exception $e) {
             report($e);
             return $this->errorResponse('服务器内部错误', 500);
