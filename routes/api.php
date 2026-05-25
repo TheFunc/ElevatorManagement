@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FrontendAPI;
+use App\Http\Controllers\VideoStreamController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -14,6 +15,9 @@ Route::prefix('/v1')->group(function () {
     Route::prefix("/video")->group(function() {
         Route::get("/types", [FrontendAPI::class, "videoType"]);
         Route::get("/list", [FrontendAPI::class, "videoInfo"]);
+        // 视频流式传输 - 支持 HTTP Range 请求
+        Route::get("/stream/{path}", [VideoStreamController::class, 'stream'])
+            ->where('path', '.*');
     });
 
     // 图文管理API路由
