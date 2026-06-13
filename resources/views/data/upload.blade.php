@@ -44,6 +44,7 @@
                 <option value="repair" {{ old('type') == 'repair' ? 'selected' : '' }}>维修记录资料</option>
                 <option value="accident" {{ old('type') == 'accident' ? 'selected' : '' }}>事故记录资料</option>
                 <option value="rescue" {{ old('type') == 'rescue' ? 'selected' : '' }}>救援演练资料</option>
+                <option value="annual_check" {{ old('type') == 'annual_check' ? 'selected' : '' }}>年检资料</option>
             </select>
         </div>
 

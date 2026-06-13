@@ -65,6 +65,7 @@ class ElevatorController extends Controller
             'repair'       => Files::where('type', 'repair')->count(),
             'accident'     => Files::where('type', 'accident')->count(),
             'rescue'       => Files::where('type', 'rescue')->count(),
+            'annual_check' => Files::where('type', 'annual_check')->count(),
         ];
 
         return view('elevator.ledger', compact('devices', 'fileStats', 'checkNumbers'));
@@ -255,6 +256,7 @@ class ElevatorController extends Controller
             'repair'       => ['name' => '维修记录', 'color' => 'purple', 'icon' => 'ri-hammer-line'],
             'accident'     => ['name' => '事故记录', 'color' => 'orange', 'icon' => 'ri-alarm-warning-line'],
             'rescue'       => ['name' => '救援演练', 'color' => 'teal', 'icon' => 'ri-lifebuoy-line'],
+            'annual_check' => ['name' => '年检资料', 'color' => 'cyan', 'icon' => 'ri-calendar-check-line'],
         ];
         
         return view('data.query', compact('files', 'fileTypes'));
@@ -403,6 +405,7 @@ class ElevatorController extends Controller
             'repair'       => ['name' => '维修记录', 'color' => 'purple', 'icon' => 'ri-hammer-line'],
             'accident'     => ['name' => '事故记录', 'color' => 'orange', 'icon' => 'ri-alarm-warning-line'],
             'rescue'       => ['name' => '救援演练', 'color' => 'teal', 'icon' => 'ri-lifebuoy-line'],
+            'annual_check' => ['name' => '年检资料', 'color' => 'cyan', 'icon' => 'ri-calendar-check-line'],
         ];
         
         return view('file.show', compact('file', 'fileTypes'));

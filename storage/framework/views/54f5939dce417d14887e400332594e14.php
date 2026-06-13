@@ -44,6 +44,7 @@
                 <option value="repair" <?php echo e(old('type') == 'repair' ? 'selected' : ''); ?>>维修记录资料</option>
                 <option value="accident" <?php echo e(old('type') == 'accident' ? 'selected' : ''); ?>>事故记录资料</option>
                 <option value="rescue" <?php echo e(old('type') == 'rescue' ? 'selected' : ''); ?>>救援演练资料</option>
+                <option value="annual_check" <?php echo e(old('type') == 'annual_check' ? 'selected' : ''); ?>>年检资料</option>
             </select>
         </div>
 

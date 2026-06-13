@@ -275,6 +275,10 @@
                     <span class="w-3 h-3 rounded-full bg-teal-500 mr-2"></span>
                     <span class="text-gray-600">救援演练: {{ $fileStats['rescue'] }}</span>
                 </div>
+                <div class="flex items-center text-sm">
+                    <span class="w-3 h-3 rounded-full bg-cyan-500 mr-2"></span>
+                    <span class="text-gray-600">年检资料: {{ $fileStats['annual_check'] }}</span>
+                </div>
             </div>
         </div>
     </div>
@@ -287,7 +291,7 @@ var fileChartCtx = document.getElementById('fileChart').getContext('2d');
 var fileChart = new Chart(fileChartCtx, {
     type: 'pie',
     data: {
-        labels: ['准备资料', '维保资料', '巡检资料', '故障记录', '维修记录', '事故记录', '救援演练'],
+        labels: ['准备资料', '维保资料', '巡检资料', '故障记录', '维修记录', '事故记录', '救援演练', '年检资料'],
         datasets: [{
             data: [
                 {{ $fileStats['prepare'] }},
@@ -296,10 +300,11 @@ var fileChart = new Chart(fileChartCtx, {
                 {{ $fileStats['fault'] }},
                 {{ $fileStats['repair'] }},
                 {{ $fileStats['accident'] }},
-                {{ $fileStats['rescue'] }}
+                {{ $fileStats['rescue'] }},
+                {{ $fileStats['annual_check'] }}
             ],
             backgroundColor: [
-                '#3B82F6', '#10B981', '#EAB308', '#EF4444', '#8B5CF6', '#F97316', '#14B8A6'
+                '#3B82F6', '#10B981', '#EAB308', '#EF4444', '#8B5CF6', '#F97316', '#14B8A6', '#06B6D4'
             ],
             borderWidth: 0,
             hoverOffset: 0

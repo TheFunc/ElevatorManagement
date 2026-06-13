@@ -41,6 +41,7 @@ class FileUploadController extends Controller
             'repair'       => '维修记录资料',
             'accident'     => '事故记录资料',
             'rescue'       => '救援演练资料',
+            'annual_check' => '年检资料',
         ];
 
         // 文件验证规则
@@ -48,7 +49,7 @@ class FileUploadController extends Controller
             'file' => 'required|file|mimes:doc,docx,pdf,xls,xlsx,ppt,pptx,txt|max:20480', // 最大20MB
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'type' => 'required|in:prepare,maintenance,inspection,fault,repair,accident,rescue',
+            'type' => 'required|in:prepare,maintenance,inspection,fault,repair,accident,rescue,annual_check',
         ], [
             'file.required' => '请选择要上传的文件',
             'file.mimes' => '仅支持 Word、PDF、Excel、PPT、TXT 格式文件',
