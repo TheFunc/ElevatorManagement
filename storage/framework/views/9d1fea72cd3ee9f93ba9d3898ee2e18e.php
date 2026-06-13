@@ -53,9 +53,10 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+<!-- 使用flex布局：电梯列表自动撑满，资料统计面板固定在右侧 -->
+<div class="flex flex-col lg:flex-row gap-6 mb-6">
     <!-- 电梯列表 -->
-    <div class="lg:col-span-2 card">
+    <div id="elevatorListContainer" class="flex-1 min-w-0 card transition-all duration-300">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold text-gray-800">电梯设备列表</h3>
             <div class="flex gap-3">
@@ -211,40 +212,47 @@
         </div>
     </div>
     
-    <!-- 资料统计饼图 -->
-    <div class="card">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4">资料统计</h3>
-        <div class="h-64 flex items-center justify-center p-4">
-            <canvas id="fileChart"></canvas>
+    <!-- 资料统计饼图（可折叠）- 固定宽度，折叠后变窄但保留在右侧 -->
+    <div id="statsPanel" class="card transition-all duration-300 flex-shrink-0 overflow-hidden" style="width: 380px;">
+        <div class="flex justify-between items-center mb-4 whitespace-nowrap" id="statsHeader">
+            <h3 class="text-xl font-semibold text-gray-800 flex-shrink-0">资料统计</h3>
+            <button id="toggleStatsBtn" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0 ml-2" title="折叠/展开">
+                <i id="toggleStatsIcon" class="ri-subtract-line text-xl"></i>
+            </button>
         </div>
-        <div class="mt-4 space-y-2">
-            <div class="flex items-center text-sm">
-                <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-                <span class="text-gray-600">准备资料: <?php echo e($fileStats['prepare']); ?></span>
+        <div id="statsContent">
+            <div class="h-64 flex items-center justify-center p-4">
+                <canvas id="fileChart"></canvas>
             </div>
-            <div class="flex items-center text-sm">
-                <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
-                <span class="text-gray-600">维保资料: <?php echo e($fileStats['maintenance']); ?></span>
-            </div>
-            <div class="flex items-center text-sm">
-                <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-                <span class="text-gray-600">巡检资料: <?php echo e($fileStats['inspection']); ?></span>
-            </div>
-            <div class="flex items-center text-sm">
-                <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
-                <span class="text-gray-600">故障记录: <?php echo e($fileStats['fault']); ?></span>
-            </div>
-            <div class="flex items-center text-sm">
-                <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span>
-                <span class="text-gray-600">维修记录: <?php echo e($fileStats['repair']); ?></span>
-            </div>
-            <div class="flex items-center text-sm">
-                <span class="w-3 h-3 rounded-full bg-orange-500 mr-2"></span>
-                <span class="text-gray-600">事故记录: <?php echo e($fileStats['accident']); ?></span>
-            </div>
-            <div class="flex items-center text-sm">
-                <span class="w-3 h-3 rounded-full bg-teal-500 mr-2"></span>
-                <span class="text-gray-600">救援演练: <?php echo e($fileStats['rescue']); ?></span>
+            <div class="mt-4 space-y-2">
+                <div class="flex items-center text-sm">
+                    <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
+                    <span class="text-gray-600">准备资料: <?php echo e($fileStats['prepare']); ?></span>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+                    <span class="text-gray-600">维保资料: <?php echo e($fileStats['maintenance']); ?></span>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
+                    <span class="text-gray-600">巡检资料: <?php echo e($fileStats['inspection']); ?></span>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+                    <span class="text-gray-600">故障记录: <?php echo e($fileStats['fault']); ?></span>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span>
+                    <span class="text-gray-600">维修记录: <?php echo e($fileStats['repair']); ?></span>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="w-3 h-3 rounded-full bg-orange-500 mr-2"></span>
+                    <span class="text-gray-600">事故记录: <?php echo e($fileStats['accident']); ?></span>
+                </div>
+                <div class="flex items-center text-sm">
+                    <span class="w-3 h-3 rounded-full bg-teal-500 mr-2"></span>
+                    <span class="text-gray-600">救援演练: <?php echo e($fileStats['rescue']); ?></span>
+                </div>
             </div>
         </div>
     </div>
@@ -253,8 +261,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // 饼状图
-const ctx = document.getElementById('fileChart').getContext('2d');
-new Chart(ctx, {
+var fileChartCtx = document.getElementById('fileChart').getContext('2d');
+var fileChart = new Chart(fileChartCtx, {
     type: 'pie',
     data: {
         labels: ['准备资料', '维保资料', '巡检资料', '故障记录', '维修记录', '事故记录', '救援演练'],
@@ -308,11 +316,11 @@ new Chart(ctx, {
 });
 
 function sortTable(field) {
-    const url = new URL(window.location.href);
-    const currentSort = url.searchParams.get('sort');
-    const currentOrder = url.searchParams.get('order');
+    var url = new URL(window.location.href);
+    var currentSort = url.searchParams.get('sort');
+    var currentOrder = url.searchParams.get('order');
     
-    let newOrder = 'asc';
+    var newOrder = 'asc';
     if (currentSort === field && currentOrder === 'asc') {
         newOrder = 'desc';
     }
@@ -331,11 +339,51 @@ function sortTable(field) {
     window.location.href = url.toString();
 }
 
-// 鼠标滚轮横向滚动表格
+// 资料统计面板折叠/展开功能 + 鼠标滚轮横向滚动表格
 document.addEventListener('DOMContentLoaded', function() {
-    const tableContainer = document.getElementById('tableContainer');
-    const topScrollbar = document.getElementById('topScrollbar');
-    const topScrollbarInner = document.getElementById('topScrollbarInner');
+    // 折叠/展开功能
+    var toggleBtn = document.getElementById('toggleStatsBtn');
+    var statsContent = document.getElementById('statsContent');
+    var statsPanel = document.getElementById('statsPanel');
+    var toggleIcon = document.getElementById('toggleStatsIcon');
+    var isCollapsed = false;
+    var expandedWidth = 380;
+
+    if (toggleBtn && statsContent && statsPanel) {
+        toggleBtn.addEventListener('click', function() {
+            isCollapsed = !isCollapsed;
+
+            if (isCollapsed) {
+                // 折叠：隐藏具体内容，面板缩窄仅显示展开按钮
+                statsContent.style.display = 'none';
+                statsPanel.style.width = '44px';
+                toggleIcon.className = 'ri-add-line text-xl';
+                // 将标题文字隐藏，按钮居中
+                statsPanel.querySelector('h3').style.display = 'none';
+                statsPanel.querySelector('#statsHeader').className = 'flex justify-center mb-0';
+            } else {
+                // 展开：显示内容，恢复宽度
+                statsContent.style.display = '';
+                statsPanel.style.width = expandedWidth + 'px';
+                toggleIcon.className = 'ri-subtract-line text-xl';
+                // 恢复标题显示，按钮回到右侧
+                statsPanel.querySelector('h3').style.display = '';
+                statsPanel.querySelector('#statsHeader').className = 'flex justify-between items-center mb-4 whitespace-nowrap';
+                
+                // 重新绘制图表（修复折叠后图表尺寸问题）
+                setTimeout(function() {
+                    window.dispatchEvent(new Event('resize'));
+                }, 100);
+            }
+        });
+    }
+
+    // 鼠标滚轮横向滚动表格
+    var tableContainer = document.getElementById('tableContainer');
+    var topScrollbar = document.getElementById('topScrollbar');
+    var topScrollbarInner = document.getElementById('topScrollbarInner');
+    
+    if (!tableContainer || !topScrollbar || !topScrollbarInner) return;
     
     // 设置顶部滚动条内部容器的宽度与表格一致
     function syncScrollbarWidth() {
@@ -351,44 +399,41 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', syncScrollbarWidth);
     
     // 双向同步滚动
-    if (tableContainer && topScrollbar) {
-        let isSyncing = false;
-        
-        // 表格滚动时同步顶部滚动条
-        tableContainer.addEventListener('scroll', function() {
-            if (!isSyncing) {
-                isSyncing = true;
-                topScrollbar.scrollLeft = this.scrollLeft;
-                requestAnimationFrame(() => {
-                    isSyncing = false;
-                });
-            }
-        });
-        
-        // 顶部滚动条滚动时同步表格
-        topScrollbar.addEventListener('scroll', function() {
-            if (!isSyncing) {
-                isSyncing = true;
-                tableContainer.scrollLeft = this.scrollLeft;
-                requestAnimationFrame(() => {
-                    isSyncing = false;
-                });
-            }
-        });
-        
-        // 鼠标滚轮横向滚动表格
-        tableContainer.addEventListener('wheel', function(e) {
-            // 检查是否有横向滚动条
-            if (this.scrollWidth > this.clientWidth) {
-                // 阻止默认的垂直滚动行为
-                e.preventDefault();
-                // 将垂直滚动转换为横向滚动
-                this.scrollLeft += e.deltaY;
-            }
-        }, { passive: false });
-    }
+    var isSyncing = false;
+    
+    // 表格滚动时同步顶部滚动条
+    tableContainer.addEventListener('scroll', function() {
+        if (!isSyncing) {
+            isSyncing = true;
+            topScrollbar.scrollLeft = this.scrollLeft;
+            requestAnimationFrame(function() {
+                isSyncing = false;
+            });
+        }
+    });
+    
+    // 顶部滚动条滚动时同步表格
+    topScrollbar.addEventListener('scroll', function() {
+        if (!isSyncing) {
+            isSyncing = true;
+            tableContainer.scrollLeft = this.scrollLeft;
+            requestAnimationFrame(function() {
+                isSyncing = false;
+            });
+        }
+    });
+    
+    // 鼠标滚轮横向滚动表格
+    tableContainer.addEventListener('wheel', function(e) {
+        // 检查是否有横向滚动条
+        if (this.scrollWidth > this.clientWidth) {
+            // 阻止默认的垂直滚动行为
+            e.preventDefault();
+            // 将垂直滚动转换为横向滚动
+            this.scrollLeft += e.deltaY;
+        }
+    }, { passive: false });
 });
 </script>
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.elevator', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\else\order\ElevatorManagement\ElevatorManagement\resources\views/elevator/ledger.blade.php ENDPATH**/ ?>
