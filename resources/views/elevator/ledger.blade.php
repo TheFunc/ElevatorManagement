@@ -125,12 +125,20 @@
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[120px]">型号</th>
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[100px]">校区</th>
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[180px]">位置</th>
-                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[80px]">状态</th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[130px]">年检</th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[70px]">状态</th>
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[100px]">操作</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $now = \Carbon\Carbon::now();
+                        @endphp
                         @foreach($devices as $device)
+                        @php
+                            $checkDate = isset($checkNumbers[$device->number]) ? \Carbon\Carbon::parse($checkNumbers[$device->number]) : null;
+                            $daysDiff = $checkDate ? $now->diffInDays($checkDate, false) : null;
+                        @endphp
                         <tr class="border-b border-gray-100 hover:bg-gray-50">
                             <td class="px-3 py-3 text-gray-800 font-medium whitespace-nowrap truncate" title="{{ $device->number }}">{{ $device->number }}</td>
                             <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->name ?? '-' }}">{{ $device->name ?? '-' }}</td>
@@ -138,6 +146,20 @@
                             <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->Model ?? '-' }}">{{ $device->Model ?? '-' }}</td>
                             <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->Campus ?? '-' }}">{{ $device->Campus ?? '-' }}</td>
                             <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="{{ $device->Position }}">{{ $device->Position }}</td>
+                            <td class="px-3 py-3 whitespace-nowrap">
+                                @if($checkDate)
+                                    <div class="text-xs text-gray-500">{{ $checkDate->format('Y-m-d') }}</div>
+                                    @if($daysDiff < 0)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">已逾期</span>
+                                    @elseif($daysDiff <= 30)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">临近期</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">未临期</span>
+                                    @endif
+                                @else
+                                    <span class="text-gray-400 text-xs">未设置</span>
+                                @endif
+                            </td>
                             <td class="px-3 py-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap
                                     {{ $device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700') }}">
@@ -154,7 +176,7 @@
                         
                         @if($devices->isEmpty())
                         <tr>
-                            <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+                            <td colspan="9" class="px-4 py-8 text-center text-gray-500">
                                 暂无电梯数据，请点击"添加电梯"录入设备信息
                             </td>
                         </tr>

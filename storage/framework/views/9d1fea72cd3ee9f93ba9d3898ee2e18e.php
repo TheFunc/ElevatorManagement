@@ -123,12 +123,20 @@
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[120px]">型号</th>
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[100px]">校区</th>
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[180px]">位置</th>
-                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[80px]">状态</th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[130px]">年检</th>
+                            <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[70px]">状态</th>
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 w-[100px]">操作</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <?php
+                            $now = \Carbon\Carbon::now();
+                        ?>
                         <?php $__currentLoopData = $devices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $device): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
+                            $checkDate = isset($checkNumbers[$device->number]) ? \Carbon\Carbon::parse($checkNumbers[$device->number]) : null;
+                            $daysDiff = $checkDate ? $now->diffInDays($checkDate, false) : null;
+                        ?>
                         <tr class="border-b border-gray-100 hover:bg-gray-50">
                             <td class="px-3 py-3 text-gray-800 font-medium whitespace-nowrap truncate" title="<?php echo e($device->number); ?>"><?php echo e($device->number); ?></td>
                             <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="<?php echo e($device->name ?? '-'); ?>"><?php echo e($device->name ?? '-'); ?></td>
@@ -136,6 +144,20 @@
                             <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="<?php echo e($device->Model ?? '-'); ?>"><?php echo e($device->Model ?? '-'); ?></td>
                             <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="<?php echo e($device->Campus ?? '-'); ?>"><?php echo e($device->Campus ?? '-'); ?></td>
                             <td class="px-3 py-3 text-gray-600 whitespace-nowrap truncate" title="<?php echo e($device->Position); ?>"><?php echo e($device->Position); ?></td>
+                            <td class="px-3 py-3 whitespace-nowrap">
+                                <?php if($checkDate): ?>
+                                    <div class="text-xs text-gray-500"><?php echo e($checkDate->format('Y-m-d')); ?></div>
+                                    <?php if($daysDiff < 0): ?>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">已逾期</span>
+                                    <?php elseif($daysDiff <= 30): ?>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">临近期</span>
+                                    <?php else: ?>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">未临期</span>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <span class="text-gray-400 text-xs">未设置</span>
+                                <?php endif; ?>
+                            </td>
                             <td class="px-3 py-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap
                                     <?php echo e($device->status == 1 ? 'bg-green-100 text-green-800' : ($device->status == 0 ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-700')); ?>">
@@ -153,7 +175,7 @@
                         
                         <?php if($devices->isEmpty()): ?>
                         <tr>
-                            <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+                            <td colspan="9" class="px-4 py-8 text-center text-gray-500">
                                 暂无电梯数据，请点击"添加电梯"录入设备信息
                             </td>
                         </tr>

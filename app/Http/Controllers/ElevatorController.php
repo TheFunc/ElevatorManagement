@@ -53,6 +53,9 @@ class ElevatorController extends Controller
         
         $devices = $query->get();
         
+        // 获取年检信息
+        $checkNumbers = \App\Models\Check::pluck('next_check_at', 'number');
+        
         // 统计各类资料数量
         $fileStats = [
             'prepare'      => Files::where('type', 'prepare')->count(),
@@ -64,7 +67,7 @@ class ElevatorController extends Controller
             'rescue'       => Files::where('type', 'rescue')->count(),
         ];
 
-        return view('elevator.ledger', compact('devices', 'fileStats'));
+        return view('elevator.ledger', compact('devices', 'fileStats', 'checkNumbers'));
     }
 
     public function maintenance(Request $request)
@@ -275,6 +278,7 @@ class ElevatorController extends Controller
             'desc' => 'required|string|max:500',
             'Campus' => 'required|string|max:100',
             'building' => 'required|string|max:100',
+            'next_check_at' => 'nullable|date',
         ], [
             'number.required' => '请填写电梯编号',
             'number.unique' => '该电梯编号已存在',
@@ -288,7 +292,15 @@ class ElevatorController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        Device::create($request->all());
+        $device = Device::create($request->all());
+
+        // 如果设置了年检时间，同步写入 checks 表
+        if ($request->filled('next_check_at')) {
+            \App\Models\Check::create([
+                'number' => $device->number,
+                'next_check_at' => $request->next_check_at,
+            ]);
+        }
 
         return redirect()->route('elevator.ledger')->with('success', '电梯添加成功！');
     }
@@ -299,7 +311,8 @@ class ElevatorController extends Controller
     public function showDevice($id)
     {
         $device = Device::findOrFail($id);
-        return view('elevator.show', compact('device'));
+        $check = \App\Models\Check::where('number', $device->number)->first();
+        return view('elevator.show', compact('device', 'check'));
     }
 
     /**
@@ -347,6 +360,31 @@ class ElevatorController extends Controller
         $device->update($request->all());
 
         return redirect()->route('device.show', $id)->with('success', '电梯信息更新成功！');
+    }
+
+    /**
+     * 更新年检时间
+     */
+    public function updateCheckDate(Request $request, $id)
+    {
+        $device = Device::findOrFail($id);
+
+        $request->validate([
+            'next_check_at' => 'nullable|date',
+        ]);
+
+        if ($request->filled('next_check_at')) {
+            // 更新或创建年检记录
+            \App\Models\Check::updateOrCreate(
+                ['number' => $device->number],
+                ['next_check_at' => $request->next_check_at]
+            );
+        } else {
+            // 清空年检时间
+            \App\Models\Check::where('number', $device->number)->delete();
+        }
+
+        return redirect()->route('device.show', $id)->with('success', '年检时间更新成功！');
     }
 
     /**

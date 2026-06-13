@@ -66,6 +66,64 @@
                 </p>
             </div>
             <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-sm text-gray-500 mb-1">下次年检时间</p>
+                <div id="checkDisplay">
+                    <p class="text-lg font-semibold">
+                        <?php if($check && $check->next_check_at): ?>
+                            <?php
+                                $now = \Carbon\Carbon::now();
+                                $checkDate = \Carbon\Carbon::parse($check->next_check_at);
+                                $daysDiff = $now->diffInDays($checkDate, false);
+                            ?>
+                            <span class="<?php echo e($daysDiff < 0 ? 'text-red-600' : ($daysDiff <= 30 ? 'text-yellow-600' : 'text-green-600')); ?>">
+                                <?php echo e($checkDate->format('Y-m-d')); ?>
+
+                            </span>
+                            <?php if($daysDiff < 0): ?>
+                                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">已逾期</span>
+                            <?php elseif($daysDiff <= 30): ?>
+                                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">临近期</span>
+                            <?php else: ?>
+                                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">未临期</span>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <span class="text-gray-400">未设置</span>
+                        <?php endif; ?>
+                        <button onclick="toggleCheckEdit()" class="ml-2 px-2 py-1 text-xs text-primary hover:bg-primary/10 rounded transition-colors">
+                            <i class="ri-edit-line"></i>修改
+                        </button>
+                    </p>
+                </div>
+                <div id="checkEditForm" style="display:none;">
+                    <form action="<?php echo e(route('device.check.update', $device->id)); ?>" method="POST" class="flex items-center gap-2 mt-1">
+                        <?php echo csrf_field(); ?>
+                        <input type="date" name="next_check_at" value="<?php echo e($check && $check->next_check_at ? \Carbon\Carbon::parse($check->next_check_at)->format('Y-m-d') : ''); ?>" class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                        <button type="submit" class="px-3 py-1.5 bg-primary text-white rounded-lg hover:bg-dark transition-colors text-sm">
+                            保存
+                        </button>
+                        <button type="button" onclick="toggleCheckEdit()" class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm">
+                            取消
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <script>
+                function toggleCheckEdit() {
+                    var display = document.getElementById('checkDisplay');
+                    var form = document.getElementById('checkEditForm');
+                    if (display.style.display === 'none') {
+                        display.style.display = '';
+                        form.style.display = 'none';
+                    } else {
+                        display.style.display = 'none';
+                        form.style.display = '';
+                    }
+                }
+            </script>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
                 <p class="text-sm text-gray-500 mb-1">电梯位置</p>
                 <p class="text-lg font-semibold text-gray-800"><?php echo e($device->Position); ?></p>
             </div>
