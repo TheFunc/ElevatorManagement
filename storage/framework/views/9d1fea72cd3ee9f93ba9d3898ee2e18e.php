@@ -2,52 +2,62 @@
 <?php $__env->startSection('page-title', '电梯台账'); ?>
 
 <?php $__env->startSection('content'); ?>
-<!-- 统计卡片 -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-    <div class="card p-4">
-        <div class="flex items-center">
-            <div class="bg-primary/10 p-3 rounded-lg">
-                <i class="ri-building-4-line text-2xl text-primary"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-gray-500 text-sm">电梯总数</p>
-                <h3 class="text-2xl font-bold text-gray-800"><?php echo e($devices->count()); ?></h3>
-            </div>
-        </div>
+<!-- 统计卡片（可折叠） -->
+<div id="summaryPanel" class="card mb-6 transition-all duration-300 overflow-hidden">
+    <div class="flex justify-between items-center p-4 pb-0 whitespace-nowrap" id="summaryHeader">
+        <h3 class="text-xl font-semibold text-gray-800 flex-shrink-0" id="summaryTitle">数据概览</h3>
+        <button id="toggleSummaryBtn" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0 ml-2" title="折叠/展开">
+            <i id="toggleSummaryIcon" class="ri-subtract-line text-xl"></i>
+        </button>
     </div>
-    
-    <div class="card p-4">
-        <div class="flex items-center">
-            <div class="bg-green-100 p-3 rounded-lg">
-                <i class="ri-file-list-3-line text-2xl text-green-600"></i>
+    <div id="summaryContent">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="bg-primary/10 p-3 rounded-lg">
+                        <i class="ri-building-4-line text-2xl text-primary"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-500 text-sm">电梯总数</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo e($devices->count()); ?></h3>
+                    </div>
+                </div>
             </div>
-            <div class="ml-4">
-                <p class="text-gray-500 text-sm">资料总数</p>
-                <h3 class="text-2xl font-bold text-gray-800"><?php echo e(array_sum($fileStats)); ?></h3>
+            
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="bg-green-100 p-3 rounded-lg">
+                        <i class="ri-file-list-3-line text-2xl text-green-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-500 text-sm">资料总数</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo e(array_sum($fileStats)); ?></h3>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="card p-4">
-        <div class="flex items-center">
-            <div class="bg-blue-100 p-3 rounded-lg">
-                <i class="ri-tools-line text-2xl text-blue-600"></i>
+            
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 p-3 rounded-lg">
+                        <i class="ri-tools-line text-2xl text-blue-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-500 text-sm">维保资料</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo e($fileStats['maintenance']); ?></h3>
+                    </div>
+                </div>
             </div>
-            <div class="ml-4">
-                <p class="text-gray-500 text-sm">维保资料</p>
-                <h3 class="text-2xl font-bold text-gray-800"><?php echo e($fileStats['maintenance']); ?></h3>
-            </div>
-        </div>
-    </div>
-    
-    <div class="card p-4">
-        <div class="flex items-center">
-            <div class="bg-orange-100 p-3 rounded-lg">
-                <i class="ri-alarm-warning-line text-2xl text-orange-600"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-gray-500 text-sm">故障记录</p>
-                <h3 class="text-2xl font-bold text-gray-800"><?php echo e($fileStats['fault']); ?></h3>
+            
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="bg-orange-100 p-3 rounded-lg">
+                        <i class="ri-alarm-warning-line text-2xl text-orange-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-500 text-sm">故障记录</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo e($fileStats['fault']); ?></h3>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -366,9 +376,44 @@ function sortTable(field) {
     window.location.href = url.toString();
 }
 
-// 资料统计面板折叠/展开功能 + 鼠标滚轮横向滚动表格
+// 数据概览折叠/展开功能 + 资料统计面板折叠/展开功能 + 鼠标滚轮横向滚动表格
 document.addEventListener('DOMContentLoaded', function() {
-    // 折叠/展开功能
+    // 数据概览折叠/展开功能
+    var summaryToggleBtn = document.getElementById('toggleSummaryBtn');
+    var summaryContent = document.getElementById('summaryContent');
+    var summaryPanel = document.getElementById('summaryPanel');
+    var summaryIcon = document.getElementById('toggleSummaryIcon');
+    var summaryTitle = document.getElementById('summaryTitle');
+    var summaryHeader = document.getElementById('summaryHeader');
+    var summaryCollapsed = false;
+
+    if (summaryToggleBtn && summaryContent && summaryIcon) {
+        // 设置过渡
+        summaryContent.style.transition = 'max-height 0.3s ease, padding 0.3s ease';
+        summaryContent.style.overflow = 'hidden';
+        var contentHeight = summaryContent.scrollHeight;
+
+        summaryToggleBtn.addEventListener('click', function() {
+            summaryCollapsed = !summaryCollapsed;
+            if (summaryCollapsed) {
+                // 折叠：隐藏内容、隐藏标题
+                summaryContent.style.maxHeight = '0px';
+                summaryContent.style.padding = '0 1rem';
+                summaryTitle.style.display = 'none';
+                summaryHeader.className = 'flex justify-center p-4 pb-0';
+                summaryIcon.className = 'ri-add-line text-xl';
+            } else {
+                // 展开：显示内容、显示标题
+                summaryTitle.style.display = '';
+                summaryHeader.className = 'flex justify-between items-center p-4 pb-0 whitespace-nowrap';
+                summaryContent.style.maxHeight = contentHeight + 'px';
+                summaryContent.style.padding = '';
+                summaryIcon.className = 'ri-subtract-line text-xl';
+            }
+        });
+    }
+
+    // 资料统计面板折叠/展开功能
     var toggleBtn = document.getElementById('toggleStatsBtn');
     var statsContent = document.getElementById('statsContent');
     var statsPanel = document.getElementById('statsPanel');
