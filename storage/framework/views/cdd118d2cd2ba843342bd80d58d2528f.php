@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>电梯管理系统 - <?php echo $__env->yieldContent('title'); ?></title>
+    <title>电梯资料管理 - <?php echo $__env->yieldContent('title'); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <script>
@@ -303,7 +303,7 @@
             </div>
         </div>
         <div class="p-6">
-            <p class="text-gray-600 mb-6">您确定要退出电梯管理系统吗？退出后需要重新登录才能继续使用。</p>
+            <p class="text-gray-600 mb-6">您确定要退出电梯资料管理吗？退出后需要重新登录才能继续使用。</p>
             <div class="flex flex-col sm:flex-row gap-3">
                 <button onclick="hideLogoutModal()" class="flex-1 px-5 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 active:bg-gray-300 transition-all">
                     取消
@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Logo区域 -->
             <div class="h-16 flex items-center px-5 border-b border-gray-200">
                 <i class="ri-building-4-line text-primary text-2xl"></i>
-                <h1 class="ml-3 text-lg font-bold text-gray-800">电梯管理系统</h1>
+                <h1 class="ml-3 text-lg font-bold text-gray-800">电梯资料管理</h1>
                 <button onclick="toggleSidebar()" class="md:hidden ml-auto text-gray-500 hover:text-primary p-2 rounded-xl hover:bg-gray-100 transition-colors">
                     <i class="ri-close-line text-xl"></i>
                 </button>
@@ -410,11 +410,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         <?php endif; ?>
                     <?php endif; ?>
 
-                    <div class="text-xs font-semibold text-gray-500 uppercase mb-3 px-2">系统管理</div>
+                    <div class="text-xs font-semibold text-gray-500 uppercase mb-3 px-2">信息列表显示</div>
                     
                     <a href="<?php echo e(route('elevator.ledger')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'elevator.ledger'): ?> menu-item-active <?php endif; ?>">
                         <i class="ri-file-list-3-line text-lg"></i>
-                        <span>电梯台账</span>
+                        <span>电梯信息列表</span>
                     </a>
                     
                     <a href="<?php echo e(route('elevator.maintenance')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'elevator.maintenance'): ?> menu-item-active <?php endif; ?>">
@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <?php if(Auth::user()->role == 1): ?>
                     <a href="<?php echo e(route('data.device')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'data.device'): ?> menu-item-active <?php endif; ?>">
                         <i class="ri-database-2-line text-lg"></i>
-                        <span>设备基础录入信息</span>
+                        <span>电梯基础录入</span>
                     </a>
                     <?php endif; ?>
                     <?php endif; ?>
@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <a href="<?php echo e(route('video.create')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'video.create'): ?> menu-item-active <?php endif; ?>">
                         <i class="ri-add-circle-line text-lg"></i>
-                        <span>增加视频</span>
+                        <span>新增视频</span>
                     </a>
                     
                     <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">图文管理</div>
@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <a href="<?php echo e(route('image-text.create')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'image-text.create'): ?> menu-item-active <?php endif; ?>">
                         <i class="ri-add-circle-line text-lg"></i>
-                        <span>增加图文</span>
+                        <span>新增图文</span>
                     </a>
                     
                     <div class="text-xs font-semibold text-gray-500 uppercase mb-3 mt-6 px-2">文本管理</div>
@@ -503,7 +503,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <a href="<?php echo e(route('text-management.create')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'text-management.create'): ?> menu-item-active <?php endif; ?>">
                         <i class="ri-add-circle-line text-lg"></i>
-                        <span>添加文本</span>
+                        <span>新增文本</span>
                     </a>
                     <?php endif; ?>
                     <?php endif; ?>

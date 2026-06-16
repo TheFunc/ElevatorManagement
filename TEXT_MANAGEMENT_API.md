@@ -1,34 +1,31 @@
-# 文本管理 API 接口文档（新增）
+﻿# 鏂囨湰绠＄悊 API 鎺ュ彛鏂囨。锛堟柊澧烇級
 
-## 📌 概述
+## 馃搶 姒傝堪
 
-本文档描述了电梯管理系统中**新增的文本管理 API 接口**，用于管理和获取 Markdown 格式的文本内容。这些接口基于 Laravel 框架开发，遵循 RESTful 设计规范。
-
-### 基础信息
+鏈枃妗ｆ弿杩颁簡鐢垫绠＄悊绯荤粺涓?*鏂板鐨勬枃鏈鐞?API 鎺ュ彛**锛岀敤浜庣鐞嗗拰鑾峰彇 Markdown 鏍煎紡鐨勬枃鏈唴瀹广€傝繖浜涙帴鍙ｅ熀浜?Laravel 妗嗘灦寮€鍙戯紝閬靛惊 RESTful 璁捐瑙勮寖銆?
+### 鍩虹淇℃伅
 
 - **Base URL**: `/api/v1/text`
-- **认证方式**: 无需认证（公开接口）
-- **响应格式**: JSON
-- **字符编码**: UTF-8
-- **HTTP 方法**: GET
+- **璁よ瘉鏂瑰紡**: 鏃犻渶璁よ瘉锛堝叕寮€鎺ュ彛锛?- **鍝嶅簲鏍煎紡**: JSON
+- **瀛楃缂栫爜**: UTF-8
+- **HTTP 鏂规硶**: GET
 
 ---
 
-## 📋 接口列表
+## 馃搵 鎺ュ彛鍒楄〃
 
-### 1. 获取文本类型列表
+### 1. 鑾峰彇鏂囨湰绫诲瀷鍒楄〃
 
-#### 接口信息
+#### 鎺ュ彛淇℃伅
 - **URL**: `GET /api/v1/text/types`
-- **功能**: 获取所有可用的文本类型分类
-- **权限**: 公开访问
+- **鍔熻兘**: 鑾峰彇鎵€鏈夊彲鐢ㄧ殑鏂囨湰绫诲瀷鍒嗙被
+- **鏉冮檺**: 鍏紑璁块棶
 
-#### 请求参数
-无
+#### 璇锋眰鍙傛暟
+鏃?
+#### 鍝嶅簲绀轰緥
 
-#### 响应示例
-
-**成功响应 (200)**:
+**鎴愬姛鍝嶅簲 (200)**:
 ```json
 {
     "code": 200,
@@ -36,19 +33,19 @@
     "data": [
         {
             "id": 1,
-            "type": "安全须知",
+            "type": "瀹夊叏椤荤煡",
             "created_at": "2026-05-20T10:30:00.000000Z",
             "updated_at": "2026-05-20T10:30:00.000000Z"
         },
         {
             "id": 2,
-            "type": "操作指南",
+            "type": "鎿嶄綔鎸囧崡",
             "created_at": "2026-05-20T11:00:00.000000Z",
             "updated_at": "2026-05-20T11:00:00.000000Z"
         },
         {
             "id": 3,
-            "type": "维护公告",
+            "type": "缁存姢鍏憡",
             "created_at": "2026-05-20T12:00:00.000000Z",
             "updated_at": "2026-05-20T12:00:00.000000Z"
         }
@@ -56,37 +53,37 @@
 }
 ```
 
-**错误响应 (500)**:
+**閿欒鍝嶅簲 (500)**:
 ```json
 {
     "code": 500,
-    "message": "获取文本分类失败"
+    "message": "鑾峰彇鏂囨湰鍒嗙被澶辫触"
 }
 ```
 
-#### 前端调用示例
+#### 鍓嶇璋冪敤绀轰緥
 
 ```javascript
-// 方式一：Fetch API
+// 鏂瑰紡涓€锛欶etch API
 async function getTextTypes() {
     try {
         const response = await fetch('/api/v1/text/types');
         const result = await response.json();
         
         if (result.code === 200) {
-            console.log('文本类型列表:', result.data);
+            console.log('鏂囨湰绫诲瀷鍒楄〃:', result.data);
             return result.data;
         } else {
-            console.error('获取失败:', result.message);
+            console.error('鑾峰彇澶辫触:', result.message);
             return [];
         }
     } catch (error) {
-        console.error('网络错误:', error);
+        console.error('缃戠粶閿欒:', error);
         return [];
     }
 }
 
-// 方式二：Axios
+// 鏂瑰紡浜岋細Axios
 import axios from 'axios';
 
 async function getTextTypes() {
@@ -100,12 +97,12 @@ async function getTextTypes() {
             throw new Error(message);
         }
     } catch (error) {
-        console.error('获取文本类型失败:', error.message);
+        console.error('鑾峰彇鏂囨湰绫诲瀷澶辫触:', error.message);
         return [];
     }
 }
 
-// 使用示例
+// 浣跨敤绀轰緥
 const types = await getTextTypes();
 types.forEach(type => {
     console.log(`${type.id}: ${type.type}`);
@@ -114,39 +111,36 @@ types.forEach(type => {
 
 ---
 
-### 2. 获取文本列表
+### 2. 鑾峰彇鏂囨湰鍒楄〃
 
-#### 接口信息
+#### 鎺ュ彛淇℃伅
 - **URL**: `GET /api/v1/text/list`
-- **功能**: 获取文本信息列表，支持关键词搜索和类型筛选
-- **权限**: 公开访问
+- **鍔熻兘**: 鑾峰彇鏂囨湰淇℃伅鍒楄〃锛屾敮鎸佸叧閿瘝鎼滅储鍜岀被鍨嬬瓫閫?- **鏉冮檺**: 鍏紑璁块棶
 
-#### 请求参数
+#### 璇锋眰鍙傛暟
 
-| 参数名 | 类型 | 必填 | 说明 | 示例 |
+| 鍙傛暟鍚?| 绫诲瀷 | 蹇呭～ | 璇存槑 | 绀轰緥 |
 |--------|------|------|------|------|
-| keyword | string | 否 | 搜索关键词（匹配文本内容或类型名称） | `keyword=安全` |
-| textType | string | 否 | 文本类型筛选 | `textType=安全须知` |
+| keyword | string | 鍚?| 鎼滅储鍏抽敭璇嶏紙鍖归厤鏂囨湰鍐呭鎴栫被鍨嬪悕绉帮級 | `keyword=瀹夊叏` |
+| textType | string | 鍚?| 鏂囨湰绫诲瀷绛涢€?| `textType=瀹夊叏椤荤煡` |
 
-#### 请求示例
+#### 璇锋眰绀轰緥
 
 ```bash
-# 获取所有文本
-GET /api/v1/text/list
+# 鑾峰彇鎵€鏈夋枃鏈?GET /api/v1/text/list
 
-# 按关键词搜索
-GET /api/v1/text/list?keyword=安全
+# 鎸夊叧閿瘝鎼滅储
+GET /api/v1/text/list?keyword=瀹夊叏
 
-# 按类型筛选
-GET /api/v1/text/list?textType=安全须知
+# 鎸夌被鍨嬬瓫閫?GET /api/v1/text/list?textType=瀹夊叏椤荤煡
 
-# 组合查询
-GET /api/v1/text/list?keyword=电梯&textType=操作指南
+# 缁勫悎鏌ヨ
+GET /api/v1/text/list?keyword=鐢垫&textType=鎿嶄綔鎸囧崡
 ```
 
-#### 响应示例
+#### 鍝嶅簲绀轰緥
 
-**成功响应 (200)**:
+**鎴愬姛鍝嶅簲 (200)**:
 ```json
 {
     "code": 200,
@@ -154,17 +148,17 @@ GET /api/v1/text/list?keyword=电梯&textType=操作指南
     "data": [
         {
             "id": 1,
-            "TextType": "安全须知",
+            "TextType": "瀹夊叏椤荤煡",
             "TextGroup": null,
-            "TextContent": "# 电梯安全须知\n\n## 乘坐前检查\n- 确认电梯正常运行\n- 注意观察楼层显示\n\n## 乘坐时注意事项\n1. 不要倚靠轿门\n2. 不要在电梯内跳跃\n3. 如遇故障保持冷静\n\n## 紧急情况处理\n- 按下紧急呼叫按钮\n- 等待救援人员\n- 不要强行扒门",
+            "TextContent": "# 鐢垫瀹夊叏椤荤煡\n\n## 涔樺潗鍓嶆鏌n- 纭鐢垫姝ｅ父杩愯\n- 娉ㄦ剰瑙傚療妤煎眰鏄剧ず\n\n## 涔樺潗鏃舵敞鎰忎簨椤筡n1. 涓嶈鍊氶潬杞块棬\n2. 涓嶈鍦ㄧ數姊唴璺宠穬\n3. 濡傞亣鏁呴殰淇濇寔鍐烽潤\n\n## 绱ф€ユ儏鍐靛鐞哱n- 鎸変笅绱ф€ュ懠鍙寜閽甛n- 绛夊緟鏁戞彺浜哄憳\n- 涓嶈寮鸿鎵掗棬",
             "created_at": "2026-05-20T10:30:00.000000Z",
             "updated_at": "2026-05-20T10:30:00.000000Z"
         },
         {
             "id": 2,
-            "TextType": "操作指南",
+            "TextType": "鎿嶄綔鎸囧崡",
             "TextGroup": null,
-            "TextContent": "# 电梯操作指南\n\n## 基本操作\n- 按下上行/下行按钮\n- 选择目标楼层\n- 等待电梯到达\n\n## 特殊功能\n- 开门保持：长按开门键\n- 关门加速：双击关门键\n- 紧急停止：红色急停按钮",
+            "TextContent": "# 鐢垫鎿嶄綔鎸囧崡\n\n## 鍩烘湰鎿嶄綔\n- 鎸変笅涓婅/涓嬭鎸夐挳\n- 閫夋嫨鐩爣妤煎眰\n- 绛夊緟鐢垫鍒拌揪\n\n## 鐗规畩鍔熻兘\n- 寮€闂ㄤ繚鎸侊細闀挎寜寮€闂ㄩ敭\n- 鍏抽棬鍔犻€燂細鍙屽嚮鍏抽棬閿甛n- 绱ф€ュ仠姝細绾㈣壊鎬ュ仠鎸夐挳",
             "created_at": "2026-05-20T11:00:00.000000Z",
             "updated_at": "2026-05-20T11:00:00.000000Z"
         }
@@ -172,7 +166,7 @@ GET /api/v1/text/list?keyword=电梯&textType=操作指南
 }
 ```
 
-**空数据响应 (200)**:
+**绌烘暟鎹搷搴?(200)**:
 ```json
 {
     "code": 200,
@@ -181,19 +175,18 @@ GET /api/v1/text/list?keyword=电梯&textType=操作指南
 }
 ```
 
-**错误响应 (500)**:
+**閿欒鍝嶅簲 (500)**:
 ```json
 {
     "code": 500,
-    "message": "获取文本信息失败"
+    "message": "鑾峰彇鏂囨湰淇℃伅澶辫触"
 }
 ```
 
-#### 前端调用示例
+#### 鍓嶇璋冪敤绀轰緥
 
 ```javascript
-// 方式一：获取所有文本
-async function getTextList() {
+// 鏂瑰紡涓€锛氳幏鍙栨墍鏈夋枃鏈?async function getTextList() {
     try {
         const response = await fetch('/api/v1/text/list');
         const result = await response.json();
@@ -203,13 +196,12 @@ async function getTextList() {
         }
         return [];
     } catch (error) {
-        console.error('获取文本列表失败:', error);
+        console.error('鑾峰彇鏂囨湰鍒楄〃澶辫触:', error);
         return [];
     }
 }
 
-// 方式二：带搜索条件
-async function searchTexts(keyword = '', textType = '') {
+// 鏂瑰紡浜岋細甯︽悳绱㈡潯浠?async function searchTexts(keyword = '', textType = '') {
     const params = new URLSearchParams();
     
     if (keyword) {
@@ -231,23 +223,23 @@ async function searchTexts(keyword = '', textType = '') {
         }
         return [];
     } catch (error) {
-        console.error('搜索失败:', error);
+        console.error('鎼滅储澶辫触:', error);
         return [];
     }
 }
 
-// 方式三：Vue + Axios 完整示例
+// 鏂瑰紡涓夛細Vue + Axios 瀹屾暣绀轰緥
 <template>
     <div class="text-list-page">
-        <!-- 搜索栏 -->
+        <!-- 鎼滅储鏍?-->
         <div class="search-bar">
             <input 
                 v-model="searchForm.keyword" 
-                placeholder="搜索文本内容..."
+                placeholder="鎼滅储鏂囨湰鍐呭..."
                 @keyup.enter="loadTexts"
             />
             <select v-model="searchForm.textType">
-                <option value="">全部类型</option>
+                <option value="">鍏ㄩ儴绫诲瀷</option>
                 <option 
                     v-for="type in textTypes" 
                     :key="type.id" 
@@ -257,12 +249,12 @@ async function searchTexts(keyword = '', textType = '') {
                 </option>
             </select>
             <button @click="loadTexts">
-                <i class="ri-search-line"></i> 搜索
+                <i class="ri-search-line"></i> 鎼滅储
             </button>
-            <button @click="resetSearch">重置</button>
+            <button @click="resetSearch">閲嶇疆</button>
         </div>
 
-        <!-- 文本列表 -->
+        <!-- 鏂囨湰鍒楄〃 -->
         <div class="text-grid">
             <div 
                 v-for="text in textList" 
@@ -279,10 +271,10 @@ async function searchTexts(keyword = '', textType = '') {
             </div>
         </div>
 
-        <!-- 空状态 -->
+        <!-- 绌虹姸鎬?-->
         <div v-if="textList.length === 0 && !loading" class="empty-state">
             <i class="ri-inbox-line"></i>
-            <p>暂无文本数据</p>
+            <p>鏆傛棤鏂囨湰鏁版嵁</p>
         </div>
     </div>
 </template>
@@ -300,7 +292,7 @@ const searchForm = ref({
     textType: ''
 });
 
-// 加载文本类型
+// 鍔犺浇鏂囨湰绫诲瀷
 async function loadTypes() {
     try {
         const response = await axios.get('/api/v1/text/types');
@@ -308,11 +300,11 @@ async function loadTypes() {
             textTypes.value = response.data.data;
         }
     } catch (error) {
-        console.error('加载类型失败:', error);
+        console.error('鍔犺浇绫诲瀷澶辫触:', error);
     }
 }
 
-// 加载文本列表
+// 鍔犺浇鏂囨湰鍒楄〃
 async function loadTexts() {
     loading.value = true;
     try {
@@ -330,13 +322,13 @@ async function loadTexts() {
             textList.value = response.data.data;
         }
     } catch (error) {
-        console.error('加载列表失败:', error);
+        console.error('鍔犺浇鍒楄〃澶辫触:', error);
     } finally {
         loading.value = false;
     }
 }
 
-// 重置搜索
+// 閲嶇疆鎼滅储
 function resetSearch() {
     searchForm.value = {
         keyword: '',
@@ -345,13 +337,13 @@ function resetSearch() {
     loadTexts();
 }
 
-// 查看详情
+// 鏌ョ湅璇︽儏
 function viewDetail(id) {
-    // 跳转到详情页或打开弹窗
+    // 璺宠浆鍒拌鎯呴〉鎴栨墦寮€寮圭獥
     window.location.href = `/text-management/detail/${id}`;
 }
 
-// 工具函数
+// 宸ュ叿鍑芥暟
 function getFirstLine(content) {
     if (!content) return '';
     const lines = content.split('\n');
@@ -380,64 +372,63 @@ onMounted(() => {
 
 ---
 
-### 3. 获取文本详情
+### 3. 鑾峰彇鏂囨湰璇︽儏
 
-#### 接口信息
+#### 鎺ュ彛淇℃伅
 - **URL**: `GET /api/v1/text/{id}`
-- **功能**: 根据 ID 获取单个文本的详细信息
-- **权限**: 公开访问
+- **鍔熻兘**: 鏍规嵁 ID 鑾峰彇鍗曚釜鏂囨湰鐨勮缁嗕俊鎭?- **鏉冮檺**: 鍏紑璁块棶
 
-#### 路径参数
+#### 璺緞鍙傛暟
 
-| 参数名 | 类型 | 必填 | 说明 | 示例 |
+| 鍙傛暟鍚?| 绫诲瀷 | 蹇呭～ | 璇存槑 | 绀轰緥 |
 |--------|------|------|------|------|
-| id | integer | 是 | 文本 ID | `/api/v1/text/1` |
+| id | integer | 鏄?| 鏂囨湰 ID | `/api/v1/text/1` |
 
-#### 请求示例
+#### 璇锋眰绀轰緥
 
 ```bash
 GET /api/v1/text/1
 GET /api/v1/text/42
 ```
 
-#### 响应示例
+#### 鍝嶅簲绀轰緥
 
-**成功响应 (200)**:
+**鎴愬姛鍝嶅簲 (200)**:
 ```json
 {
     "code": 200,
     "message": "success",
     "data": {
         "id": 1,
-        "TextType": "安全须知",
+        "TextType": "瀹夊叏椤荤煡",
         "TextGroup": null,
-        "TextContent": "# 电梯安全须知\n\n## 乘坐前检查\n- 确认电梯正常运行\n- 注意观察楼层显示\n\n## 乘坐时注意事项\n1. 不要倚靠轿门\n2. 不要在电梯内跳跃\n3. 如遇故障保持冷静\n\n## 紧急情况处理\n- 按下紧急呼叫按钮\n- 等待救援人员\n- 不要强行扒门\n\n## 禁止行为\n- ❌ 超载运行\n- ❌ 强行扒门\n- ❌ 在电梯内吸烟\n- ❌ 携带易燃易爆物品",
+        "TextContent": "# 鐢垫瀹夊叏椤荤煡\n\n## 涔樺潗鍓嶆鏌n- 纭鐢垫姝ｅ父杩愯\n- 娉ㄦ剰瑙傚療妤煎眰鏄剧ず\n\n## 涔樺潗鏃舵敞鎰忎簨椤筡n1. 涓嶈鍊氶潬杞块棬\n2. 涓嶈鍦ㄧ數姊唴璺宠穬\n3. 濡傞亣鏁呴殰淇濇寔鍐烽潤\n\n## 绱ф€ユ儏鍐靛鐞哱n- 鎸変笅绱ф€ュ懠鍙寜閽甛n- 绛夊緟鏁戞彺浜哄憳\n- 涓嶈寮鸿鎵掗棬\n\n## 绂佹琛屼负\n- 鉂?瓒呰浇杩愯\n- 鉂?寮鸿鎵掗棬\n- 鉂?鍦ㄧ數姊唴鍚哥儫\n- 鉂?鎼哄甫鏄撶噧鏄撶垎鐗╁搧",
         "created_at": "2026-05-20T10:30:00.000000Z",
         "updated_at": "2026-05-20T10:30:00.000000Z"
     }
 }
 ```
 
-**错误响应 - 文本不存在 (404)**:
+**閿欒鍝嶅簲 - 鏂囨湰涓嶅瓨鍦?(404)**:
 ```json
 {
     "code": 404,
-    "message": "文本不存在"
+    "message": "鏂囨湰涓嶅瓨鍦?
 }
 ```
 
-**错误响应 - 服务器错误 (500)**:
+**閿欒鍝嶅簲 - 鏈嶅姟鍣ㄩ敊璇?(500)**:
 ```json
 {
     "code": 500,
-    "message": "获取文本详情失败"
+    "message": "鑾峰彇鏂囨湰璇︽儏澶辫触"
 }
 ```
 
-#### 前端调用示例
+#### 鍓嶇璋冪敤绀轰緥
 
 ```javascript
-// 方式一：Fetch API
+// 鏂瑰紡涓€锛欶etch API
 async function getTextDetail(id) {
     try {
         const response = await fetch(`/api/v1/text/${id}`);
@@ -446,19 +437,19 @@ async function getTextDetail(id) {
         if (result.code === 200) {
             return result.data;
         } else if (result.code === 404) {
-            console.error('文本不存在');
+            console.error('鏂囨湰涓嶅瓨鍦?);
             return null;
         } else {
-            console.error('获取失败:', result.message);
+            console.error('鑾峰彇澶辫触:', result.message);
             return null;
         }
     } catch (error) {
-        console.error('网络错误:', error);
+        console.error('缃戠粶閿欒:', error);
         return null;
     }
 }
 
-// 方式二：React + Axios 完整示例
+// 鏂瑰紡浜岋細React + Axios 瀹屾暣绀轰緥
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { marked } from 'marked';
@@ -482,7 +473,7 @@ function TextDetailPage({ textId }) {
                     setError(response.data.message);
                 }
             } catch (err) {
-                setError('加载失败，请稍后重试');
+                setError('鍔犺浇澶辫触锛岃绋嶅悗閲嶈瘯');
             } finally {
                 setLoading(false);
             }
@@ -491,7 +482,7 @@ function TextDetailPage({ textId }) {
         fetchTextDetail();
     }, [textId]);
 
-    // 配置 marked.js
+    // 閰嶇疆 marked.js
     marked.setOptions({
         breaks: true,
         gfm: true,
@@ -507,7 +498,7 @@ function TextDetailPage({ textId }) {
         return (
             <div className="loading-spinner">
                 <div className="spinner"></div>
-                <p>加载中...</p>
+                <p>鍔犺浇涓?..</p>
             </div>
         );
     }
@@ -516,8 +507,8 @@ function TextDetailPage({ textId }) {
         return (
             <div className="error-state">
                 <i className="ri-error-warning-line"></i>
-                <p>{error || '未找到文本'}</p>
-                <button onClick={() => window.history.back()}>返回</button>
+                <p>{error || '鏈壘鍒版枃鏈?}</p>
+                <button onClick={() => window.history.back()}>杩斿洖</button>
             </div>
         );
     }
@@ -526,38 +517,38 @@ function TextDetailPage({ textId }) {
 
     return (
         <div className="text-detail-page">
-            {/* 头部信息 */}
+            {/* 澶撮儴淇℃伅 */}
             <header className="detail-header">
                 <div className="type-badge">{text.TextType}</div>
                 <h1>{getFirstLine(text.TextContent)}</h1>
                 <div className="meta-info">
-                    <span>创建时间: {formatDate(text.created_at)}</span>
-                    <span>更新时间: {formatDate(text.updated_at)}</span>
+                    <span>鍒涘缓鏃堕棿: {formatDate(text.created_at)}</span>
+                    <span>鏇存柊鏃堕棿: {formatDate(text.updated_at)}</span>
                 </div>
             </header>
 
-            {/* Markdown 内容 */}
+            {/* Markdown 鍐呭 */}
             <article 
                 className="markdown-content"
                 dangerouslySetInnerHTML={{ __html: renderedContent }}
             />
 
-            {/* 操作按钮 */}
+            {/* 鎿嶄綔鎸夐挳 */}
             <footer className="detail-footer">
                 <button onClick={() => window.history.back()}>
-                    <i className="ri-arrow-left-line"></i> 返回
+                    <i className="ri-arrow-left-line"></i> 杩斿洖
                 </button>
                 <button onClick={() => window.print()}>
-                    <i className="ri-printer-line"></i> 打印
+                    <i className="ri-printer-line"></i> 鎵撳嵃
                 </button>
             </footer>
         </div>
     );
 }
 
-// 工具函数
+// 宸ュ叿鍑芥暟
 function getFirstLine(content) {
-    if (!content) return '无标题';
+    if (!content) return '鏃犳爣棰?;
     const lines = content.split('\n');
     return lines[0].replace(/^#+\s*/, '');
 }
@@ -578,17 +569,14 @@ export default TextDetailPage;
 
 ---
 
-## 🔧 技术实现细节
+## 馃敡 鎶€鏈疄鐜扮粏鑺?
+### 鍚庣瀹炵幇
 
-### 后端实现
-
-#### 控制器方法位置
-文件: `app/Http/Controllers/FrontendAPI.php`
+#### 鎺у埗鍣ㄦ柟娉曚綅缃?鏂囦欢: `app/Http/Controllers/FrontendAPI.php`
 
 ```php
 /**
- * 获取所有文本类型
- */
+ * 鑾峰彇鎵€鏈夋枃鏈被鍨? */
 public function textType(Request $request): JsonResponse
 {
     try {
@@ -596,23 +584,21 @@ public function textType(Request $request): JsonResponse
         return $this->successResponse($textTypes);
     } catch (QueryException $e) {
         report($e);
-        return $this->errorResponse('获取文本分类失败', 500);
+        return $this->errorResponse('鑾峰彇鏂囨湰鍒嗙被澶辫触', 500);
     } catch (\Exception $e) {
         report($e);
-        return $this->errorResponse('服务器内部错误', 500);
+        return $this->errorResponse('鏈嶅姟鍣ㄥ唴閮ㄩ敊璇?, 500);
     }
 }
 
 /**
- * 获取所有文本信息
- */
+ * 鑾峰彇鎵€鏈夋枃鏈俊鎭? */
 public function textList(Request $request): JsonResponse
 {
     try {
         $query = TextInfo::query();
 
-        // 关键词搜索
-        if ($request->has('keyword') && $request->keyword != '') {
+        // 鍏抽敭璇嶆悳绱?        if ($request->has('keyword') && $request->keyword != '') {
             $keyword = $request->keyword;
             $query->where(function($q) use ($keyword) {
                 $q->where('TextContent', 'like', "%{$keyword}%")
@@ -620,7 +606,7 @@ public function textList(Request $request): JsonResponse
             });
         }
 
-        // 类型过滤
+        // 绫诲瀷杩囨护
         if ($request->has('textType') && $request->textType != '') {
             $query->where('TextType', $request->textType);
         }
@@ -629,15 +615,15 @@ public function textList(Request $request): JsonResponse
         return $this->successResponse($textInfos);
     } catch (QueryException $e) {
         report($e);
-        return $this->errorResponse('获取文本信息失败', 500);
+        return $this->errorResponse('鑾峰彇鏂囨湰淇℃伅澶辫触', 500);
     } catch (\Exception $e) {
         report($e);
-        return $this->errorResponse('服务器内部错误', 500);
+        return $this->errorResponse('鏈嶅姟鍣ㄥ唴閮ㄩ敊璇?, 500);
     }
 }
 
 /**
- * 获取文本详情
+ * 鑾峰彇鏂囨湰璇︽儏
  */
 public function textDetail($id): JsonResponse
 {
@@ -645,22 +631,22 @@ public function textDetail($id): JsonResponse
         $textInfo = TextInfo::findOrFail($id);
         return $this->successResponse($textInfo);
     } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-        return $this->errorResponse('文本不存在', 404);
+        return $this->errorResponse('鏂囨湰涓嶅瓨鍦?, 404);
     } catch (QueryException $e) {
         report($e);
-        return $this->errorResponse('获取文本详情失败', 500);
+        return $this->errorResponse('鑾峰彇鏂囨湰璇︽儏澶辫触', 500);
     } catch (\Exception $e) {
         report($e);
-        return $this->errorResponse('服务器内部错误', 500);
+        return $this->errorResponse('鏈嶅姟鍣ㄥ唴閮ㄩ敊璇?, 500);
     }
 }
 ```
 
-#### 路由配置
-文件: `routes/api.php`
+#### 璺敱閰嶇疆
+鏂囦欢: `routes/api.php`
 
 ```php
-// 文本管理API路由
+// 鏂囨湰绠＄悊API璺敱
 Route::prefix("/text")->group(function() {
     Route::get("/types", [FrontendAPI::class, "textType"]);
     Route::get("/list", [FrontendAPI::class, "textList"]);
@@ -668,25 +654,23 @@ Route::prefix("/text")->group(function() {
 });
 ```
 
-### 数据库表结构
+### 鏁版嵁搴撹〃缁撴瀯
 
-#### text_types 表
-```sql
+#### text_types 琛?```sql
 CREATE TABLE text_types (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    type VARCHAR(255) NOT NULL COMMENT '类型名称',
+    type VARCHAR(255) NOT NULL COMMENT '绫诲瀷鍚嶇О',
     created_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL
 );
 ```
 
-#### text_infos 表
-```sql
+#### text_infos 琛?```sql
 CREATE TABLE text_infos (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    TextType VARCHAR(100) NOT NULL COMMENT '文本类型',
-    TextGroup VARCHAR(200) NULL COMMENT '文本分组',
-    TextContent TEXT NULL COMMENT '文本内容(Markdown格式)',
+    TextType VARCHAR(100) NOT NULL COMMENT '鏂囨湰绫诲瀷',
+    TextGroup VARCHAR(200) NULL COMMENT '鏂囨湰鍒嗙粍',
+    TextContent TEXT NULL COMMENT '鏂囨湰鍐呭(Markdown鏍煎紡)',
     created_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL
 );
@@ -694,20 +678,17 @@ CREATE TABLE text_infos (
 
 ---
 
-## 💡 使用建议
+## 馃挕 浣跨敤寤鸿
 
-### 1. Markdown 渲染
+### 1. Markdown 娓叉煋
 
-返回的 `TextContent` 字段包含 Markdown 格式文本，建议使用以下库进行渲染：
+杩斿洖鐨?`TextContent` 瀛楁鍖呭惈 Markdown 鏍煎紡鏂囨湰锛屽缓璁娇鐢ㄤ互涓嬪簱杩涜娓叉煋锛?
+- **marked.js** - 杞婚噺绾с€佸揩閫?- **markdown-it** - 鍙墿灞曟€у己
+- **Showdown** - 鍏煎鎬уソ
 
-- **marked.js** - 轻量级、快速
-- **markdown-it** - 可扩展性强
-- **Showdown** - 兼容性好
+### 2. 浠ｇ爜楂樹寒
 
-### 2. 代码高亮
-
-如果文本中包含代码块，建议配合 highlight.js 使用：
-
+濡傛灉鏂囨湰涓寘鍚唬鐮佸潡锛屽缓璁厤鍚?highlight.js 浣跨敤锛?
 ```javascript
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
@@ -722,43 +703,37 @@ marked.setOptions({
 });
 ```
 
-### 3. 性能优化
+### 3. 鎬ц兘浼樺寲
 
-- **缓存策略**: 文本类型列表变化频率低，建议前端缓存
-- **懒加载**: 列表页只加载摘要，详情页再加载完整内容
-- **搜索优化**: 大数据量时使用关键词和类型筛选
+- **缂撳瓨绛栫暐**: 鏂囨湰绫诲瀷鍒楄〃鍙樺寲棰戠巼浣庯紝寤鸿鍓嶇缂撳瓨
+- **鎳掑姞杞?*: 鍒楄〃椤靛彧鍔犺浇鎽樿锛岃鎯呴〉鍐嶅姞杞藉畬鏁村唴瀹?- **鎼滅储浼樺寲**: 澶ф暟鎹噺鏃朵娇鐢ㄥ叧閿瘝鍜岀被鍨嬬瓫閫?
+### 4. 閿欒澶勭悊
 
-### 4. 错误处理
-
-始终检查响应中的 `code` 字段：
-
+濮嬬粓妫€鏌ュ搷搴斾腑鐨?`code` 瀛楁锛?
 ```javascript
 if (result.code === 200) {
-    // 成功处理
+    // 鎴愬姛澶勭悊
 } else if (result.code === 404) {
-    // 资源不存在
-} else {
-    // 其他错误
+    // 璧勬簮涓嶅瓨鍦?} else {
+    // 鍏朵粬閿欒
     showError(result.message);
 }
 ```
 
 ---
 
-## 📊 响应码说明
-
-| 响应码 | 说明 | 场景 |
+## 馃搳 鍝嶅簲鐮佽鏄?
+| 鍝嶅簲鐮?| 璇存槑 | 鍦烘櫙 |
 |--------|------|------|
-| 200 | 成功 | 请求成功，返回数据 |
-| 404 | 未找到 | 文本 ID 不存在 |
-| 500 | 服务器错误 | 数据库查询失败或其他异常 |
+| 200 | 鎴愬姛 | 璇锋眰鎴愬姛锛岃繑鍥炴暟鎹?|
+| 404 | 鏈壘鍒?| 鏂囨湰 ID 涓嶅瓨鍦?|
+| 500 | 鏈嶅姟鍣ㄩ敊璇?| 鏁版嵁搴撴煡璇㈠け璐ユ垨鍏朵粬寮傚父 |
 
 ---
 
-## 🔐 安全性说明
-
-- 当前接口为**公开接口**，无需身份认证
-- 如需限制访问，可在路由中添加 Sanctum 中间件：
+## 馃攼 瀹夊叏鎬ц鏄?
+- 褰撳墠鎺ュ彛涓?*鍏紑鎺ュ彛**锛屾棤闇€韬唤璁よ瘉
+- 濡傞渶闄愬埗璁块棶锛屽彲鍦ㄨ矾鐢变腑娣诲姞 Sanctum 涓棿浠讹細
   ```php
   Route::middleware('auth:sanctum')->group(function() {
       Route::get("/types", [FrontendAPI::class, "textType"]);
@@ -768,11 +743,10 @@ if (result.code === 200) {
 
 ---
 
-## 📝 更新日志
+## 馃摑 鏇存柊鏃ュ織
 
 **v1.0.0** (2026-05-20)
-- ✅ 新增文本类型列表接口
-- ✅ 新增文本列表接口（支持搜索和筛选）
-- ✅ 新增文本详情接口
-- ✅ 完整的异常处理机制
-- ✅ 统一的响应格式
+- 鉁?鏂板鏂囨湰绫诲瀷鍒楄〃鎺ュ彛
+- 鉁?鏂板鏂囨湰鍒楄〃鎺ュ彛锛堟敮鎸佹悳绱㈠拰绛涢€夛級
+- 鉁?鏂板鏂囨湰璇︽儏鎺ュ彛
+- 鉁?瀹屾暣鐨勫紓甯稿鐞嗘満鍒?- 鉁?缁熶竴鐨勫搷搴旀牸寮?

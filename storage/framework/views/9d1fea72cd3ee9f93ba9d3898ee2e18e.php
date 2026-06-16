@@ -104,6 +104,59 @@
             </div>
         </form>
         
+        <!-- 年检状态提示条 -->
+        <?php
+            $now = \Carbon\Carbon::now();
+            $overdueCount = 0;   // 已逾期
+            $nearCount = 0;      // 临近期 (<= 30天)
+            $okCount = 0;        // 未临期
+            $noneCount = 0;      // 未设置
+
+            foreach($devices as $device) {
+                $checkDate = isset($checkNumbers[$device->number]) ? \Carbon\Carbon::parse($checkNumbers[$device->number]) : null;
+                $daysDiff = $checkDate ? $now->diffInDays($checkDate, false) : null;
+
+                if (!$checkDate) {
+                    $noneCount++;
+                } elseif ($daysDiff < 0) {
+                    $overdueCount++;
+                } elseif ($daysDiff <= 30) {
+                    $nearCount++;
+                } else {
+                    $okCount++;
+                }
+            }
+            $totalCheckCount = $devices->count();
+        ?>
+        <div class="flex flex-wrap gap-3 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <span class="text-sm text-gray-600 font-medium mr-1 self-center">年检状态：</span>
+            <?php if($overdueCount > 0): ?>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                <i class="ri-alarm-warning-line"></i>已逾期 <?php echo e($overdueCount); ?>
+
+            </span>
+            <?php endif; ?>
+            <?php if($nearCount > 0): ?>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                <i class="ri-time-line"></i>临近期 <?php echo e($nearCount); ?>
+
+            </span>
+            <?php endif; ?>
+            <?php if($okCount > 0): ?>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <i class="ri-checkbox-circle-line"></i>未临期 <?php echo e($okCount); ?>
+
+            </span>
+            <?php endif; ?>
+            <?php if($noneCount > 0): ?>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                <i class="ri-question-line"></i>未设置 <?php echo e($noneCount); ?>
+
+            </span>
+            <?php endif; ?>
+            <span class="text-xs text-gray-400 self-center ml-auto">共 <?php echo e($totalCheckCount); ?> 台设备</span>
+        </div>
+
         <!-- PC端表格 仅在桌面显示 -->
         <div class="hidden md:block">
             <!-- 顶部滚动条容器 -->

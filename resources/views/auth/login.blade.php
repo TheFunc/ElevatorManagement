@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电梯管理系统 - 用户登录</title>
+    <title>电梯资料管理 - 用户登录</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <script>
@@ -28,7 +28,7 @@
                 <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                     <i class="ri-building-4-line text-4xl text-primary"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-800">电梯管理系统</h1>
+                <h1 class="text-2xl font-bold text-gray-800">电梯资料管理</h1>
                 <p class="text-gray-500 mt-2">请登录您的账户</p>
             </div>
 
