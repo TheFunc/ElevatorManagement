@@ -98,9 +98,39 @@
     
     <!-- 分页 -->
     <?php if($files->hasPages()): ?>
-    <div class="mt-6">
-        <?php echo e($files->links()); ?>
-
+    <div class="mt-6 flex justify-center">
+        <div class="flex items-center gap-1.5">
+            
+            <?php if($files->onFirstPage()): ?>
+                <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                    <i class="ri-arrow-left-s-line"></i>
+                </span>
+            <?php else: ?>
+                <a href="<?php echo e($files->previousPageUrl()); ?>" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                    <i class="ri-arrow-left-s-line"></i>
+                </a>
+            <?php endif; ?>
+            
+            
+            <?php $__currentLoopData = $files->getUrlRange(1, $files->lastPage()); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $page => $url): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if($page == $files->currentPage()): ?>
+                    <span class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl shadow-sm shadow-primary/20"><?php echo e($page); ?></span>
+                <?php else: ?>
+                    <a href="<?php echo e($url); ?>" class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200"><?php echo e($page); ?></a>
+                <?php endif; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            
+            
+            <?php if($files->hasMorePages()): ?>
+                <a href="<?php echo e($files->nextPageUrl()); ?>" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                    <i class="ri-arrow-right-s-line"></i>
+                </a>
+            <?php else: ?>
+                <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                    <i class="ri-arrow-right-s-line"></i>
+                </span>
+            <?php endif; ?>
+        </div>
     </div>
     <?php endif; ?>
 </div>
@@ -157,12 +187,6 @@ document.getElementById('deleteModal').addEventListener('click', function(e) {
     }
 });
 </script>
-    <?php if($files->hasPages()): ?>
-    <div class="mt-6">
-        <?php echo e($files->links()); ?>
-
-    </div>
-    <?php endif; ?>
-</div>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.elevator', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\else\order\ElevatorManagement\ElevatorManagement\resources\views/data/query.blade.php ENDPATH**/ ?>

@@ -245,7 +245,7 @@ class ElevatorController extends Controller
             $query->where('type', $request->type);
         }
         
-        $files = $query->paginate(15);
+        $files = $query->paginate(5);
         
         // 文件类型配置
         $fileTypes = [
@@ -652,8 +652,8 @@ class ElevatorController extends Controller
             });
         }
         
-        // 按分组聚合，每组只取第一条记录
-        $orders = $query->latest()
+        // 获取所有记录并按分组聚合
+        $allOrders = $query->latest()
             ->get()
             ->groupBy('group_id')
             ->map(function($group) {
@@ -662,6 +662,21 @@ class ElevatorController extends Controller
                 return $first;
             })
             ->values();
+        
+        // 手动分页：每页5条
+        $perPage = 5;
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage();
+        $currentItems = $allOrders->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $orders = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentItems,
+            $allOrders->count(),
+            $perPage,
+            $currentPage,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+        );
+        
+        // 保持搜索参数
+        $orders->appends($request->all());
             
         return view('repair.orders', compact('orders'));
     }

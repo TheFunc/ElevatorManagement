@@ -92,6 +92,44 @@
             </tbody>
         </table>
     </div>
+    
+    <!-- 分页 -->
+    @if($orders->hasPages())
+    <div class="mt-6 flex justify-center">
+        <div class="flex items-center gap-1.5">
+            {{-- 上一页 --}}
+            @if($orders->onFirstPage())
+                <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                    <i class="ri-arrow-left-s-line"></i>
+                </span>
+            @else
+                <a href="{{ $orders->previousPageUrl() }}" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                    <i class="ri-arrow-left-s-line"></i>
+                </a>
+            @endif
+            
+            {{-- 页码 --}}
+            @foreach($orders->getUrlRange(1, $orders->lastPage()) as $page => $url)
+                @if($page == $orders->currentPage())
+                    <span class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl shadow-sm shadow-primary/20">{{ $page }}</span>
+                @else
+                    <a href="{{ $url }}" class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">{{ $page }}</a>
+                @endif
+            @endforeach
+            
+            {{-- 下一页 --}}
+            @if($orders->hasMorePages())
+                <a href="{{ $orders->nextPageUrl() }}" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                    <i class="ri-arrow-right-s-line"></i>
+                </a>
+            @else
+                <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                    <i class="ri-arrow-right-s-line"></i>
+                </span>
+            @endif
+        </div>
+    </div>
+    @endif
 </div>
 
 <!-- 上传弹窗 -->
