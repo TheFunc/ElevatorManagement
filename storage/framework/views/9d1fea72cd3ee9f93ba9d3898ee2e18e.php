@@ -2,68 +2,7 @@
 <?php $__env->startSection('page-title', '电梯台账'); ?>
 
 <?php $__env->startSection('content'); ?>
-<!-- 统计卡片（可折叠） -->
-<div id="summaryPanel" class="card mb-6 transition-all duration-300 overflow-hidden">
-    <div class="flex justify-between items-center p-4 pb-0 whitespace-nowrap" id="summaryHeader">
-        <h3 class="text-xl font-semibold text-gray-800 flex-shrink-0" id="summaryTitle">数据概览</h3>
-        <button id="toggleSummaryBtn" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0 ml-2" title="折叠/展开">
-            <i id="toggleSummaryIcon" class="ri-subtract-line text-xl"></i>
-        </button>
-    </div>
-    <div id="summaryContent">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
-            <div class="p-4 bg-gray-50 rounded-lg">
-                <div class="flex items-center">
-                    <div class="bg-primary/10 p-3 rounded-lg">
-                        <i class="ri-building-4-line text-2xl text-primary"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-gray-500 text-sm">电梯总数</p>
-                        <h3 class="text-2xl font-bold text-gray-800"><?php echo e($devices->count()); ?></h3>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="p-4 bg-gray-50 rounded-lg">
-                <div class="flex items-center">
-                    <div class="bg-green-100 p-3 rounded-lg">
-                        <i class="ri-file-list-3-line text-2xl text-green-600"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-gray-500 text-sm">资料总数</p>
-                        <h3 class="text-2xl font-bold text-gray-800"><?php echo e(array_sum($fileStats)); ?></h3>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="p-4 bg-gray-50 rounded-lg">
-                <div class="flex items-center">
-                    <div class="bg-blue-100 p-3 rounded-lg">
-                        <i class="ri-tools-line text-2xl text-blue-600"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-gray-500 text-sm">维保资料</p>
-                        <h3 class="text-2xl font-bold text-gray-800"><?php echo e($fileStats['maintenance']); ?></h3>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="p-4 bg-gray-50 rounded-lg">
-                <div class="flex items-center">
-                    <div class="bg-orange-100 p-3 rounded-lg">
-                        <i class="ri-alarm-warning-line text-2xl text-orange-600"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-gray-500 text-sm">故障记录</p>
-                        <h3 class="text-2xl font-bold text-gray-800"><?php echo e($fileStats['fault']); ?></h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 使用flex布局：电梯列表自动撑满，资料统计面板固定在右侧 -->
+<!-- 使用flex布局 -->
 <div class="flex flex-col lg:flex-row gap-6 mb-6">
     <!-- 电梯列表 -->
     <div id="elevatorListContainer" class="flex-1 min-w-0 card transition-all duration-300">
@@ -109,7 +48,8 @@
             $now = \Carbon\Carbon::now();
             $overdueCount = 0;   // 已逾期
             $nearCount = 0;      // 临近期 (<= 30天)
-            $okCount = 0;        // 未临期
+            $near2Count = 0;     // 临期2个月 (>30天且<=60天)
+            $okCount = 0;        // 未临期 (>60天)
             $noneCount = 0;      // 未设置
 
             foreach($devices as $device) {
@@ -122,39 +62,44 @@
                     $overdueCount++;
                 } elseif ($daysDiff <= 30) {
                     $nearCount++;
+                } elseif ($daysDiff <= 60) {
+                    $near2Count++;
                 } else {
                     $okCount++;
                 }
             }
             $totalCheckCount = $devices->count();
         ?>
-        <div class="flex flex-wrap gap-3 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
-            <span class="text-sm text-gray-600 font-medium mr-1 self-center">年检状态：</span>
+        <div class="flex flex-wrap gap-3 mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <span class="text-base text-gray-600 font-medium mr-1 self-center">年检状态：</span>
             <?php if($overdueCount > 0): ?>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                <i class="ri-alarm-warning-line"></i>已逾期 <?php echo e($overdueCount); ?>
-
+            <span class="text-sm text-gray-500 self-center">已超过年检日期：</span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+                <i class="ri-alarm-warning-line"></i>已逾期 <span class="text-lg"><?php echo e($overdueCount); ?></span>
             </span>
             <?php endif; ?>
             <?php if($nearCount > 0): ?>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                <i class="ri-time-line"></i>临近期 <?php echo e($nearCount); ?>
-
+            <span class="text-sm text-gray-500 self-center">距年检日 ≤ 30天：</span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+                <i class="ri-time-line"></i>临近期 <span class="text-lg"><?php echo e($nearCount); ?></span>
             </span>
             <?php endif; ?>
-            <?php if($okCount > 0): ?>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                <i class="ri-checkbox-circle-line"></i>未临期 <?php echo e($okCount); ?>
-
+            <?php if($near2Count > 0): ?>
+            <span class="text-sm text-gray-500 self-center">距年检日 ≤ 60天：</span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-orange-100 text-orange-800">
+                <i class="ri-calendar-line"></i>临期2个月 <span class="text-lg"><?php echo e($near2Count); ?></span>
             </span>
             <?php endif; ?>
+            <span class="text-sm text-gray-500 self-center">距年检日 > 60天：</span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+                <i class="ri-checkbox-circle-line"></i>未临期 <span class="text-lg"><?php echo e($okCount); ?></span>
+            </span>
             <?php if($noneCount > 0): ?>
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                <i class="ri-question-line"></i>未设置 <?php echo e($noneCount); ?>
-
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600">
+                <i class="ri-question-line"></i>未设置 <span class="text-lg"><?php echo e($noneCount); ?></span>
             </span>
             <?php endif; ?>
-            <span class="text-xs text-gray-400 self-center ml-auto">共 <?php echo e($totalCheckCount); ?> 台设备</span>
+            <span class="text-sm text-gray-400 self-center ml-auto">共 <?php echo e($totalCheckCount); ?> 台设备</span>
         </div>
 
         <!-- PC端表格 仅在桌面显示 -->
@@ -214,6 +159,8 @@
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">已逾期</span>
                                     <?php elseif($daysDiff <= 30): ?>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">临近期</span>
+                                    <?php elseif($daysDiff <= 60): ?>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">临期2个月</span>
                                     <?php else: ?>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">未临期</span>
                                     <?php endif; ?>
@@ -297,114 +244,9 @@
         </div>
     </div>
     
-    <!-- 资料统计饼图（可折叠）- 固定宽度，折叠后变窄但保留在右侧 -->
-    <div id="statsPanel" class="card transition-all duration-300 flex-shrink-0 overflow-hidden" style="width: 380px;">
-        <div class="flex justify-between items-center mb-4 whitespace-nowrap" id="statsHeader">
-            <h3 class="text-xl font-semibold text-gray-800 flex-shrink-0">资料统计</h3>
-            <button id="toggleStatsBtn" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0 ml-2" title="折叠/展开">
-                <i id="toggleStatsIcon" class="ri-subtract-line text-xl"></i>
-            </button>
-        </div>
-        <div id="statsContent">
-            <div class="h-64 flex items-center justify-center p-4">
-                <canvas id="fileChart"></canvas>
-            </div>
-            <div class="mt-4 space-y-2">
-                <div class="flex items-center text-sm">
-                    <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-                    <span class="text-gray-600">准备资料: <?php echo e($fileStats['prepare']); ?></span>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
-                    <span class="text-gray-600">维保资料: <?php echo e($fileStats['maintenance']); ?></span>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-                    <span class="text-gray-600">巡检资料: <?php echo e($fileStats['inspection']); ?></span>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
-                    <span class="text-gray-600">故障记录: <?php echo e($fileStats['fault']); ?></span>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span class="w-3 h-3 rounded-full bg-purple-500 mr-2"></span>
-                    <span class="text-gray-600">维修记录: <?php echo e($fileStats['repair']); ?></span>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span class="w-3 h-3 rounded-full bg-orange-500 mr-2"></span>
-                    <span class="text-gray-600">事故记录: <?php echo e($fileStats['accident']); ?></span>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span class="w-3 h-3 rounded-full bg-teal-500 mr-2"></span>
-                    <span class="text-gray-600">救援演练: <?php echo e($fileStats['rescue']); ?></span>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span class="w-3 h-3 rounded-full bg-cyan-500 mr-2"></span>
-                    <span class="text-gray-600">年检资料: <?php echo e($fileStats['annual_check']); ?></span>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// 饼状图
-var fileChartCtx = document.getElementById('fileChart').getContext('2d');
-var fileChart = new Chart(fileChartCtx, {
-    type: 'pie',
-    data: {
-        labels: ['准备资料', '维保资料', '巡检资料', '故障记录', '维修记录', '事故记录', '救援演练', '年检资料'],
-        datasets: [{
-            data: [
-                <?php echo e($fileStats['prepare']); ?>,
-                <?php echo e($fileStats['maintenance']); ?>,
-                <?php echo e($fileStats['inspection']); ?>,
-                <?php echo e($fileStats['fault']); ?>,
-                <?php echo e($fileStats['repair']); ?>,
-                <?php echo e($fileStats['accident']); ?>,
-                <?php echo e($fileStats['rescue']); ?>,
-                <?php echo e($fileStats['annual_check']); ?>
-
-            ],
-            backgroundColor: [
-                '#3B82F6', '#10B981', '#EAB308', '#EF4444', '#8B5CF6', '#F97316', '#14B8A6', '#06B6D4'
-            ],
-            borderWidth: 0,
-            hoverOffset: 0
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: 0,
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                padding: 12,
-                titleFont: {
-                    size: 14
-                },
-                bodyFont: {
-                    size: 13
-                }
-            }
-        },
-        animation: {
-            animateRotate: false,
-            animateScale: false,
-            duration: 0
-        },
-        interaction: {
-            mode: 'nearest',
-            intersect: true
-        }
-    }
-});
-
 function sortTable(field) {
     var url = new URL(window.location.href);
     var currentSort = url.searchParams.get('sort');
@@ -429,80 +271,8 @@ function sortTable(field) {
     window.location.href = url.toString();
 }
 
-// 数据概览折叠/展开功能 + 资料统计面板折叠/展开功能 + 鼠标滚轮横向滚动表格
+// 鼠标滚轮横向滚动表格
 document.addEventListener('DOMContentLoaded', function() {
-    // 数据概览折叠/展开功能
-    var summaryToggleBtn = document.getElementById('toggleSummaryBtn');
-    var summaryContent = document.getElementById('summaryContent');
-    var summaryPanel = document.getElementById('summaryPanel');
-    var summaryIcon = document.getElementById('toggleSummaryIcon');
-    var summaryTitle = document.getElementById('summaryTitle');
-    var summaryHeader = document.getElementById('summaryHeader');
-    var summaryCollapsed = false;
-
-    if (summaryToggleBtn && summaryContent && summaryIcon) {
-        // 设置过渡
-        summaryContent.style.transition = 'max-height 0.3s ease, padding 0.3s ease';
-        summaryContent.style.overflow = 'hidden';
-        var contentHeight = summaryContent.scrollHeight;
-
-        summaryToggleBtn.addEventListener('click', function() {
-            summaryCollapsed = !summaryCollapsed;
-            if (summaryCollapsed) {
-                // 折叠：隐藏内容、隐藏标题
-                summaryContent.style.maxHeight = '0px';
-                summaryContent.style.padding = '0 1rem';
-                summaryTitle.style.display = 'none';
-                summaryHeader.className = 'flex justify-center p-4 pb-0';
-                summaryIcon.className = 'ri-add-line text-xl';
-            } else {
-                // 展开：显示内容、显示标题
-                summaryTitle.style.display = '';
-                summaryHeader.className = 'flex justify-between items-center p-4 pb-0 whitespace-nowrap';
-                summaryContent.style.maxHeight = contentHeight + 'px';
-                summaryContent.style.padding = '';
-                summaryIcon.className = 'ri-subtract-line text-xl';
-            }
-        });
-    }
-
-    // 资料统计面板折叠/展开功能
-    var toggleBtn = document.getElementById('toggleStatsBtn');
-    var statsContent = document.getElementById('statsContent');
-    var statsPanel = document.getElementById('statsPanel');
-    var toggleIcon = document.getElementById('toggleStatsIcon');
-    var isCollapsed = false;
-    var expandedWidth = 380;
-
-    if (toggleBtn && statsContent && statsPanel) {
-        toggleBtn.addEventListener('click', function() {
-            isCollapsed = !isCollapsed;
-
-            if (isCollapsed) {
-                // 折叠：隐藏具体内容，面板缩窄仅显示展开按钮
-                statsContent.style.display = 'none';
-                statsPanel.style.width = '44px';
-                toggleIcon.className = 'ri-add-line text-xl';
-                // 将标题文字隐藏，按钮居中
-                statsPanel.querySelector('h3').style.display = 'none';
-                statsPanel.querySelector('#statsHeader').className = 'flex justify-center mb-0';
-            } else {
-                // 展开：显示内容，恢复宽度
-                statsContent.style.display = '';
-                statsPanel.style.width = expandedWidth + 'px';
-                toggleIcon.className = 'ri-subtract-line text-xl';
-                // 恢复标题显示，按钮回到右侧
-                statsPanel.querySelector('h3').style.display = '';
-                statsPanel.querySelector('#statsHeader').className = 'flex justify-between items-center mb-4 whitespace-nowrap';
-                
-                // 重新绘制图表（修复折叠后图表尺寸问题）
-                setTimeout(function() {
-                    window.dispatchEvent(new Event('resize'));
-                }, 100);
-            }
-        });
-    }
-
     // 鼠标滚轮横向滚动表格
     var tableContainer = document.getElementById('tableContainer');
     var topScrollbar = document.getElementById('topScrollbar');

@@ -445,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <a href="<?php echo e(route('repair.orders')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'repair.orders' || Route::currentRouteName() == 'repair.upload'): ?> menu-item-active <?php endif; ?>">
                         <i class="ri-file-list-2-line text-lg"></i>
-                        <span>电梯单上传</span>
+                        <span>维保单上传</span>
                     </a>
 
                     <a href="<?php echo e(route('data.query')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'data.query'): ?> menu-item-active <?php endif; ?>">
