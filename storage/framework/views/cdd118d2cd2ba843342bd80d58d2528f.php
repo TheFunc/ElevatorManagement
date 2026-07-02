@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </button>
                         
                         <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-medium flex-shrink-0">
-                            <?php echo e(strtoupper(substr(Auth::user()->name, 0, 1))); ?>
+                            <?php echo e(strtoupper(mb_substr(Auth::user()->name, 0, 1, 'UTF-8'))); ?>
 
                         </div>
                     <?php else: ?>

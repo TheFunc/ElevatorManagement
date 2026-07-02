@@ -19,7 +19,7 @@
     <div class="bg-gray-50 p-6 rounded-lg mb-6">
         <div class="flex items-center gap-6">
             <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center text-white text-3xl font-bold">
-                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                {{ strtoupper(mb_substr(Auth::user()->name, 0, 1, 'UTF-8')) }}
             </div>
             <div>
                 <h3 class="text-2xl font-bold text-gray-800">{{ Auth::user()->name }}</h3>

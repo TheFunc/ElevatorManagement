@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </button>
                         
                         <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-medium flex-shrink-0">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            {{ strtoupper(mb_substr(Auth::user()->name, 0, 1, 'UTF-8')) }}
                         </div>
                     @else
                         <a href="{{ route('login') }}" class="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-primary hover:bg-light rounded-xl transition-all">

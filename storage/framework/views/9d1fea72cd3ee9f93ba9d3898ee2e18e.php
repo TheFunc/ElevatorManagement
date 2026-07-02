@@ -122,7 +122,7 @@
                     <thead>
                         <tr class="bg-gray-50">
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 w-[120px]" onclick="sortTable('number')">
-                                电梯编号 <i class="ri-arrow-up-down-line ml-1"></i>
+                                设备代码 <i class="ri-arrow-up-down-line ml-1"></i>
                             </th>
                             <th class="px-3 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 w-[150px]" onclick="sortTable('name')">
                                 设备名称 <i class="ri-arrow-up-down-line ml-1"></i>

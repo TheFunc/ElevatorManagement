@@ -21,7 +21,7 @@
         @csrf
         
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">电梯编号 <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">设备代码 <span class="text-red-500">*</span></label>
             <input type="text" name="number" value="{{ old('number', $device->number) }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入电梯编号">
         </div>
 
