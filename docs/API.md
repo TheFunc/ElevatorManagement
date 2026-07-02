@@ -27,6 +27,14 @@
 }
 ```
 
+### 404 响应
+```json
+{
+  "code": 404,
+  "message": "资源不存在"
+}
+```
+
 ## 认证说明
 
 当前API版本（v1）暂未启用认证机制，所有接口均可直接访问。
@@ -153,11 +161,161 @@
 
 ---
 
+## 3. 获取图片类型列表
+
+### 接口信息
+- **URL**: `/api/v1/image-text/types`
+- **Method**: `GET`
+- **认证**: 无需认证
+
+### 请求参数
+无
+
+### 响应示例
+
+#### 成功响应 (200)
+```json
+{
+    "code": 200,
+    "message": "success",
+    "data": [
+        {
+            "id": 1,
+            "type": "安全须知",
+            "created_at": "2026-05-18T12:00:00.000000Z",
+            "updated_at": "2026-05-18T12:00:00.000000Z"
+        },
+        {
+            "id": 2,
+            "type": "维护公告",
+            "created_at": "2026-05-18T13:00:00.000000Z",
+            "updated_at": "2026-05-18T13:00:00.000000Z"
+        }
+    ]
+}
+```
+
+### 数据字段说明
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| id | integer | 类型ID |
+| type | string | 类型名称 |
+| created_at | string | 创建时间 (ISO 8601格式) |
+| updated_at | string | 更新时间 (ISO 8601格式) |
+
+---
+
+## 4. 获取图片信息列表
+
+### 接口信息
+- **URL**: `/api/v1/image-text/list`
+- **Method**: `GET`
+- **认证**: 无需认证
+
+### 请求参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| keyword | string | 否 | 关键词搜索（按图片组名模糊匹配） |
+| imageType | string | 否 | 图片类型筛选（精确匹配） |
+
+### 请求示例
+```
+GET /api/v1/image-text/list?keyword=电梯&imageType=安全须知
+```
+
+### 响应示例
+
+#### 成功响应 (200)
+```json
+{
+    "code": 200,
+    "message": "success",
+    "data": [
+        {
+            "id": 1,
+            "coverPath": "storage/images/电梯安全/1716024000_cover.jpg",
+            "imagePath": "storage/images/电梯安全/1716024000_img1.jpg",
+            "imageType": "安全须知",
+            "imageGroup": "电梯安全",
+            "description": "电梯安全知识宣传图片",
+            "created_at": "2026-05-18T12:00:00.000000Z",
+            "updated_at": "2026-05-18T12:00:00.000000Z"
+        }
+    ]
+}
+```
+
+### 数据字段说明
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| id | integer | 图片ID |
+| coverPath | string | 封面图片路径（相对路径，需拼接域名） |
+| imagePath | string | 图片文件路径（相对路径，需拼接域名） |
+| imageType | string | 图片类型 |
+| imageGroup | string | 图片分组名称 |
+| description | string | 图片描述（可为空） |
+| created_at | string | 创建时间 (ISO 8601格式) |
+| updated_at | string | 更新时间 (ISO 8601格式) |
+
+---
+
+## 5. 获取图片详情
+
+### 接口信息
+- **URL**: `/api/v1/image-text/{id}`
+- **Method**: `GET`
+- **认证**: 无需认证
+
+### 路径参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 图片ID |
+
+### 请求示例
+```
+GET /api/v1/image-text/1
+```
+
+### 响应示例
+
+#### 成功响应 (200)
+```json
+{
+    "code": 200,
+    "message": "success",
+    "data": {
+        "id": 1,
+        "coverPath": "storage/images/电梯安全/1716024000_cover.jpg",
+        "imagePath": "storage/images/电梯安全/1716024000_img1.jpg",
+        "imageType": "安全须知",
+        "imageGroup": "电梯安全",
+        "description": "电梯安全知识宣传图片",
+        "created_at": "2026-05-18T12:00:00.000000Z",
+        "updated_at": "2026-05-18T12:00:00.000000Z"
+    }
+}
+```
+
+#### 错误响应 (404)
+```json
+{
+    "code": 404,
+    "message": "图片不存在"
+}
+```
+
+---
+
 ## 错误码说明
 
 | 错误码 | 说明 |
 |--------|------|
 | 200 | 请求成功 |
+| 404 | 资源不存在 |
 | 500 | 服务器内部错误 |
 
 ---
@@ -168,13 +326,17 @@
 - 2026-04-14: 初始版本发布
   - 获取视频分类列表接口
   - 获取视频信息列表接口
+- 2026-05-18: 新增图文管理接口
+  - 获取图片类型列表接口
+  - 获取图片信息列表接口
+  - 获取图片详情接口
 
 ---
 
 ## 注意事项
 
-1. 所有时间字段格式为 `YYYY-MM-DD HH:mm:ss`
-2. 路径字段（如 `coverPath`、`videoPath`）为相对路径，需拼接基础URL才能访问完整路径
+1. 所有时间字段格式为 `YYYY-MM-DD HH:mm:ss` 或 ISO 8601 格式
+2. 路径字段（如 `coverPath`、`videoPath`、`imagePath`）为相对路径，需拼接基础URL才能访问完整路径
 3. 视频分类和视频信息通过 `videoType` 字段关联
 4. 当前API版本为预发布版本，后续可能会有较大调整
 
