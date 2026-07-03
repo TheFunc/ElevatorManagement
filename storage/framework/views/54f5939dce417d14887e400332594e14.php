@@ -53,9 +53,13 @@
             <input type="text" name="title" value="<?php echo e(old('title')); ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
         </div>
 
+        <!-- 文件描述已隐藏，默认使用 "null" -->
+        <input type="hidden" name="description" value="null">
+
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">文件描述</label>
-            <textarea name="description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"><?php echo e(old('description')); ?></textarea>
+            <label class="block text-sm font-medium text-gray-700 mb-2">上传时间</label>
+            <input type="datetime-local" name="event_time" value="<?php echo e(old('event_time')); ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+            <p class="text-sm text-gray-500 mt-1">不填写则默认使用当前时间</p>
         </div>
 
         <div>

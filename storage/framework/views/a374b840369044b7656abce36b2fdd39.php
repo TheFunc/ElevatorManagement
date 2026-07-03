@@ -72,7 +72,13 @@
                     </td>
                     <td class="px-4 py-3 text-gray-800 font-medium"><?php echo e($file->title); ?></td>
                     <!-- 描述列已隐藏 -->
-                    <td class="px-4 py-3 text-gray-600"><?php echo e($file->created_at->format('Y-m-d')); ?></td>
+                    <td class="px-4 py-3 text-gray-600">
+                        <?php
+                            $_descData = json_decode($file->desc, true);
+                        ?>
+                        <?php echo e(is_array($_descData) && isset($_descData['event_time']) ? \Carbon\Carbon::parse($_descData['event_time'])->format('Y-m-d') : $file->created_at->format('Y-m-d')); ?>
+
+                    </td>
                     <td class="px-4 py-3">
                         <a href="<?php echo e(route('file.show', $file->id)); ?>" class="text-primary hover:text-dark font-medium mr-3">查看详情</a>
                         <a href="<?php echo e(route('file.download', $file->id)); ?>" class="text-green-600 hover:text-green-800 font-medium mr-3">

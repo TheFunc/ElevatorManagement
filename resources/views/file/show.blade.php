@@ -39,9 +39,12 @@
             <p class="text-xl font-semibold text-gray-800">{{ $file->title }}</p>
         </div>
         
+        @php
+            $descData = json_decode($file->desc, true);
+        @endphp
         <div class="bg-gray-50 p-5 rounded-lg">
-            <p class="text-sm text-gray-500 mb-2">文件描述</p>
-            <p class="text-gray-800">{{ $file->desc ?? '暂无描述' }}</p>
+            <p class="text-sm text-gray-500 mb-2">上传时间</p>
+            <p class="text-gray-800">{{ is_array($descData) && isset($descData['event_time']) ? $descData['event_time'] : $file->created_at->format('Y-m-d H:i:s') }}</p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -57,7 +60,7 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-gray-50 p-5 rounded-lg">
-                <p class="text-sm text-gray-500 mb-2">上传时间</p>
+                <p class="text-sm text-gray-500 mb-2">记录创建时间</p>
                 <p class="text-gray-800">{{ $file->created_at->format('Y-m-d H:i:s') }}</p>
             </div>
             <div class="bg-gray-50 p-5 rounded-lg">

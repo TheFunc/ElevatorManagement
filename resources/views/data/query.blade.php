@@ -73,7 +73,12 @@
                     </td>
                     <td class="px-4 py-3 text-gray-800 font-medium">{{ $file->title }}</td>
                     <!-- 描述列已隐藏 -->
-                    <td class="px-4 py-3 text-gray-600">{{ $file->created_at->format('Y-m-d') }}</td>
+                    <td class="px-4 py-3 text-gray-600">
+                        @php
+                            $_descData = json_decode($file->desc, true);
+                        @endphp
+                        {{ is_array($_descData) && isset($_descData['event_time']) ? \Carbon\Carbon::parse($_descData['event_time'])->format('Y-m-d') : $file->created_at->format('Y-m-d') }}
+                    </td>
                     <td class="px-4 py-3">
                         <a href="{{ route('file.show', $file->id) }}" class="text-primary hover:text-dark font-medium mr-3">查看详情</a>
                         <a href="{{ route('file.download', $file->id) }}" class="text-green-600 hover:text-green-800 font-medium mr-3">

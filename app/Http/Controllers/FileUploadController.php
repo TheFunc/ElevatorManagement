@@ -50,6 +50,7 @@ class FileUploadController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'type' => 'required|in:prepare,maintenance,inspection,fault,repair,accident,rescue,annual_check',
+            'event_time' => 'nullable|string',
         ], [
             'file.required' => '请选择要上传的文件',
             'file.mimes' => '仅支持 Word、PDF、Excel、PPT、TXT 格式文件',
@@ -76,9 +77,25 @@ class FileUploadController extends Controller
             /*
             */
 
+            // 处理上传时间：如果用户未填写则使用当前时间
+            $eventTimeInput = $request->input('event_time');
+            if (!empty($eventTimeInput)) {
+                // datetime-local 格式为 "2026-05-15T10:20"，转为时间戳再格式化
+                $timestamp = strtotime($eventTimeInput);
+                $eventTime = $timestamp !== false ? date('Y-m-d H:i:s', $timestamp) : now()->format('Y-m-d H:i:s');
+            } else {
+                $eventTime = now()->format('Y-m-d H:i:s');
+            }
+
+            // desc 字段存储 JSON：包含描述和事件时间
+            $descData = json_encode([
+                'desc' => $request->input('description', 'null'),
+                'event_time' => $eventTime,
+            ]);
+
             files::create([
                 'title' => $request->input("title"),
-                'desc' => $request->input("description"),
+                'desc' => $descData,
                 'type' => $request->input("type"),
                 'path' => $filePath,
             ]);
