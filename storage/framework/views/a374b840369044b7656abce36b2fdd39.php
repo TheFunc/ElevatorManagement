@@ -10,7 +10,7 @@
         <div class="flex flex-wrap gap-3 items-end">
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-sm text-gray-600 mb-1">关键词搜索</label>
-                <input type="text" name="keyword" value="<?php echo e(request('keyword')); ?>" placeholder="搜索文件标题或描述..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                <input type="text" name="keyword" value="<?php echo e(request('keyword')); ?>" placeholder="搜索文件标题..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
             </div>
             <div class="w-48">
                 <label class="block text-sm text-gray-600 mb-1">文件类型</label>
@@ -55,7 +55,7 @@
                 <tr class="bg-gray-50">
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">类型</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">文件标题</th>
-                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">描述</th>
+                    <!-- 描述列已隐藏 -->
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">上传时间</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
                 </tr>
@@ -71,7 +71,7 @@
                         </span>
                     </td>
                     <td class="px-4 py-3 text-gray-800 font-medium"><?php echo e($file->title); ?></td>
-                    <td class="px-4 py-3 text-gray-600"><?php echo e(Str::limit($file->desc, 40)); ?></td>
+                    <!-- 描述列已隐藏 -->
                     <td class="px-4 py-3 text-gray-600"><?php echo e($file->created_at->format('Y-m-d H:i')); ?></td>
                     <td class="px-4 py-3">
                         <a href="<?php echo e(route('file.show', $file->id)); ?>" class="text-primary hover:text-dark font-medium mr-3">查看详情</a>
@@ -87,7 +87,7 @@
                 
                 <?php if($files->isEmpty()): ?>
                 <tr>
-                    <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
                         暂无符合条件的资料文件
                     </td>
                 </tr>

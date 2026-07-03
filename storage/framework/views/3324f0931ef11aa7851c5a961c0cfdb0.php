@@ -1,19 +1,19 @@
-<?php $__env->startSection('title', '电梯单管理'); ?>
-<?php $__env->startSection('page-title', '电梯单上传管理'); ?>
+<?php $__env->startSection('title', '维保单管理'); ?>
+<?php $__env->startSection('page-title', '维保单上传管理'); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="card">
     <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-semibold text-gray-800">电梯单列表</h3>
+        <h3 class="text-xl font-semibold text-gray-800">维保单列表</h3>
         <button type="button" onclick="showUploadModal()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-dark transition-colors">
-            <i class="ri-add-line mr-1"></i>上传电梯单
+            <i class="ri-add-line mr-1"></i>上传维保单
         </button>
     </div>
 
     <!-- 搜索栏 -->
     <form action="" method="GET" class="mb-6">
         <div class="flex gap-3 flex-wrap">
-            <input type="text" name="keyword" value="<?php echo e(request('keyword')); ?>" placeholder="搜索标题或描述..." class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+            <input type="text" name="keyword" value="<?php echo e(request('keyword')); ?>" placeholder="搜索标题..." class="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
             <button type="submit" class="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors">
                 <i class="ri-search-line mr-1"></i>搜索
             </button>
@@ -31,8 +31,8 @@
                 <tr class="bg-gray-50">
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">缩略图</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">标题</th>
-                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">描述</th>
-                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">上传时间</th>
+                    <!-- 描述列已隐藏 -->
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">维保日期</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
                 </tr>
             </thead>
@@ -63,7 +63,7 @@
                 </div>
             </td>
                     <td class="px-4 py-3 text-gray-800 font-medium"><?php echo e($order->title); ?></td>
-                    <td class="px-4 py-3 text-gray-600"><?php echo e($order->description); ?></td>
+                    <!-- 描述列已隐藏 -->
                     <td class="px-4 py-3 text-gray-600"><?php echo e(\Carbon\Carbon::parse($order->time)->format('Y-m-d H:i')); ?></td>
                     <td class="px-4 py-3">
                         <div class="flex gap-2">
@@ -83,8 +83,8 @@
 
                 <?php if($orders->isEmpty()): ?>
                 <tr>
-                    <td colspan="5" class="px-4 py-8 text-center text-gray-500">
-                        暂无电梯单数据，请点击上方按钮上传
+                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                        暂无维保单数据，请点击上方按钮上传
                     </td>
                 </tr>
                 <?php endif; ?>
@@ -135,7 +135,7 @@
 <div id="uploadModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl p-6 max-w-2xl w-11/12 transform transition-all">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-800">上传电梯单</h3>
+            <h3 class="text-lg font-semibold text-gray-800">上传维保单</h3>
             <button type="button" onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600">
                 <i class="ri-close-line text-xl"></i>
             </button>
@@ -146,16 +146,13 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">标题 <span class="text-red-500">*</span></label>
-                <input type="text" name="title" id="title" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入电梯单标题">
+                <input type="text" name="title" id="title" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="请输入维保单标题">
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">描述</label>
-                <textarea name="description" id="description" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="可选描述信息"></textarea>
-            </div>
+            <!-- 描述字段已隐藏 -->
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">自定义上传时间（可选）</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">维保日期</label>
                 <input type="datetime-local" name="customUploadTime" id="customUploadTime" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
                 <p class="text-sm text-gray-500 mt-1">如果不填写，将使用当前时间作为上传时间</p>
             </div>

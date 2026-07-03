@@ -15,7 +15,7 @@
     <!-- 搜索框 -->
     <form action="" method="GET" class="mb-6">
         <div class="flex gap-3">
-            <input type="text" name="keyword" value="<?php echo e(request('keyword')); ?>" placeholder="搜索维保记录标题或描述..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+            <input type="text" name="keyword" value="<?php echo e(request('keyword')); ?>" placeholder="搜索维保记录标题..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
             <button type="submit" class="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors">
                 <i class="ri-search-line mr-1"></i>搜索
             </button>
@@ -33,7 +33,7 @@
             <thead>
                 <tr class="bg-gray-50">
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">文件标题</th>
-                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">描述</th>
+                    <!-- 描述列已隐藏 -->
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100" onclick="sortTable()">
                         上传时间 <i class="ri-arrow-up-down-line ml-1"></i>
                     </th>
@@ -44,7 +44,7 @@
                 <?php $__currentLoopData = $files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
                     <td class="px-4 py-3 text-gray-800 font-medium"><?php echo e($file->title); ?></td>
-                    <td class="px-4 py-3 text-gray-600"><?php echo e(Str::limit($file->desc, 40)); ?></td>
+                    <!-- 描述列已隐藏 -->
                     <td class="px-4 py-3 text-gray-600"><?php echo e($file->created_at->format('Y-m-d H:i')); ?></td>
                     <td class="px-4 py-3">
                         <a href="<?php echo e(route('file.download', $file->id)); ?>" class="text-green-600 hover:text-green-800 font-medium">
@@ -56,7 +56,7 @@
                 
                 <?php if($files->isEmpty()): ?>
                 <tr>
-                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                    <td colspan="3" class="px-4 py-8 text-center text-gray-500">
                         <?php if(request('keyword')): ?>
                         未找到匹配的维保记录
                         <?php else: ?>
