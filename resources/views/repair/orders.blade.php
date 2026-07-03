@@ -65,7 +65,7 @@
             </td>
                     <td class="px-4 py-3 text-gray-800 font-medium">{{ $order->title }}</td>
                     <!-- 描述列已隐藏 -->
-                    <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($order->time)->format('Y-m-d H:i') }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($order->time)->format('Y-m-d') }}</td>
                     <td class="px-4 py-3">
                         <div class="flex gap-2">
                             <button onclick="showImageGroup(this)" data-images='@json($order->images->map(fn($img) => ["path" => asset($img->path), "title" => $img->title]))' class="px-3 py-1 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors text-sm font-medium">

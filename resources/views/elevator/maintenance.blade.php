@@ -47,7 +47,7 @@
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
                     <td class="px-4 py-3 text-gray-800 font-medium">{{ $file->title }}</td>
                     <!-- 描述列已隐藏 -->
-                    <td class="px-4 py-3 text-gray-600">{{ $file->created_at->format('Y-m-d H:i') }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $file->created_at->format('Y-m-d') }}</td>
                     <td class="px-4 py-3">
                         <a href="{{ route('file.download', $file->id) }}" class="text-green-600 hover:text-green-800 font-medium">
                             <i class="ri-download-line mr-1"></i>下载
