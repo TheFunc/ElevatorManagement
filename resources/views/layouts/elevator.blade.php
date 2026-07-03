@@ -417,9 +417,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>电梯信息列表</span>
                     </a>
                     
-                    <a href="{{ route('elevator.maintenance') }}" class="menu-item @if(Route::currentRouteName() == 'elevator.maintenance') menu-item-active @endif">
+                    <a href="{{ route('repair.orders') }}" class="menu-item @if(Route::currentRouteName() == 'elevator.maintenance') menu-item-active @endif">
                         <i class="ri-tools-line text-lg"></i>
-                        <span>维保记录</span>
+                        <span>维保单列表</span>
                     </a>
                     
                     <!-- <a href="{{ route('elevator.warning') }}" class="menu-item @if(Route::currentRouteName() == 'elevator.warning') menu-item-active @endif">

@@ -58,7 +58,18 @@
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">类型</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">文件标题</th>
                     <!-- 描述列已隐藏 -->
-                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">上传时间</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                        <a href="{{ route('data.query', array_merge(request()->all(), ['sort' => 'created_at', 'order' => request('order', 'asc') == 'asc' ? 'desc' : 'asc'])) }}" class="inline-flex items-center gap-1 hover:text-primary transition-colors group">
+                            上传时间
+                            @php
+                                $currentOrder = request('order', 'asc');
+                            @endphp
+                            <span class="inline-flex flex-col text-[10px] leading-none opacity-40 group-hover:opacity-100 transition-opacity">
+                                <i class="ri-arrow-up-s-line {{ $currentOrder == 'asc' ? 'text-primary opacity-100' : '' }}" style="margin-bottom: -2px;"></i>
+                                <i class="ri-arrow-down-s-line {{ $currentOrder == 'desc' ? 'text-primary opacity-100' : '' }}" style="margin-top: -2px;"></i>
+                            </span>
+                        </a>
+                    </th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">操作</th>
                 </tr>
             </thead>

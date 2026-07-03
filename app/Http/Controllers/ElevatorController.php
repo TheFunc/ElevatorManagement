@@ -229,7 +229,17 @@ class ElevatorController extends Controller
 
     public function query(Request $request)
     {
-        $query = Files::latest();
+        $query = Files::query();
+        
+        // 排序处理 - 默认按创建时间升序（从早到晚）
+        $sort = $request->get('sort', 'created_at');
+        $order = $request->get('order', 'asc');
+        
+        if (in_array($sort, ['created_at']) && in_array($order, ['asc', 'desc'])) {
+            $query->orderBy($sort, $order);
+        } else {
+            $query->orderBy('created_at', 'asc');
+        }
         
         // 关键词搜索
         if ($request->has('keyword') && $request->keyword != '') {
@@ -245,7 +255,7 @@ class ElevatorController extends Controller
             $query->where('type', $request->type);
         }
         
-        $files = $query->paginate(5);
+        $files = $query->paginate(5)->appends($request->all());
         
         // 文件类型配置
         $fileTypes = [

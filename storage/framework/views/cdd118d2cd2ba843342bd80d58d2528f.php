@@ -417,9 +417,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span>电梯信息列表</span>
                     </a>
                     
-                    <a href="<?php echo e(route('elevator.maintenance')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'elevator.maintenance'): ?> menu-item-active <?php endif; ?>">
+                    <a href="<?php echo e(route('repair.orders')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'elevator.maintenance'): ?> menu-item-active <?php endif; ?>">
                         <i class="ri-tools-line text-lg"></i>
-                        <span>维保记录</span>
+                        <span>维保单列表</span>
                     </a>
                     
                     <!-- <a href="<?php echo e(route('elevator.warning')); ?>" class="menu-item <?php if(Route::currentRouteName() == 'elevator.warning'): ?> menu-item-active <?php endif; ?>">
