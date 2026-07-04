@@ -231,15 +231,11 @@ class ElevatorController extends Controller
     {
         $query = Files::query();
         
-        // 排序处理 - 默认按创建时间升序（从早到晚）
-        $sort = $request->get('sort', 'created_at');
-        $order = $request->get('order', 'asc');
+        // 排序处理 - 默认按事件时间降序（从晚到早，最新在前）
+        $order = $request->get('order', 'desc') == 'desc' ? 'desc' : 'asc';
         
-        if (in_array($sort, ['created_at']) && in_array($order, ['asc', 'desc'])) {
-            $query->orderBy($sort, $order);
-        } else {
-            $query->orderBy('created_at', 'asc');
-        }
+        // 按 desc 字段中 JSON 的 event_time 排序（与页面显示一致），无 event_time 时回退到 created_at
+        $query->orderByRaw("COALESCE(NULLIF(JSON_UNQUOTE(JSON_EXTRACT(`desc`, '$.event_time')), ''), created_at) {$order}");
         
         // 关键词搜索
         if ($request->has('keyword') && $request->keyword != '') {
@@ -673,8 +669,8 @@ class ElevatorController extends Controller
             })
             ->values();
         
-        // 手动分页：每页5条
-        $perPage = 5;
+        // 手动分页：每页10条
+        $perPage = 10;
         $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage();
         $currentItems = $allOrders->slice(($currentPage - 1) * $perPage, $perPage)->values();
         $orders = new \Illuminate\Pagination\LengthAwarePaginator(

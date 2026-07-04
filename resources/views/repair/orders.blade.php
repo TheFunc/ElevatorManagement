@@ -31,7 +31,6 @@
         <table class="w-full">
             <thead>
                 <tr class="bg-gray-50">
-                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">缩略图</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">标题</th>
                     <!-- 描述列已隐藏 -->
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">维保日期</th>
@@ -41,28 +40,6 @@
             <tbody>
                 @foreach($orders as $order)
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
-            <td class="px-4 py-3">
-                <div class="relative w-20 h-20 overflow-hidden rounded-lg">
-                    @if(isset($order->images) && $order->images->count() > 0)
-                        <div class="carousel-thumb" data-images='@json($order->images->map(fn($img) => ["path" => asset($img->path), "title" => $img->title]))'>
-                            <img src="{{ asset($order->images->first()->path) }}" alt="{{ $order->title }}" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform carousel-image" onclick="showImageGroup(this)">
-                            @if($order->images->count() > 1)
-                            <div class="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
-                                1/{{ $order->images->count() }}
-                            </div>
-                            <button class="absolute left-1 top-1/2 -translate-y-1/2 bg-black/50 text-white w-5 h-5 rounded-full text-xs hover:bg-black/70 carousel-prev" onclick="event.stopPropagation(); prevThumb(this)">
-                                <i class="ri-arrow-left-s-line"></i>
-                            </button>
-                            <button class="absolute right-1 top-1/2 -translate-y-1/2 bg-black/50 text-white w-5 h-5 rounded-full text-xs hover:bg-black/70 carousel-next" onclick="event.stopPropagation(); nextThumb(this)">
-                                <i class="ri-arrow-right-s-line"></i>
-                            </button>
-                            @endif
-                        </div>
-                    @else
-                        <img src="{{ asset($order->path) }}" alt="{{ $order->title }}" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform" onclick="showImage('{{ asset($order->path) }}', '{{ $order->title }}')">
-                    @endif
-                </div>
-            </td>
                     <td class="px-4 py-3 text-gray-800 font-medium">{{ $order->title }}</td>
                     <!-- 描述列已隐藏 -->
                     <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($order->time)->format('Y-m-d') }}</td>
@@ -84,7 +61,7 @@
 
                 @if($orders->isEmpty())
                 <tr>
-                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                    <td colspan="3" class="px-4 py-8 text-center text-gray-500">
                         暂无维保单数据，请点击上方按钮上传
                     </td>
                 </tr>

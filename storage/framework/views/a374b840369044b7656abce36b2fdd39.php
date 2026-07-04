@@ -58,10 +58,10 @@
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">文件标题</th>
                     <!-- 描述列已隐藏 -->
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                        <a href="<?php echo e(route('data.query', array_merge(request()->all(), ['sort' => 'created_at', 'order' => request('order', 'asc') == 'asc' ? 'desc' : 'asc']))); ?>" class="inline-flex items-center gap-1 hover:text-primary transition-colors group">
+                        <a href="<?php echo e(route('data.query', array_merge(request()->all(), ['sort' => 'created_at', 'order' => request('order', 'desc') == 'desc' ? 'asc' : 'desc']))); ?>" class="inline-flex items-center gap-1 hover:text-primary transition-colors group">
                             上传时间
                             <?php
-                                $currentOrder = request('order', 'asc');
+                                $currentOrder = request('order', 'desc');
                             ?>
                             <span class="inline-flex flex-col text-[10px] leading-none opacity-40 group-hover:opacity-100 transition-opacity">
                                 <i class="ri-arrow-up-s-line <?php echo e($currentOrder == 'asc' ? 'text-primary opacity-100' : ''); ?>" style="margin-bottom: -2px;"></i>

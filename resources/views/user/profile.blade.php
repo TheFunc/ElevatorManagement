@@ -92,13 +92,6 @@
                 </div>
             </a>
 
-            <a href="{{ route('elevator.warning') }}" class="p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-light transition-all flex items-center gap-3">
-                <i class="ri-alarm-warning-line text-2xl text-orange-600"></i>
-                <div>
-                    <p class="font-medium text-gray-800">年检预警</p>
-                    <p class="text-sm text-gray-500">查看电梯年检提醒</p>
-                </div>
-            </a>
         </div>
     </div>
 
