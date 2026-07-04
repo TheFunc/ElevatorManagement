@@ -5,7 +5,20 @@
 
 @section('content')
 <div class="card">
-    <h3 class="text-xl font-semibold text-gray-800 mb-6">资料管理查询</h3>
+    <div class="flex flex-wrap items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-800">资料管理查询</h3>
+        <!-- 类型图例 -->
+        <div class="flex flex-wrap gap-3">
+            @foreach($fileTypes as $key => $type)
+            <div class="flex items-center">
+                <span class="w-6 h-6 flex items-center justify-center rounded bg-{{ $type['color'] }}-100 text-{{ $type['color'] }}-600">
+                    <i class="{{ $type['icon'] }}" style="font-size: 14px;"></i>
+                </span>
+                <span class="ml-1.5 text-sm text-gray-600">{{ $type['name'] }}</span>
+            </div>
+            @endforeach
+        </div>
+    </div>
     
     <!-- 搜索和过滤区域 -->
     <form action="" method="GET" class="mb-6">
@@ -37,18 +50,6 @@
             @endif
         </div>
     </form>
-    
-    <!-- 类型图例 -->
-    <div class="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-        @foreach($fileTypes as $key => $type)
-        <div class="flex items-center">
-            <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-{{ $type['color'] }}-100 text-{{ $type['color'] }}-600">
-                <i class="{{ $type['icon'] }}"></i>
-            </span>
-            <span class="ml-2 text-sm text-gray-700">{{ $type['name'] }}</span>
-        </div>
-        @endforeach
-    </div>
     
     <!-- 资料表格 -->
     <div class="overflow-x-auto">
@@ -91,7 +92,7 @@
                         {{ is_array($_descData) && isset($_descData['event_time']) ? \Carbon\Carbon::parse($_descData['event_time'])->format('Y-m-d') : $file->created_at->format('Y-m-d') }}
                     </td>
                     <td class="px-4 py-3">
-                        <a href="{{ route('file.show', $file->id) }}" class="text-primary hover:text-dark font-medium mr-3">查看详情</a>
+                        {{-- <a href="{{ route('file.show', $file->id) }}" class="text-primary hover:text-dark font-medium mr-3">查看详情</a> --}}
                         <a href="{{ route('file.download', $file->id) }}" class="text-green-600 hover:text-green-800 font-medium mr-3">
                             <i class="ri-download-line mr-1"></i>下载
                         </a>

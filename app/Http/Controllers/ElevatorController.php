@@ -255,7 +255,7 @@ class ElevatorController extends Controller
             $query->where('type', $request->type);
         }
         
-        $files = $query->paginate(5)->appends($request->all());
+        $files = $query->paginate(10)->appends($request->all());
         
         // 文件类型配置
         $fileTypes = [

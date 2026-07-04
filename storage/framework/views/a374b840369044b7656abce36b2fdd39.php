@@ -3,7 +3,20 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="card">
-    <h3 class="text-xl font-semibold text-gray-800 mb-6">资料管理查询</h3>
+    <div class="flex flex-wrap items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-gray-800">资料管理查询</h3>
+        <!-- 类型图例 -->
+        <div class="flex flex-wrap gap-3">
+            <?php $__currentLoopData = $fileTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="flex items-center">
+                <span class="w-6 h-6 flex items-center justify-center rounded bg-<?php echo e($type['color']); ?>-100 text-<?php echo e($type['color']); ?>-600">
+                    <i class="<?php echo e($type['icon']); ?>" style="font-size: 14px;"></i>
+                </span>
+                <span class="ml-1.5 text-sm text-gray-600"><?php echo e($type['name']); ?></span>
+            </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+    </div>
     
     <!-- 搜索和过滤区域 -->
     <form action="" method="GET" class="mb-6">
@@ -35,18 +48,6 @@
             <?php endif; ?>
         </div>
     </form>
-    
-    <!-- 类型图例 -->
-    <div class="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-        <?php $__currentLoopData = $fileTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <div class="flex items-center">
-            <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-<?php echo e($type['color']); ?>-100 text-<?php echo e($type['color']); ?>-600">
-                <i class="<?php echo e($type['icon']); ?>"></i>
-            </span>
-            <span class="ml-2 text-sm text-gray-700"><?php echo e($type['name']); ?></span>
-        </div>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </div>
     
     <!-- 资料表格 -->
     <div class="overflow-x-auto">
@@ -91,7 +92,7 @@
 
                     </td>
                     <td class="px-4 py-3">
-                        <a href="<?php echo e(route('file.show', $file->id)); ?>" class="text-primary hover:text-dark font-medium mr-3">查看详情</a>
+                        
                         <a href="<?php echo e(route('file.download', $file->id)); ?>" class="text-green-600 hover:text-green-800 font-medium mr-3">
                             <i class="ri-download-line mr-1"></i>下载
                         </a>
