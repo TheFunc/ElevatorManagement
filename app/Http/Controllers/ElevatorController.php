@@ -51,7 +51,7 @@ class ElevatorController extends Controller
             $query->latest();
         }
         
-        $devices = $query->get();
+        $devices = $query->paginate(10)->appends($request->all());
         
         // 获取年检信息
         $checkNumbers = \App\Models\Check::pluck('next_check_at', 'number');

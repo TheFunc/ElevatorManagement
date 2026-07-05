@@ -194,6 +194,44 @@
                     </tbody>
                 </table>
             </div>
+            
+            <!-- PC端分页 -->
+            @if($devices->hasPages())
+            <div class="mt-6 flex justify-center">
+                <div class="flex items-center gap-1.5">
+                    {{-- 上一页 --}}
+                    @if($devices->onFirstPage())
+                        <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </span>
+                    @else
+                        <a href="{{ $devices->previousPageUrl() }}" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </a>
+                    @endif
+                    
+                    {{-- 页码 --}}
+                    @foreach($devices->getUrlRange(1, $devices->lastPage()) as $page => $url)
+                        @if($page == $devices->currentPage())
+                            <span class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl shadow-sm shadow-primary/20">{{ $page }}</span>
+                        @else
+                            <a href="{{ $url }}" class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">{{ $page }}</a>
+                        @endif
+                    @endforeach
+                    
+                    {{-- 下一页 --}}
+                    @if($devices->hasMorePages())
+                        <a href="{{ $devices->nextPageUrl() }}" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </a>
+                    @else
+                        <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </span>
+                    @endif
+                </div>
+            </div>
+            @endif
         </div>
         
         <!-- 手机端卡片流布局 仅在移动端显示 -->
@@ -239,6 +277,44 @@
             <div class="py-12 text-center text-gray-500">
                 <i class="ri-inbox-line text-4xl text-gray-300 mb-3"></i>
                 <p>暂无电梯数据，请点击"添加电梯"录入设备信息</p>
+            </div>
+            @endif
+            
+            <!-- 手机端分页 -->
+            @if($devices->hasPages())
+            <div class="mt-6 flex justify-center">
+                <div class="flex items-center gap-1.5">
+                    {{-- 上一页 --}}
+                    @if($devices->onFirstPage())
+                        <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </span>
+                    @else
+                        <a href="{{ $devices->previousPageUrl() }}" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </a>
+                    @endif
+                    
+                    {{-- 页码 --}}
+                    @foreach($devices->getUrlRange(1, $devices->lastPage()) as $page => $url)
+                        @if($page == $devices->currentPage())
+                            <span class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl shadow-sm shadow-primary/20">{{ $page }}</span>
+                        @else
+                            <a href="{{ $url }}" class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">{{ $page }}</a>
+                        @endif
+                    @endforeach
+                    
+                    {{-- 下一页 --}}
+                    @if($devices->hasMorePages())
+                        <a href="{{ $devices->nextPageUrl() }}" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </a>
+                    @else
+                        <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </span>
+                    @endif
+                </div>
             </div>
             @endif
         </div>

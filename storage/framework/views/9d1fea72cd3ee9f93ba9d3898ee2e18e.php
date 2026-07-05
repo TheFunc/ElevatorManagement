@@ -193,6 +193,44 @@
                     </tbody>
                 </table>
             </div>
+            
+            <!-- PC端分页 -->
+            <?php if($devices->hasPages()): ?>
+            <div class="mt-6 flex justify-center">
+                <div class="flex items-center gap-1.5">
+                    
+                    <?php if($devices->onFirstPage()): ?>
+                        <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </span>
+                    <?php else: ?>
+                        <a href="<?php echo e($devices->previousPageUrl()); ?>" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </a>
+                    <?php endif; ?>
+                    
+                    
+                    <?php $__currentLoopData = $devices->getUrlRange(1, $devices->lastPage()); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $page => $url): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if($page == $devices->currentPage()): ?>
+                            <span class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl shadow-sm shadow-primary/20"><?php echo e($page); ?></span>
+                        <?php else: ?>
+                            <a href="<?php echo e($url); ?>" class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200"><?php echo e($page); ?></a>
+                        <?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    
+                    
+                    <?php if($devices->hasMorePages()): ?>
+                        <a href="<?php echo e($devices->nextPageUrl()); ?>" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </a>
+                    <?php else: ?>
+                        <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </span>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
         
         <!-- 手机端卡片流布局 仅在移动端显示 -->
@@ -239,6 +277,44 @@
             <div class="py-12 text-center text-gray-500">
                 <i class="ri-inbox-line text-4xl text-gray-300 mb-3"></i>
                 <p>暂无电梯数据，请点击"添加电梯"录入设备信息</p>
+            </div>
+            <?php endif; ?>
+            
+            <!-- 手机端分页 -->
+            <?php if($devices->hasPages()): ?>
+            <div class="mt-6 flex justify-center">
+                <div class="flex items-center gap-1.5">
+                    
+                    <?php if($devices->onFirstPage()): ?>
+                        <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </span>
+                    <?php else: ?>
+                        <a href="<?php echo e($devices->previousPageUrl()); ?>" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </a>
+                    <?php endif; ?>
+                    
+                    
+                    <?php $__currentLoopData = $devices->getUrlRange(1, $devices->lastPage()); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $page => $url): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if($page == $devices->currentPage()): ?>
+                            <span class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl shadow-sm shadow-primary/20"><?php echo e($page); ?></span>
+                        <?php else: ?>
+                            <a href="<?php echo e($url); ?>" class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200"><?php echo e($page); ?></a>
+                        <?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    
+                    
+                    <?php if($devices->hasMorePages()): ?>
+                        <a href="<?php echo e($devices->nextPageUrl()); ?>" class="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-light hover:border-primary hover:text-primary transition-all duration-200">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </a>
+                    <?php else: ?>
+                        <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 rounded-xl cursor-not-allowed">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </span>
+                    <?php endif; ?>
+                </div>
             </div>
             <?php endif; ?>
         </div>
